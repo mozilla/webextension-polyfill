@@ -158,4 +158,17 @@ browser.runtime.onMessage.addListener(msg => {
 });
 ```
 
+or:
+
+```javascript
+browser.runtime.onMessage.addListener(async function(msg) {
+  if (msg == "get-ids") {
+    let {idPattern} = await browser.storage.get("idPattern");
+
+    return Array.from(document.querySelectorAll(idPattern),
+                      elem => elem.textContent);
+  }
+});
+```
+
 Or vice versa.
