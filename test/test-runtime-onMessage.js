@@ -23,15 +23,23 @@ describe("browser-polyfill", () => {
 
       return setupTestDOMWindow(fakeChrome).then(window => {
         fakeChrome.runtime.onMessage.hasListener
+          // Fake the hasListener result for "listener not yet registered".
           .onFirstCall().returns(false)
+          // Fake the hasListener result for "listener registered".
           .onSecondCall().returns(true)
+          // Fake the hasListener result for "listener unregistered".
           .onThirdCall().returns(false);
 
         assert.equal(window.browser.runtime.onMessage.hasListener(messageListener),
                      false, "Got hasListener==false before the listener has been added");
+
         window.browser.runtime.onMessage.addListener(messageListener);
+
         assert.equal(window.browser.runtime.onMessage.hasListener(messageListener),
                      true, "Got hasListener==true once the listener has been added");
+
+        // Add the same listener again to test that it will be called with the
+        // same wrapped listener.
         window.browser.runtime.onMessage.addListener(messageListener);
 
         assert.ok(fakeChrome.runtime.onMessage.addListener.calledTwice,
@@ -40,10 +48,12 @@ describe("browser-polyfill", () => {
                      fakeChrome.runtime.onMessage.addListener.firstCall.args[0],
                      "both the addListener calls received the same wrapped listener");
 
+        // Retrieve the wrapped listener and execute it to fake a received message.
         const wrappedListener = fakeChrome.runtime.onMessage.addListener.firstCall.args[0];
         wrappedListener("msg", {name: "sender"}, function sendResponse() {});
         assert.ok(messageListener.calledOnce, "The listener has been called once");
 
+        // Remove the listener.
         window.browser.runtime.onMessage.removeListener(messageListener);
         assert.ok(fakeChrome.runtime.onMessage.removeListener.calledOnce,
                   "removeListener has been called once");
