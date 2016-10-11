@@ -1,11 +1,12 @@
 {
-  "extends": "../.eslintrc",
   "env": {
     "mocha": true,
     "node": true,
     "browser": true,
     "webextensions": true
   },
-  "globals": {
+  "globals": {},
+  "rules": {
+    "max-nested-callbacks": ["warn", 6]
   }
 }
