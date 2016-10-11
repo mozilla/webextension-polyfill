@@ -1,7 +1,7 @@
 "use strict";
 
-const {createInstrumenter} = require("istanbul-lib-instrument");
 const fs = require("fs");
+const {createInstrumenter} = require("istanbul-lib-instrument");
 const {jsdom, createVirtualConsole} = require("jsdom");
 
 var virtualConsole = createVirtualConsole().sendTo(console);
@@ -10,25 +10,21 @@ var virtualConsole = createVirtualConsole().sendTo(console);
 // where mocha is executed.
 const BROWSER_POLYFILL_PATH = "./dist/browser-polyfill.js";
 
+// Create the jsdom window used to run the tests
+const testDOMWindow = jsdom({virtualConsole}).defaultView;
+global.window = testDOMWindow;
+
 function setupTestDOMWindow(chromeObject) {
   return new Promise((resolve, reject) => {
-    let window;
-
-    // If a jsdom window has already been created, reuse it so that
-    // we can retrieve the final code coverage data, which has been
-    // collected in the jsdom window (where the instrumented browser-polyfill
-    // is running).
-    if (global.window) {
-      window = global.window;
-      window.browser = undefined;
-    } else {
-      window = jsdom({virtualConsole}).defaultView;
-      global.window = window;
-    }
+    const window = testDOMWindow;
 
     // Inject the fake chrome object used as a fixture for the particular
     // browser-polyfill test scenario.
     window.chrome = chromeObject;
+
+    // Set the browser property to undefined.
+    // TODO: change into `delete window.browser` once tmpvar/jsdom#1622 has been fixed.
+    window.browser = undefined;
 
     const scriptEl = window.document.createElement("script");
 
@@ -44,19 +40,31 @@ function setupTestDOMWindow(chromeObject) {
       scriptEl.src = BROWSER_POLYFILL_PATH;
     }
 
-    // Prepare to listen for script loading errors (which results in a rejection),
-    // and to detect when the browser-polyfill has been executed (which resolves
-    // to the jsdom window where the loading has been completed).
-    window.__browserPolyfillLoaded__ = {resolve, reject};
-    window.addEventListener("error", (evt) => reject(evt));
-    const loadedScriptEl = window.document.createElement("script");
-    loadedScriptEl.textContent = `
-      window.removeEventListener("error", window.__browserPolyfillLoaded__.reject);
-      window.__browserPolyfillLoaded__.resolve(window);
-    `;
+    let onLoad;
+    let onLoadError;
+    let onError;
+
+    let cleanLoadListeners = () => {
+      scriptEl.removeEventListener("load", onLoad);
+      scriptEl.removeEventListener("error", onLoadError);
+
+      window.removeEventListener("error", onError);
+    };
+
+    onLoad = () => { cleanLoadListeners(); resolve(window); };
+    onLoadError = () => {
+      cleanLoadListeners();
+      reject(new Error(`Error loading script: ${BROWSER_POLYFILL_PATH}`));
+    };
+    onError = (err) => { cleanLoadListeners(); reject(err); };
+
+    // Listen to any uncaught errors.
+    window.addEventListener("error", onError);
+    scriptEl.addEventListener("error", onLoadError);
+
+    scriptEl.addEventListener("load", onLoad);
 
     window.document.body.appendChild(scriptEl);
-    window.document.body.appendChild(loadedScriptEl);
   });
 }
 
