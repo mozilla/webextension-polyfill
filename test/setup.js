@@ -4,17 +4,31 @@ const fs = require("fs");
 const {createInstrumenter} = require("istanbul-lib-instrument");
 const {jsdom, createVirtualConsole} = require("jsdom");
 
-var virtualConsole = createVirtualConsole().sendTo(console);
+var virtualConsole = createVirtualConsole();
+
+// Optionally print console logs from the jsdom window.
+if (process.env.ENABLE_JSDOM_CONSOLE == "y") {
+  virtualConsole.sendTo(console);
+}
 
 // Path to the browser-polyfill script, relative to the current work dir
 // where mocha is executed.
 const BROWSER_POLYFILL_PATH = "./dist/browser-polyfill.js";
 
 // Create the jsdom window used to run the tests
-const testDOMWindow = jsdom({virtualConsole}).defaultView;
+const testDOMWindow = jsdom("", {virtualConsole}).defaultView;
 global.window = testDOMWindow;
 
-function setupTestDOMWindow(chromeObject) {
+// Copy the code coverage of the browser-polyfill script from the jsdom window
+// to the nodejs global, where nyc expects to find the code coverage data to
+// render in the reports.
+after(() => {
+  if (global.window && process.env.COVERAGE == "y") {
+    global.__coverage__ = global.window.__coverage__;
+  }
+});
+
+function setupTestDOMWindow(chromeObject, browserObject = undefined) {
   return new Promise((resolve, reject) => {
     const window = testDOMWindow;
 
@@ -22,9 +36,13 @@ function setupTestDOMWindow(chromeObject) {
     // browser-polyfill test scenario.
     window.chrome = chromeObject;
 
-    // Set the browser property to undefined.
-    // TODO: change into `delete window.browser` once tmpvar/jsdom#1622 has been fixed.
-    window.browser = undefined;
+    // Set (or reset) the browser property.
+    if (browserObject) {
+      window.browser = browserObject;
+    } else {
+      // TODO: change into `delete window.browser` once tmpvar/jsdom#1622 has been fixed.
+      window.browser = undefined;
+    }
 
     const scriptEl = window.document.createElement("script");
 
@@ -67,15 +85,6 @@ function setupTestDOMWindow(chromeObject) {
     window.document.body.appendChild(scriptEl);
   });
 }
-
-// Copy the code coverage of the browser-polyfill script from the jsdom window
-// to the nodejs global, where nyc expects to find the code coverage data to
-// render in the reports.
-after(() => {
-  if (global.window && process.env.COVERAGE == "y") {
-    global.__coverage__ = global.window.__coverage__;
-  }
-});
 
 module.exports = {
   BROWSER_POLYFILL_PATH,
