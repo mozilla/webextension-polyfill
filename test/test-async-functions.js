@@ -44,5 +44,47 @@ describe("browser-polyfill", () => {
                          "Fake runtime.requestUpdateCheck resolved to an array of values");
       });
     });
+
+    it("rejects the returned promise if chrome.runtime.lastError is not null", () => {
+      const fakeChrome = {
+        runtime: {
+          lastError: new Error("fake lastError"),
+        },
+        tabs: {
+          query: sinon.stub(),
+        },
+      };
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        // Test for single array callback argument.
+        fakeChrome.tabs.query
+          .onFirstCall().callsArgWith(1, ["res1", "res2"]);
+
+        return window.browser.tabs.query({active: true}).then(
+          () => assert.fail("Expected a rejected promise"),
+          (err) => assert.equal(err, fakeChrome.runtime.lastError,
+                                "Got the expected error in the rejected promise")
+        );
+      });
+    });
+
+    it("throws if the number of arguments are not in the range defined in the metadata", () => {
+      const fakeChrome = {
+        runtime: {
+          lastError: null,
+          sendMessage: sinon.spy(),
+        },
+      };
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        assert.throws(() => {
+          window.browser.runtime.sendMessage();
+        }, "Expected at least 1 arguments for sendMessage(), got 0");
+
+        assert.throws(() => {
+          window.browser.runtime.sendMessage("0", "1", "2", "3");
+        }, "Expected at most 3 arguments for sendMessage(), got 4");
+      });
+    });
   });
 });
