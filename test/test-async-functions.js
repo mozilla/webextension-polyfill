@@ -10,7 +10,7 @@ describe("browser-polyfill", () => {
     it("returns a promise which resolves to the callback parameters", () => {
       const fakeChrome = {
         alarms: {clear: sinon.stub()},
-        runtime: {lastError: undefined},
+        runtime: {lastError: null},
       };
       return setupTestDOMWindow(fakeChrome).then(window => {
         fakeChrome.alarms.clear

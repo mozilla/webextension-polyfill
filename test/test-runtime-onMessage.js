@@ -12,7 +12,7 @@ describe("browser-polyfill", () => {
 
       const fakeChrome = {
         runtime: {
-          lastError: undefined,
+          lastError: null,
           onMessage: {
             addListener: sinon.spy(),
             hasListener: sinon.stub(),
@@ -55,7 +55,7 @@ describe("browser-polyfill", () => {
     it("sends the returned value as a message response", () => {
       const fakeChrome = {
         runtime: {
-          lastError: undefined,
+          lastError: null,
           onMessage: {
             addListener: sinon.spy(),
           },
