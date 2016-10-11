@@ -7,7 +7,7 @@ const {setupTestDOMWindow} = require("./setup");
 
 describe("browser-polyfill", () => {
   describe("wrapped runtime.onMessage listener", () => {
-    it("keep track of the listeners added", () => {
+    it("keeps track of the listeners added", () => {
       const messageListener = sinon.spy();
 
       const fakeChrome = {
@@ -24,13 +24,14 @@ describe("browser-polyfill", () => {
       return setupTestDOMWindow(fakeChrome).then(window => {
         fakeChrome.runtime.onMessage.hasListener
           .onFirstCall().returns(false)
-          .onSecondCall().returns(true);
+          .onSecondCall().returns(true)
+          .onThirdCall().returns(false);
 
         assert.equal(window.browser.runtime.onMessage.hasListener(messageListener),
                      false, "Got hasListener==false before the listener has been added");
         window.browser.runtime.onMessage.addListener(messageListener);
         assert.equal(window.browser.runtime.onMessage.hasListener(messageListener),
-                     true, "Got hasListener=true once the listener has been added");
+                     true, "Got hasListener==true once the listener has been added");
         window.browser.runtime.onMessage.addListener(messageListener);
 
         assert.ok(fakeChrome.runtime.onMessage.addListener.calledTwice,
@@ -49,6 +50,8 @@ describe("browser-polyfill", () => {
         assert.equal(fakeChrome.runtime.onMessage.addListener.secondCall.args[0],
                      fakeChrome.runtime.onMessage.removeListener.firstCall.args[0],
                      "both the addListener and removeListenercalls received the same wrapped listener");
+        assert.equal(fakeChrome.runtime.onMessage.hasListener(messageListener), false,
+                     "Got hasListener==false once the listener has been removed");
       });
     });
 

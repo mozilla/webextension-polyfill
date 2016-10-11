@@ -5,7 +5,7 @@ const {assert} = require("chai");
 const {setupTestDOMWindow} = require("./setup");
 
 describe("browser-polyfill", () => {
-  it("automatically wrapps chrome into a browser object", () => {
+  it("wraps the global chrome namespace with a global browser namespace", () => {
     const fakeChrome = {};
     return setupTestDOMWindow(fakeChrome).then(window => {
       assert.equal(typeof window.browser, "object", "Got the window.browser object");

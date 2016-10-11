@@ -22,7 +22,7 @@ describe("browser-polyfill", () => {
       });
     });
 
-    it("delete proxy getter/setter that are not wrapped", () => {
+    it("deletes proxy getter/setter that are not wrapped", () => {
       const fakeChrome = {};
       return setupTestDOMWindow(fakeChrome).then(window => {
         window.browser.newns = {newkey: "test-value"};
@@ -41,6 +41,8 @@ describe("browser-polyfill", () => {
         delete window.browser.newns.newkey2;
         assert.equal(window.browser.newns.newkey2, undefined,
                      "Got the expected result from setting a wrapped property name");
+        assert.ok(!("newkey2" in window.browser.newns),
+                  "The deleted property is not listed anymore");
       });
     });
   });
