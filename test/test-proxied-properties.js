@@ -1,7 +1,6 @@
 "use strict";
 
 const {assert} = require("chai");
-const sinon = require("sinon");
 
 const {setupTestDOMWindow} = require("./setup");
 
