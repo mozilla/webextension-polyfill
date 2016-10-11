@@ -1,11 +1,31 @@
 "use strict";
 
 const {assert} = require("chai");
+const sinon = require("sinon");
 
 const {setupTestDOMWindow} = require("./setup");
 
 describe("browser-polyfill", () => {
   describe("proxies non-wrapped functions", () => {
+    it("should proxy non-wrapped methods", () => {
+      const fakeChrome = {
+        runtime: {
+          nonwrappedmethod: sinon.spy(),
+        },
+      };
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        assert.ok(window.browser.runtime.nonwrappedmethod);
+
+        const fakeCallback = () => {};
+        window.browser.runtime.nonwrappedmethod(fakeCallback);
+
+        const receivedCallback = fakeChrome.runtime.nonwrappedmethod.firstCall.args[0];
+
+        assert.equal(fakeCallback, receivedCallback,
+                     "The callback has not been wrapped for the nonwrappedmethod");
+      });
+    });
+
     it("should proxy getters and setters", () => {
       const fakeChrome = {
         runtime: {myprop: "previous-value"},
@@ -58,6 +78,10 @@ describe("browser-polyfill", () => {
       const fakeChrome = {};
       return setupTestDOMWindow(fakeChrome).then(window => {
         window.browser.newns = {newkey: "test-value"};
+
+        assert.ok("newns" in window.browser, "The custom namespace is in the wrapper");
+        assert.ok("newns" in window.chrome, "The custom namespace is in the target");
+
         assert.equal(window.browser.newns.newkey, "test-value",
                      "Got the expected result from setting a wrapped property name");
 
@@ -68,7 +92,6 @@ describe("browser-polyfill", () => {
                      "Got the expected result from setting a new wrapped property name");
         assert.deepEqual(window.browser.newns, window.chrome.newns,
                          "chrome.newns and browser.newns are the same");
-
 
         delete window.browser.newns.newkey2;
         assert.equal(window.browser.newns.newkey2, undefined,

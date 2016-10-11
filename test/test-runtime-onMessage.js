@@ -7,6 +7,29 @@ const {setupTestDOMWindow} = require("./setup");
 
 describe("browser-polyfill", () => {
   describe("wrapped runtime.onMessage listener", () => {
+    it("do not wrap the listener if it is not a function", () => {
+      const fakeChrome = {
+        runtime: {
+          lastError: null,
+          onMessage: {
+            addListener: sinon.spy(),
+            hasListener: sinon.stub(),
+            removeListener: sinon.spy(),
+          },
+        },
+      };
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        const fakeNonFunctionListener = {fake: "non function listener"};
+
+        window.browser.runtime.onMessage.addListener(fakeNonFunctionListener);
+
+        assert.deepEqual(fakeChrome.runtime.onMessage.addListener.firstCall.args[0],
+                         fakeNonFunctionListener,
+                         "The non-function listener has not been wrapped");
+      });
+    });
+
     it("keeps track of the listeners added", () => {
       const messageListener = sinon.spy();
 
@@ -75,20 +98,29 @@ describe("browser-polyfill", () => {
         },
       };
 
+      // Plain value returned.
       const messageListener = sinon.stub();
       const firstResponse = "fake reply";
-      const secondResponse = Promise.resolve("fake reply2");
+      // Resolved Promise returned.
+      const secondResponse = Promise.resolve("fake reply 2");
+      // Rejected Promise returned.
+      const thirdResponse = Promise.reject("fake error 3");
+
       const sendResponseSpy = sinon.spy();
 
-      messageListener.onFirstCall().returns(firstResponse)
-        .onSecondCall().returns(secondResponse);
+      messageListener
+        .onFirstCall().returns(firstResponse)
+        .onSecondCall().returns(secondResponse)
+        .onThirdCall().returns(thirdResponse);
+
+      let wrappedListener;
 
       return setupTestDOMWindow(fakeChrome).then(window => {
         window.browser.runtime.onMessage.addListener(messageListener);
 
         assert.ok(fakeChrome.runtime.onMessage.addListener.calledOnce);
 
-        const wrappedListener = fakeChrome.runtime.onMessage.addListener.firstCall.args[0];
+        wrappedListener = fakeChrome.runtime.onMessage.addListener.firstCall.args[0];
 
         wrappedListener("fake message", {name: "fake sender"}, sendResponseSpy);
 
@@ -110,11 +142,27 @@ describe("browser-polyfill", () => {
                   "The unwrapped message listener has been called");
         assert.deepEqual(messageListener.secondCall.args,
                          ["fake message2", {name: "fake sender2"}],
-                         "The unwrapped message listener has received the expected parameters");
+                         "The unwrapped listener has received the expected parameters");
 
         assert.ok(sendResponseSpy.calledTwice, "The sendResponse function has been called");
-        assert.equal(sendResponseSpy.secondCall.args[0], "fake reply2",
+        assert.equal(sendResponseSpy.secondCall.args[0], "fake reply 2",
                      "sendResponse callback has been called with the expected parameters");
+      }).then(() => {
+        wrappedListener("fake message3", {name: "fake sender3"}, sendResponseSpy);
+
+        // Wait the third response promise to be rejected.
+        return thirdResponse.catch(err => {
+          assert.equal(messageListener.callCount, 3,
+                    "The unwrapped message listener has been called");
+          assert.deepEqual(messageListener.thirdCall.args,
+                           ["fake message3", {name: "fake sender3"}],
+                           "The unwrapped listener has received the expected parameters");
+
+          assert.equal(sendResponseSpy.callCount, 3,
+                       "The sendResponse function has been called");
+          assert.equal(sendResponseSpy.thirdCall.args[0], err,
+                       "sendResponse callback has been called with the expected parameters");
+        });
       });
     });
   });
