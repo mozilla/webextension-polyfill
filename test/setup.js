@@ -17,14 +17,13 @@ const BROWSER_POLYFILL_PATH = "./dist/browser-polyfill.js";
 
 // Create the jsdom window used to run the tests
 const testDOMWindow = jsdom("", {virtualConsole}).defaultView;
-global.window = testDOMWindow;
 
 // Copy the code coverage of the browser-polyfill script from the jsdom window
 // to the nodejs global, where nyc expects to find the code coverage data to
 // render in the reports.
 after(() => {
-  if (global.window && process.env.COVERAGE == "y") {
-    global.__coverage__ = global.window.__coverage__;
+  if (testDOMWindow && process.env.COVERAGE == "y") {
+    global.__coverage__ = testDOMWindow.__coverage__;
   }
 });
 
