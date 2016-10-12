@@ -1,6 +1,6 @@
 "use strict";
 
-const {assert} = require("chai");
+const {deepEqual, equal, fail, throws} = require("chai").assert;
 const sinon = require("sinon");
 
 const {setupTestDOMWindow} = require("./setup");
@@ -37,10 +37,10 @@ describe("browser-polyfill", () => {
           window.browser.runtime.requestUpdateCheck(),
         ]);
       }).then(results => {
-        assert.equal(results[0], "res1", "Fake alarms.clear call resolved to a single value");
-        assert.deepEqual(results[1], ["res1", "res2"],
+        equal(results[0], "res1", "Fake alarms.clear call resolved to a single value");
+        deepEqual(results[1], ["res1", "res2"],
                          "Fake tabs.query resolved to an array of values");
-        assert.deepEqual(results[2], ["res1", "res2"],
+        deepEqual(results[2], ["res1", "res2"],
                          "Fake runtime.requestUpdateCheck resolved to an array of values");
       });
     });
@@ -61,8 +61,8 @@ describe("browser-polyfill", () => {
           .onFirstCall().callsArgWith(1, ["res1", "res2"]);
 
         return window.browser.tabs.query({active: true}).then(
-          () => assert.fail("Expected a rejected promise"),
-          (err) => assert.equal(err, fakeChrome.runtime.lastError,
+          () => fail("Expected a rejected promise"),
+          (err) => equal(err, fakeChrome.runtime.lastError,
                                 "Got the expected error in the rejected promise")
         );
       });
@@ -77,11 +77,11 @@ describe("browser-polyfill", () => {
       };
 
       return setupTestDOMWindow(fakeChrome).then(window => {
-        assert.throws(() => {
+        throws(() => {
           window.browser.runtime.sendMessage();
         }, "Expected at least 1 arguments for sendMessage(), got 0");
 
-        assert.throws(() => {
+        throws(() => {
           window.browser.runtime.sendMessage("0", "1", "2", "3");
         }, "Expected at most 3 arguments for sendMessage(), got 4");
       });
