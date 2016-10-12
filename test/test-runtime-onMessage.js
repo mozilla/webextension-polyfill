@@ -32,27 +32,23 @@ describe("browser-polyfill", () => {
 
     it("keeps track of the listeners added", () => {
       const messageListener = sinon.spy();
-
+      const fakeChromeListeners = new Set();
       const fakeChrome = {
         runtime: {
           lastError: null,
           onMessage: {
-            addListener: sinon.spy(),
-            hasListener: sinon.stub(),
-            removeListener: sinon.spy(),
+            addListener: sinon.spy((listener, ...args) => {
+              fakeChromeListeners.add(listener);
+            }),
+            hasListener: sinon.spy(listener => fakeChromeListeners.has(listener)),
+            removeListener: sinon.spy(listener => {
+              fakeChromeListeners.delete(listener);
+            }),
           },
         },
       };
 
       return setupTestDOMWindow(fakeChrome).then(window => {
-        fakeChrome.runtime.onMessage.hasListener
-          // Fake the hasListener result for "listener not yet registered".
-          .onFirstCall().returns(false)
-          // Fake the hasListener result for "listener registered".
-          .onSecondCall().returns(true)
-          // Fake the hasListener result for "listener unregistered".
-          .onThirdCall().returns(false);
-
         equal(window.browser.runtime.onMessage.hasListener(messageListener),
                      false, "Got hasListener==false before the listener has been added");
 
