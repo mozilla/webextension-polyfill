@@ -13,6 +13,6 @@ after_script: npm run publish-coverage
 notifications:
   irc:
     channels:
-    - irc.mozilla.org#amo-bots
+    - irc.mozilla.org#webextensions
     on_success: change
     on_failure: always
