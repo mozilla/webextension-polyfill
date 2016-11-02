@@ -84,6 +84,40 @@ describe("browser-polyfill", () => {
       });
     });
 
+    it("generates different wrappers for different listeners", () => {
+      const fakeChromeListeners = [];
+      const fakeChrome = {
+        runtime: {
+          lastError: null,
+          onMessage: {
+            addListener: sinon.spy((listener, ...args) => {
+              fakeChromeListeners.push(listener);
+            }),
+            hasListener: sinon.spy(),
+            removeListener: sinon.spy(),
+          },
+        },
+      };
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        const firstMessageListener = sinon.spy();
+        const secondMessageListener = sinon.spy();
+
+        window.browser.runtime.onMessage.addListener(firstMessageListener);
+        window.browser.runtime.onMessage.addListener(secondMessageListener);
+
+        equal(fakeChromeListeners.length, 2, "Got two wrapped listeners");
+
+        fakeChromeListeners[0]("call first wrapper");
+        ok(firstMessageListener.calledOnce);
+        equal(firstMessageListener.firstCall.args[0], "call first wrapper");
+
+        fakeChromeListeners[1]("call second wrapper");
+        ok(secondMessageListener.calledOnce);
+        equal(secondMessageListener.firstCall.args[0], "call second wrapper");
+      });
+    });
+
     it("sends the returned value as a message response", () => {
       const fakeChrome = {
         runtime: {
