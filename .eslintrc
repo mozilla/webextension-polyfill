@@ -69,7 +69,11 @@
     "generator-star-spacing": [2, {"before": false, "after": true}],
 
     // Two space indent
-    "indent": [2, 2, {"SwitchCase": 1}],
+    "indent": [2, 2, {
+        "SwitchCase": 1,
+        "CallExpression": {"arguments": "first"}
+      }
+    ],
 
     // Space after colon not before in property declarations
     "key-spacing": [2, {"beforeColon": false, "afterColon": true, "mode": "minimum"}],
