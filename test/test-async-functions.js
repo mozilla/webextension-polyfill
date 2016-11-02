@@ -79,7 +79,7 @@ describe("browser-polyfill", () => {
       return setupTestDOMWindow(fakeChrome).then(window => {
         throws(() => {
           window.browser.runtime.sendMessage();
-        }, "Expected at least 1 arguments for sendMessage(), got 0");
+        }, "Expected at least 1 argument for sendMessage(), got 0");
 
         throws(() => {
           window.browser.runtime.sendMessage("0", "1", "2", "3");
