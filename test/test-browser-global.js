@@ -12,7 +12,7 @@ describe("browser-polyfill", () => {
     });
   });
 
-  it("do not override the global browser namespace if it already exists", () => {
+  it("does not override the global browser namespace if it already exists", () => {
     const fakeChrome = {
       runtime: {lastError: null},
     };
@@ -22,7 +22,7 @@ describe("browser-polyfill", () => {
 
     return setupTestDOMWindow(fakeChrome, fakeBrowser).then(window => {
       deepEqual(window.browser, fakeBrowser,
-                "The existent browser has not been wrapped");
+                "The existing browser has not been wrapped");
     });
   });
 

@@ -7,7 +7,7 @@ const {setupTestDOMWindow} = require("./setup");
 
 describe("browser-polyfill", () => {
   describe("wrapped runtime.onMessage listener", () => {
-    it("do not wrap the listener if it is not a function", () => {
+    it("does not wrap the listener if it is not a function", () => {
       const fakeChrome = {
         runtime: {
           lastError: null,
