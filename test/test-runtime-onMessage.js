@@ -25,8 +25,8 @@ describe("browser-polyfill", () => {
         window.browser.runtime.onMessage.addListener(fakeNonFunctionListener);
 
         deepEqual(fakeChrome.runtime.onMessage.addListener.firstCall.args[0],
-                         fakeNonFunctionListener,
-                         "The non-function listener has not been wrapped");
+                  fakeNonFunctionListener,
+                  "The non-function listener has not been wrapped");
       });
     });
 
@@ -50,22 +50,22 @@ describe("browser-polyfill", () => {
 
       return setupTestDOMWindow(fakeChrome).then(window => {
         equal(window.browser.runtime.onMessage.hasListener(messageListener),
-                     false, "Got hasListener==false before the listener has been added");
+              false, "Got hasListener==false before the listener has been added");
 
         window.browser.runtime.onMessage.addListener(messageListener);
 
         equal(window.browser.runtime.onMessage.hasListener(messageListener),
-                     true, "Got hasListener==true once the listener has been added");
+              true, "Got hasListener==true once the listener has been added");
 
         // Add the same listener again to test that it will be called with the
         // same wrapped listener.
         window.browser.runtime.onMessage.addListener(messageListener);
 
         ok(fakeChrome.runtime.onMessage.addListener.calledTwice,
-                  "addListener has been called twice");
+           "addListener has been called twice");
         equal(fakeChrome.runtime.onMessage.addListener.secondCall.args[0],
-                     fakeChrome.runtime.onMessage.addListener.firstCall.args[0],
-                     "both the addListener calls received the same wrapped listener");
+              fakeChrome.runtime.onMessage.addListener.firstCall.args[0],
+              "both the addListener calls received the same wrapped listener");
 
         // Retrieve the wrapped listener and execute it to fake a received message.
         const wrappedListener = fakeChrome.runtime.onMessage.addListener.firstCall.args[0];
@@ -75,12 +75,12 @@ describe("browser-polyfill", () => {
         // Remove the listener.
         window.browser.runtime.onMessage.removeListener(messageListener);
         ok(fakeChrome.runtime.onMessage.removeListener.calledOnce,
-                  "removeListener has been called once");
+           "removeListener has been called once");
         equal(fakeChrome.runtime.onMessage.addListener.secondCall.args[0],
-                     fakeChrome.runtime.onMessage.removeListener.firstCall.args[0],
-                     "both the addListener and removeListenercalls received the same wrapped listener");
+              fakeChrome.runtime.onMessage.removeListener.firstCall.args[0],
+              "both the addListener and removeListenercalls received the same wrapped listener");
         equal(fakeChrome.runtime.onMessage.hasListener(messageListener), false,
-                     "Got hasListener==false once the listener has been removed");
+              "Got hasListener==false once the listener has been removed");
       });
     });
 
@@ -123,11 +123,11 @@ describe("browser-polyfill", () => {
         ok(messageListener.calledOnce, "The unwrapped message listener has been called");
         deepEqual(messageListener.firstCall.args,
                          ["fake message", {name: "fake sender"}],
-                         "The unwrapped message listener has received the expected parameters");
+                  "The unwrapped message listener has received the expected parameters");
 
         ok(sendResponseSpy.calledOnce, "The sendResponse function has been called");
         equal(sendResponseSpy.firstCall.args[0], "fake reply",
-                     "sendResponse callback has been called with the expected parameters");
+              "sendResponse callback has been called with the expected parameters");
 
         wrappedListener("fake message2", {name: "fake sender2"}, sendResponseSpy);
 
@@ -135,29 +135,29 @@ describe("browser-polyfill", () => {
         return secondResponse;
       }).then(() => {
         ok(messageListener.calledTwice,
-                  "The unwrapped message listener has been called");
+           "The unwrapped message listener has been called");
         deepEqual(messageListener.secondCall.args,
                          ["fake message2", {name: "fake sender2"}],
-                         "The unwrapped listener has received the expected parameters");
+                  "The unwrapped listener has received the expected parameters");
 
         ok(sendResponseSpy.calledTwice, "The sendResponse function has been called");
         equal(sendResponseSpy.secondCall.args[0], "fake reply 2",
-                     "sendResponse callback has been called with the expected parameters");
+              "sendResponse callback has been called with the expected parameters");
       }).then(() => {
         wrappedListener("fake message3", {name: "fake sender3"}, sendResponseSpy);
 
         // Wait the third response promise to be rejected.
         return thirdResponse.catch(err => {
           equal(messageListener.callCount, 3,
-                    "The unwrapped message listener has been called");
+                "The unwrapped message listener has been called");
           deepEqual(messageListener.thirdCall.args,
                            ["fake message3", {name: "fake sender3"}],
-                           "The unwrapped listener has received the expected parameters");
+                    "The unwrapped listener has received the expected parameters");
 
           equal(sendResponseSpy.callCount, 3,
-                       "The sendResponse function has been called");
+                "The sendResponse function has been called");
           equal(sendResponseSpy.thirdCall.args[0], err,
-                       "sendResponse callback has been called with the expected parameters");
+                "sendResponse callback has been called with the expected parameters");
         });
       });
     });

@@ -39,9 +39,9 @@ describe("browser-polyfill", () => {
       }).then(results => {
         equal(results[0], "res1", "Fake alarms.clear call resolved to a single value");
         deepEqual(results[1], ["res1", "res2"],
-                         "Fake tabs.query resolved to an array of values");
+                  "Fake tabs.query resolved to an array of values");
         deepEqual(results[2], ["res1", "res2"],
-                         "Fake runtime.requestUpdateCheck resolved to an array of values");
+                  "Fake runtime.requestUpdateCheck resolved to an array of values");
       });
     });
 
@@ -63,7 +63,7 @@ describe("browser-polyfill", () => {
         return window.browser.tabs.query({active: true}).then(
           () => fail("Expected a rejected promise"),
           (err) => equal(err, fakeChrome.runtime.lastError,
-                                "Got the expected error in the rejected promise")
+                         "Got the expected error in the rejected promise")
         );
       });
     });

@@ -22,7 +22,7 @@ describe("browser-polyfill", () => {
 
     return setupTestDOMWindow(fakeChrome, fakeBrowser).then(window => {
       deepEqual(window.browser, fakeBrowser,
-                       "The existent browser has not been wrapped");
+                "The existent browser has not been wrapped");
     });
   });
 
@@ -38,15 +38,15 @@ describe("browser-polyfill", () => {
 
         ok("myns" in window.browser, "The custom property exists");
         ok("mykey" in window.browser.myns,
-                  "The content of the custom property exists");
+           "The content of the custom property exists");
 
         deepEqual(window.browser.myns, {mykey: true},
-                        "The custom property has the expected content");
+                  "The custom property has the expected content");
 
         delete window.browser.myns;
 
         ok(!("myns" in window.browser),
-                  "The deleted custom defined property has been removed");
+           "The deleted custom defined property has been removed");
       });
     });
 
@@ -54,11 +54,11 @@ describe("browser-polyfill", () => {
       const fakeChrome = {myns: {mykey: true}};
       return setupTestDOMWindow(fakeChrome).then(window => {
         equal(window.browser.myns.mykey, true,
-                     "Got the expected result from a wrapped property");
+              "Got the expected result from a wrapped property");
         equal(window.browser.myns.nonexistent, undefined,
-                     "Got undefined for non existent property");
+              "Got undefined for non existent property");
         equal(window.browser.nonexistent, undefined,
-                     "Got undefined for non existent namespaces");
+              "Got undefined for non existent namespaces");
       });
     });
   });
