@@ -7,6 +7,21 @@ Chrome.
 
 [w3-browserext]: https://www.w3.org/community/browserext/
 
+## Building
+
+To build, assuming you're already installed [npm](https://www.npmjs.com/),
+simply run:
+
+```sh
+npm install
+grunt
+```
+
+This will build both non-minified and minified versions of the final library,
+and output them to `dist/browser-polyfill.js` and `dist/browser-polyfill.min.js`,
+respectively.
+
+
 ## Basic Setup
 
 In order to use the polyfill, it must be loaded into any context where

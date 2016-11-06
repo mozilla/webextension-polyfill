@@ -13,7 +13,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON("package.json"),
 
     eslint: {
-      src: ["browser-polyfill.js", "Gruntfile.js"],
+      src: ["browser-polyfill.in.js", "Gruntfile.js"],
     },
 
     replace: {
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             flatten: true,
-            src: ["browser-polyfill.js"],
+            src: ["browser-polyfill.in.js"],
             dest: "dist/",
           },
         ],
