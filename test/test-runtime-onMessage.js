@@ -156,7 +156,7 @@ describe("browser-polyfill", () => {
 
         ok(messageListener.calledOnce, "The unwrapped message listener has been called");
         deepEqual(messageListener.firstCall.args,
-                         ["fake message", {name: "fake sender"}],
+                  ["fake message", {name: "fake sender"}],
                   "The unwrapped message listener has received the expected parameters");
 
         ok(sendResponseSpy.calledOnce, "The sendResponse function has been called");
@@ -171,7 +171,7 @@ describe("browser-polyfill", () => {
         ok(messageListener.calledTwice,
            "The unwrapped message listener has been called");
         deepEqual(messageListener.secondCall.args,
-                         ["fake message2", {name: "fake sender2"}],
+                  ["fake message2", {name: "fake sender2"}],
                   "The unwrapped listener has received the expected parameters");
 
         ok(sendResponseSpy.calledTwice, "The sendResponse function has been called");
@@ -185,7 +185,7 @@ describe("browser-polyfill", () => {
           equal(messageListener.callCount, 3,
                 "The unwrapped message listener has been called");
           deepEqual(messageListener.thirdCall.args,
-                           ["fake message3", {name: "fake sender3"}],
+                    ["fake message3", {name: "fake sender3"}],
                     "The unwrapped listener has received the expected parameters");
 
           equal(sendResponseSpy.callCount, 3,
