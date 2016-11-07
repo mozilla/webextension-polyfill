@@ -19,7 +19,7 @@ module.exports = function(grunt) {
     },
 
     eslint: {
-      src: ["browser-polyfill.in.js", "Gruntfile.js"],
+      src: ["src/browser-polyfill.js", "Gruntfile.js"],
       test: ["test/**/*.js"],
     },
 
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             flatten: true,
-            src: ["browser-polyfill.in.js"],
+            src: ["src/browser-polyfill.js"],
             dest: "dist/",
           },
         ],
