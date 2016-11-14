@@ -105,13 +105,15 @@ if (typeof browser === "undefined") {
      *       The generated wrapper function.
      */
     const wrapAsyncFunction = (name, metadata) => {
+      const pluralizeArguments = (numArgs) => numArgs == 1 ? "argument" : "arguments";
+
       return function asyncFunctionWrapper(target, ...args) {
         if (args.length < metadata.minArgs) {
-          throw new Error(`Expected at least ${metadata.minArgs} arguments for ${name}(), got ${args.length}`);
+          throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
         }
 
         if (args.length > metadata.maxArgs) {
-          throw new Error(`Expected at most ${metadata.maxArgs} arguments for ${name}(), got ${args.length}`);
+          throw new Error(`Expected at most ${metadata.maxArgs} ${pluralizeArguments(metadata.maxArgs)} for ${name}(), got ${args.length}`);
         }
 
         return new Promise((resolve, reject) => {
