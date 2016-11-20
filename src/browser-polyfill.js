@@ -105,7 +105,7 @@ if (typeof browser === "undefined") {
      *       The generated wrapper function.
      */
     const wrapAsyncFunction = (name, metadata) => {
-      const pluralizeArguments = (numArgs) => numArgs == 1 ? "argument" : "arguments";
+      const pluralizeArguments = (numArgs) => numArgs === 1 ? "argument" : "arguments";
 
       return function asyncFunctionWrapper(target, ...args) {
         if (args.length < metadata.minArgs) {
