@@ -17,10 +17,12 @@
   },
   "homepage": "https://github.com/mozilla/webextension-polyfill",
   "devDependencies": {
+    "babel-preset-babili": "0.0.10",
     "chai": "^3.5.0",
     "eslint": "3.9.1",
-    "google-closure-compiler": "^20160911.0.0",
     "grunt": "^1.0.1",
+    "grunt-babel": "^6.0.0",
+    "grunt-contrib-concat": "^1.0.1",
     "grunt-coveralls": "^1.0.1",
     "grunt-replace": "*",
     "grunt-umd": "^2.4.0",
