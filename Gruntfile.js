@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         options: {
           patterns: [
             {
-              match: /\{\/\* include\("(.*?)"\) \*\/\}/,
+              match: /require\("..\/(.*?)"\)/,
               replacement: (match, filename) => {
                 return grunt.file.read(filename)
                             .replace(/\n$/, "")
@@ -52,6 +52,15 @@ module.exports = function(grunt) {
             dest: "dist/",
           },
         ],
+      },
+    },
+
+    umd: {
+      all: {
+        src: "dist/browser-polyfill.js",
+        template: "unit",
+        globalAlias: "browser",
+        amdModuleId: "webextension-polyfill",
       },
     },
 
@@ -88,8 +97,9 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-replace");
+  grunt.loadNpmTasks("grunt-umd");
   grunt.loadNpmTasks("grunt-coveralls");
   require("google-closure-compiler").grunt(grunt);
 
-  grunt.registerTask("default", ["eslint", "replace", "closure-compiler"]);
+  grunt.registerTask("default", ["eslint", "replace", "umd", "closure-compiler"]);
 };

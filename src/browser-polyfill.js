@@ -13,7 +13,9 @@ if (typeof browser === "undefined") {
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
   const wrapAPIs = () => {
-    const apiMetadata = {/* include("api-metadata.json") */};
+    // Note that `require` does NOT work in general. See discussion here:
+    // https://github.com/mozilla/webextension-polyfill/pull/17#discussion_r99170958
+    const apiMetadata = require("../api-metadata.json"); // eslint-disable-line no-undef
 
     /**
      * A WeakMap subclass which creates and stores a value for any key which does
@@ -336,5 +338,9 @@ if (typeof browser === "undefined") {
     return wrapObject(chrome, staticWrappers, apiMetadata);
   };
 
-  this.browser = wrapAPIs();
+  // The build process adds a UMD wrapper around this file, which makes the
+  // `module` variable available.
+  module.exports = wrapAPIs(); // eslint-disable-line no-undef
+} else {
+  module.exports = browser; // eslint-disable-line no-undef
 }

@@ -14,7 +14,6 @@ simply run:
 
 ```sh
 npm install
-grunt
 ```
 
 This will build both non-minified and minified versions of the final library,
