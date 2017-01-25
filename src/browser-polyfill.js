@@ -6,6 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+var browserPolyfill; // eslint-disable-line no-unused-vars
+
 if (typeof browser === "undefined") {
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
@@ -336,5 +338,7 @@ if (typeof browser === "undefined") {
     return wrapObject(chrome, staticWrappers, apiMetadata);
   };
 
-  this.browser = wrapAPIs();
+  browserPolyfill = wrapAPIs();
+} else {
+  browserPolyfill = browser;
 }

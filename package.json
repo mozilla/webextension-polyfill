@@ -2,6 +2,10 @@
   "name": "webextension-polyfill",
   "version": "0.1.0",
   "description": "A lightweight polyfill library for Promise-based WebExtension APIs in Chrome.",
+  "main": "dist/browser-polyfill.js",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mozilla/webextension-polyfill.git"
@@ -18,6 +22,7 @@
     "grunt": "^1.0.1",
     "grunt-coveralls": "^1.0.1",
     "grunt-replace": "*",
+    "grunt-umd": "^2.4.0",
     "gruntify-eslint": "*",
     "eslint": "3.9.1",
     "istanbul-lib-instrument": "^1.1.3",
@@ -34,6 +39,7 @@
     "build": "grunt",
     "test": "mocha",
     "test-coverage": "COVERAGE=y nyc mocha",
-    "publish-coverage": "grunt coveralls"
+    "publish-coverage": "grunt coveralls",
+    "prepublish": "npm run build"
   }
 }

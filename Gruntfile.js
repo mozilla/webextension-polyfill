@@ -55,6 +55,15 @@ module.exports = function(grunt) {
       },
     },
 
+    umd: {
+      all: {
+        src: "dist/browser-polyfill.js",
+        objectToExport: "browserPolyfill",
+        globalAlias: "browser",
+        amdModuleId: "webextension-polyfill",
+      },
+    },
+
     "closure-compiler": {
       dist: {
         files: {
@@ -88,8 +97,9 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-replace");
+  grunt.loadNpmTasks("grunt-umd");
   grunt.loadNpmTasks("grunt-coveralls");
   require("google-closure-compiler").grunt(grunt);
 
-  grunt.registerTask("default", ["eslint", "replace", "closure-compiler"]);
+  grunt.registerTask("default", ["eslint", "replace", "umd", "closure-compiler"]);
 };
