@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         options: {
           patterns: [
             {
-              match: /\{\/\* include\("(.*?)"\) \*\/\}/,
+              match: /require\("..\/(.*?)"\)/,
               replacement: (match, filename) => {
                 return grunt.file.read(filename)
                             .replace(/\n$/, "")
@@ -58,7 +58,7 @@ module.exports = function(grunt) {
     umd: {
       all: {
         src: "dist/browser-polyfill.js",
-        objectToExport: "browserPolyfill",
+        template: "unit",
         globalAlias: "browser",
         amdModuleId: "webextension-polyfill",
       },
