@@ -32,8 +32,9 @@
   },
   "scripts": {
     "build": "grunt",
+    "pretest": "grunt eslint",
     "test": "mocha",
-    "test-coverage": "COVERAGE=y nyc mocha",
+    "test-coverage": "COVERAGE=y nyc npm test",
     "publish-coverage": "grunt coveralls"
   }
 }
