@@ -7,7 +7,6 @@
     "browser": true,
     "es6": true,
     "webextensions": true,
-    "commonjs": true,
   },
 
   "globals": {
