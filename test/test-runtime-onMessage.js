@@ -117,8 +117,10 @@ describe("browser-polyfill", () => {
         equal(secondMessageListener.firstCall.args[0], "call second wrapper");
       });
     });
+  });
 
-    it("sends the returned value as a message response", () => {
+  describe("sendResponse callback", () => {
+    it("ignores the sendResponse calls when the listener returns a promise", () => {
       const fakeChrome = {
         runtime: {
           lastError: null,
@@ -128,70 +130,111 @@ describe("browser-polyfill", () => {
         },
       };
 
-      // Plain value returned.
-      const messageListener = sinon.stub();
-      const firstResponse = "fake reply";
-      // Resolved Promise returned.
-      const secondResponse = Promise.resolve("fake reply 2");
-      // Rejected Promise returned.
-      const thirdResponse = Promise.reject("fake error 3");
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        const listener = sinon.spy((msg, sender, sendResponse) => {
+          sendResponse("Ignored sendReponse callback on returned Promise");
 
-      const sendResponseSpy = sinon.spy();
+          return Promise.resolve("listener resolved value");
+        });
 
-      messageListener
-        .onFirstCall().returns(firstResponse)
-        .onSecondCall().returns(secondResponse)
-        .onThirdCall().returns(thirdResponse);
+        const sendResponseSpy = sinon.spy();
 
-      let wrappedListener;
+        window.browser.runtime.onMessage.addListener(listener);
+
+        ok(fakeChrome.runtime.onMessage.addListener.calledOnce,
+           "runtime.onMessage.addListener should have been called once");
+
+        let wrappedListener = fakeChrome.runtime.onMessage.addListener.firstCall.args[0];
+
+        let returnedValue = wrappedListener("test message", {name: "fake sender"}, sendResponseSpy);
+        equal(returnedValue, true, "the wrapped listener should have returned true");
+
+        ok(listener.calledOnce, "listener has been called once");
+
+        // Wait a promise to be resolved and then check the wrapped listener behaviors.
+        return Promise.resolve().then(() => {
+          ok(sendResponseSpy.calledOnce, "sendResponse callback called once");
+
+          equal(sendResponseSpy.firstCall.args[0], "listener resolved value",
+                "sendResponse has been called with the expected value");
+        });
+      });
+    });
+
+    it("ignores asynchronous sendResponse calls if the listener does not return true", () => {
+      const fakeChrome = {
+        runtime: {
+          lastError: null,
+          onMessage: {
+            addListener: sinon.spy(),
+          },
+        },
+      };
+
+      const waitPromises = [];
 
       return setupTestDOMWindow(fakeChrome).then(window => {
-        window.browser.runtime.onMessage.addListener(messageListener);
+        const listenerReturnsFalse = sinon.spy((msg, sender, sendResponse) => {
+          waitPromises.push(Promise.resolve().then(() => {
+            sendResponse("Ignored sendReponse callback on returned Promise");
+          }));
 
-        ok(fakeChrome.runtime.onMessage.addListener.calledOnce);
+          return false;
+        });
 
-        wrappedListener = fakeChrome.runtime.onMessage.addListener.firstCall.args[0];
+        const listenerReturnsValue = sinon.spy((msg, sender, sendResponse) => {
+          waitPromises.push(Promise.resolve().then(() => {
+            sendResponse("Ignored sendReponse callback on returned Promise");
+          }));
 
-        wrappedListener("fake message", {name: "fake sender"}, sendResponseSpy);
+          // Any return value that is not a promise should not be sent as a response,
+          // and any return value that is not true should make the sendResponse
+          // calls to be ignored.
+          return "Ignored return value";
+        });
 
-        ok(messageListener.calledOnce, "The unwrapped message listener has been called");
-        deepEqual(messageListener.firstCall.args,
-                  ["fake message", {name: "fake sender"}],
-                  "The unwrapped message listener has received the expected parameters");
+        const listenerReturnsTrue = sinon.spy((msg, sender, sendResponse) => {
+          waitPromises.push(Promise.resolve().then(() => {
+            sendResponse("expected sendResponse value");
+          }));
 
-        ok(sendResponseSpy.calledOnce, "The sendResponse function has been called");
-        equal(sendResponseSpy.firstCall.args[0], "fake reply",
-              "sendResponse callback has been called with the expected parameters");
+          // Expect the asynchronous sendResponse call to be used to send a response
+          // when the listener returns true.
+          return true;
+        });
 
-        wrappedListener("fake message2", {name: "fake sender2"}, sendResponseSpy);
+        const sendResponseSpy = sinon.spy();
 
-        // Wait the second response promise to be resolved.
-        return secondResponse;
-      }).then(() => {
-        ok(messageListener.calledTwice,
-           "The unwrapped message listener has been called");
-        deepEqual(messageListener.secondCall.args,
-                  ["fake message2", {name: "fake sender2"}],
-                  "The unwrapped listener has received the expected parameters");
+        window.browser.runtime.onMessage.addListener(listenerReturnsFalse);
+        window.browser.runtime.onMessage.addListener(listenerReturnsValue);
+        window.browser.runtime.onMessage.addListener(listenerReturnsTrue);
 
-        ok(sendResponseSpy.calledTwice, "The sendResponse function has been called");
-        equal(sendResponseSpy.secondCall.args[0], "fake reply 2",
-              "sendResponse callback has been called with the expected parameters");
-      }).then(() => {
-        wrappedListener("fake message3", {name: "fake sender3"}, sendResponseSpy);
+        equal(fakeChrome.runtime.onMessage.addListener.callCount, 3,
+              "runtime.onMessage.addListener should have been called 3 times");
 
-        // Wait the third response promise to be rejected.
-        return thirdResponse.catch(err => {
-          equal(messageListener.callCount, 3,
-                "The unwrapped message listener has been called");
-          deepEqual(messageListener.thirdCall.args,
-                    ["fake message3", {name: "fake sender3"}],
-                    "The unwrapped listener has received the expected parameters");
+        let wrappedListenerReturnsFalse = fakeChrome.runtime.onMessage.addListener.firstCall.args[0];
+        let wrappedListenerReturnsValue = fakeChrome.runtime.onMessage.addListener.secondCall.args[0];
+        let wrappedListenerReturnsTrue = fakeChrome.runtime.onMessage.addListener.thirdCall.args[0];
 
-          equal(sendResponseSpy.callCount, 3,
-                "The sendResponse function has been called");
-          equal(sendResponseSpy.thirdCall.args[0], err,
-                "sendResponse callback has been called with the expected parameters");
+        let returnedValue = wrappedListenerReturnsFalse("test message", {name: "fake sender"}, sendResponseSpy);
+        equal(returnedValue, false, "the first wrapped listener should return false");
+
+        returnedValue = wrappedListenerReturnsValue("test message2", {name: "fake sender"}, sendResponseSpy);
+        equal(returnedValue, false, "the second wrapped listener should return false");
+
+        returnedValue = wrappedListenerReturnsTrue("test message3", {name: "fake sender"}, sendResponseSpy);
+        equal(returnedValue, true, "the third wrapped listener should return true");
+
+        ok(listenerReturnsFalse.calledOnce, "first listener has been called once");
+        ok(listenerReturnsValue.calledOnce, "second listener has been called once");
+        ok(listenerReturnsTrue.calledOnce, "third listener has been called once");
+
+        // Wait all the collected promises to be resolved and then check the wrapped listener behaviors.
+        return Promise.all(waitPromises).then(() => {
+          ok(sendResponseSpy.calledOnce, "sendResponse callback should have been called once");
+
+          equal(sendResponseSpy.firstCall.args[0], "expected sendResponse value",
+                "sendResponse has been called with the expected value");
         });
       });
     });
