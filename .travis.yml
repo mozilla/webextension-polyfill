@@ -6,7 +6,8 @@ node_js:
 
 script:
 - npm run build
-- COVERAGE=y npm run test-coverage
+- npm run test-coverage
+- echo "RE-RUN all tests on the minified file" && TEST_MINIFIED_POLYFILL=1 npm run test
 
 after_script: npm run publish-coverage
 
