@@ -43,9 +43,10 @@
   },
   "scripts": {
     "build": "grunt",
+    "prepublish": "npm run build && npm run test",
+    "publish-coverage": "grunt coveralls",
     "test": "mocha",
     "test-coverage": "COVERAGE=y nyc mocha",
-    "publish-coverage": "grunt coveralls",
-    "prepublish": "npm run build && npm run test"
+    "test-minified": "TEST_MINIFIED_POLYFILL=1 mocha"
   }
 }
