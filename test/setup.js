@@ -13,7 +13,8 @@ if (process.env.ENABLE_JSDOM_CONSOLE == "y") {
 
 // Path to the browser-polyfill script, relative to the current work dir
 // where mocha is executed.
-const BROWSER_POLYFILL_PATH = "./dist/browser-polyfill.js";
+const BROWSER_POLYFILL_PATH = process.env.TEST_MINIFIED_POLYFILL ?
+  "./dist/browser-polyfill.min.js" : "./dist/browser-polyfill.js";
 
 // Create the jsdom window used to run the tests
 const testDOMWindow = jsdom("", {virtualConsole}).defaultView;
