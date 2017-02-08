@@ -155,9 +155,10 @@ describe("browser-polyfill", () => {
         wrappedListener("fake message", {name: "fake sender"}, sendResponseSpy);
 
         ok(messageListener.calledOnce, "The unwrapped message listener has been called");
-        deepEqual(messageListener.firstCall.args,
-                  ["fake message", {name: "fake sender"}],
-                  "The unwrapped message listener has received the expected parameters");
+        equal(messageListener.firstCall.args.length, 3, "expected argument count");
+        equal(messageListener.firstCall.args[0], "fake message", "expected message");
+        deepEqual(messageListener.firstCall.args[1], {name: "fake sender"}, "expected sender");
+        equal(typeof messageListener.firstCall.args[2], "function", "expected parameter");
 
         ok(sendResponseSpy.calledOnce, "The sendResponse function has been called");
         equal(sendResponseSpy.firstCall.args[0], "fake reply",
@@ -170,9 +171,10 @@ describe("browser-polyfill", () => {
       }).then(() => {
         ok(messageListener.calledTwice,
            "The unwrapped message listener has been called");
-        deepEqual(messageListener.secondCall.args,
-                  ["fake message2", {name: "fake sender2"}],
-                  "The unwrapped listener has received the expected parameters");
+        equal(messageListener.secondCall.args.length, 3, "expected argument count");
+        equal(messageListener.secondCall.args[0], "fake message2", "expected message");
+        deepEqual(messageListener.secondCall.args[1], {name: "fake sender2"}, "expected sender");
+        equal(typeof messageListener.secondCall.args[2], "function", "expected parameter");
 
         ok(sendResponseSpy.calledTwice, "The sendResponse function has been called");
         equal(sendResponseSpy.secondCall.args[0], "fake reply 2",
@@ -184,15 +186,104 @@ describe("browser-polyfill", () => {
         return thirdResponse.catch(err => {
           equal(messageListener.callCount, 3,
                 "The unwrapped message listener has been called");
-          deepEqual(messageListener.thirdCall.args,
-                    ["fake message3", {name: "fake sender3"}],
-                    "The unwrapped listener has received the expected parameters");
+          equal(messageListener.thirdCall.args.length, 3, "expected argument count");
+          equal(messageListener.thirdCall.args[0], "fake message3", "expected message");
+          deepEqual(messageListener.thirdCall.args[1], {name: "fake sender3"}, "expected sender");
+          equal(typeof messageListener.thirdCall.args[2], "function", "expected parameter");
 
           equal(sendResponseSpy.callCount, 3,
                 "The sendResponse function has been called");
           equal(sendResponseSpy.thirdCall.args[0], err,
                 "sendResponse callback has been called with the expected parameters");
         });
+      });
+    });
+
+    it("Listener calls sendResponse instead of returning a result", () => {
+      const fakeChrome = {
+        runtime: {
+          lastError: null,
+          onMessage: {
+            addListener: sinon.spy(),
+          },
+        },
+      };
+
+      const messageListener = sinon.stub();
+      messageListener
+        .onFirstCall().callsArgWith(2, ["fake sync reply"])
+        .onSecondCall().callsArgWithAsync(2, ["fake bad async reply"]).returns(false)
+        .onThirdCall().callsArgWithAsync(2, ["fake async reply"]).returns(true);
+
+      let wrappedListener;
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        window.browser.runtime.onMessage.addListener(messageListener);
+
+        ok(fakeChrome.runtime.onMessage.addListener.calledOnce);
+
+        wrappedListener = fakeChrome.runtime.onMessage.addListener.firstCall.args[0];
+
+        let sendResponseSpy = sinon.spy();
+        wrappedListener("fake message", {name: "fake sender"}, sendResponseSpy);
+
+        ok(messageListener.calledOnce, "The unwrapped message listener has been called");
+        equal(messageListener.firstCall.args.length, 3, "expected argument count");
+        equal(messageListener.firstCall.args[0], "fake message", "expected message");
+        deepEqual(messageListener.firstCall.args[1], {name: "fake sender"}, "expected sender");
+        equal(typeof messageListener.firstCall.args[2], "function", "expected parameter");
+
+        ok(sendResponseSpy.calledOnce, "The sendResponse function has been called");
+        equal(sendResponseSpy.firstCall.args[0], "fake sync reply",
+              "sendResponse callback has been called with the expected parameters");
+      }).then(() => {
+        let sendResponseSpy;
+        let deferred = new Promise(resolve => {
+          let count = 0;
+          sendResponseSpy = sinon.spy(() => {
+            // sendResponse is called automatically due to the lack of "return true".
+            // Then it must be called again because the onMessage handler does so.
+            // The (browser) environment will raise errors if needed (e.g. warning
+            // that a response cannot be sent twice).
+            if (++count === 2) {
+              resolve();
+            }
+          });
+        });
+        wrappedListener("fake message 2", {name: "fake sender2"}, sendResponseSpy);
+
+        ok(messageListener.calledTwice, "The unwrapped message listener has been called");
+        equal(messageListener.secondCall.args.length, 3, "expected argument count");
+        equal(messageListener.secondCall.args[0], "fake message 2", "expected message");
+        deepEqual(messageListener.secondCall.args[1], {name: "fake sender2"}, "expected sender");
+        equal(typeof messageListener.secondCall.args[2], "function", "expected parameter");
+
+        ok(sendResponseSpy.calledOnce, "The sendResponse function has been called");
+        // "return false" in chrome.runtime.onMessage's listener is normally a signal
+        // to prevent "sendResponse" from being useful asynchronously.
+        // "return false" in browser.runtime.onMessage's listener is just a possible
+        // return value.
+        equal(sendResponseSpy.firstCall.args[0], false,
+              "sendResponse callback has been called with the expected parameters");
+        return deferred;
+      }).then(() => {
+        let sendResponseSpy;
+        let deferred = new Promise(resolve => {
+          sendResponseSpy = sinon.spy(resolve);
+        });
+        wrappedListener("fake message3", {name: "fake sender3"}, sendResponseSpy);
+        equal(messageListener.callCount, 3,
+              "The unwrapped message listener has been called");
+        equal(messageListener.thirdCall.args.length, 3, "expected argument count");
+        equal(messageListener.thirdCall.args[0], "fake message3", "expected message");
+        deepEqual(messageListener.thirdCall.args[1], {name: "fake sender3"}, "expected sender");
+        equal(typeof messageListener.thirdCall.args[2], "function", "expected parameter");
+
+        ok(!sendResponseSpy.calledOnce, "The sendResponse function has not been called");
+        return deferred;
+      }).then(response => {
+        equal(response, "fake async reply",
+              "sendResponse callback has been called with the expected parameters");
       });
     });
   });
