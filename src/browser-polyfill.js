@@ -315,7 +315,11 @@ if (typeof browser === "undefined") {
         let result = listener(message, sender);
 
         if (isThenable(result)) {
-          result.then(sendResponse, error => {
+          result.then(promiseResult => {
+            if (promiseResult !== undefined) {
+              sendResponse(promiseResult);
+            }
+          }, error => {
             console.error(error);
             sendResponse(error);
           });
