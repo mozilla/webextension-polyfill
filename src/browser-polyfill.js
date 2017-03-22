@@ -1,3 +1,5 @@
+/* global module */
+
 /* @@package_name - v@@version - @@timestamp */
 /* -*- Mode: indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /* vim: set sts=2 sw=2 et tw=80: */
@@ -9,7 +11,7 @@
 let toExport;
 
 if (typeof browser !== "undefined") {
-  toExport = browser
+  toExport = browser;
 } else {
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
@@ -319,11 +321,7 @@ if (typeof browser !== "undefined") {
         let result = listener(message, sender);
 
         if (isThenable(result)) {
-          result.then(promiseResult => {
-            if (promiseResult !== undefined) {
-              sendResponse(promiseResult);
-            }
-          }, error => {
+          result.then(sendResponse, error => {
             console.error(error);
             sendResponse(error);
           });
@@ -344,8 +342,10 @@ if (typeof browser !== "undefined") {
     return wrapObject(chrome, staticWrappers, apiMetadata);
   };
 
-  toExport = wrapAPIs();  
-  this.browser = toExport
+  toExport = wrapAPIs();
+  this.browser = toExport;
 }
 
-module.exports = toExport;
+if (typeof module !== "undefined") {
+  module.exports = toExport;
+}
