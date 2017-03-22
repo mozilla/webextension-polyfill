@@ -1,6 +1,6 @@
 {
-  "name": "webextension-polyfill",
-  "version": "0.1.0",
+  "name": "collinsauve-webextension-polyfill",
+  "version": "0.1.0-25",
   "description": "A lightweight polyfill library for Promise-based WebExtension APIs in Chrome.",
   "repository": {
     "type": "git",
