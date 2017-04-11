@@ -13,7 +13,14 @@ if (typeof browser === "undefined") {
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
   const wrapAPIs = () => {
+    // NOTE: apiMetadata is associated to the content of the api-metadata.json file
+    // at build time by replacing the following "include" with the content of the
+    // JSON file.
     const apiMetadata = {/* include("api-metadata.json") */};
+
+    if (Object.keys(apiMetadata).length === 0) {
+      throw new Error("api-metadata.json has not been included in browser-polyfill");
+    }
 
     /**
      * A WeakMap subclass which creates and stores a value for any key which does
@@ -336,5 +343,9 @@ if (typeof browser === "undefined") {
     return wrapObject(chrome, staticWrappers, apiMetadata);
   };
 
-  this.browser = wrapAPIs();
+  // The build process adds a UMD wrapper around this file, which makes the
+  // `module` variable available.
+  module.exports = wrapAPIs(); // eslint-disable-line no-undef
+} else {
+  module.exports = browser; // eslint-disable-line no-undef
 }
