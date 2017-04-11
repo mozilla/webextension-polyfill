@@ -2,10 +2,8 @@
   "name": "webextension-polyfill",
   "version": "0.1.0",
   "description": "A lightweight polyfill library for Promise-based WebExtension APIs in Chrome.",
-  "main": "src/browser-polyfill.js",
+  "main": "dist/browser-polyfill.js",
   "files": [
-    "api-metadata.json",
-    "src",
     "dist"
   ],
   "repository": {
@@ -46,6 +44,6 @@
     "test": "mocha",
     "test-coverage": "COVERAGE=y nyc mocha",
     "publish-coverage": "grunt coveralls",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build && npm run test"
   }
 }

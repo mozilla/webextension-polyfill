@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         options: {
           patterns: [
             {
-              match: /require\("..\/(.*?)"\)/,
+              match: /\{\/\* include\("(.*?)"\) \*\/\}/,
               replacement: (match, filename) => {
                 return grunt.file.read(filename)
                             .replace(/\n$/, "")
