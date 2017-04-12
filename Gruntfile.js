@@ -57,15 +57,6 @@ module.exports = function(grunt) {
       },
     },
 
-    umd: {
-      all: {
-        src: "dist/browser-polyfill.js",
-        template: "unit",
-        globalAlias: "browser",
-        amdModuleId: "webextension-polyfill",
-      },
-    },
-
     babel: {
       minify: {
         options: {
@@ -76,6 +67,25 @@ module.exports = function(grunt) {
         },
         files: {
           "dist/browser-polyfill.min.js": "dist/browser-polyfill.js",
+        },
+      },
+      umd: {
+        options: {
+          babelrc: false,
+          comments: true,
+          plugins: [
+            ["transform-es2015-modules-umd", {
+              globals: {
+                "webextension-polyfill": "browser",
+              },
+              exactGlobals: true,
+            }],
+          ],
+          sourceMap: true,
+          moduleId: "webextension-polyfill",
+        },
+        files: {
+          "dist/browser-polyfill.js": "dist/browser-polyfill.js",
         },
       },
     },
@@ -91,10 +101,9 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-replace");
-  grunt.loadNpmTasks("grunt-umd");
   grunt.loadNpmTasks("grunt-coveralls");
   grunt.loadNpmTasks("grunt-contrib-concat");
   grunt.loadNpmTasks("grunt-babel");
 
-  grunt.registerTask("default", ["eslint", "replace", "umd", "babel:minify", "concat:license"]);
+  grunt.registerTask("default", ["eslint", "replace", "babel:umd", "babel:minify", "concat:license"]);
 };
