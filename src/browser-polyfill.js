@@ -319,7 +319,16 @@ if (typeof browser === "undefined") {
        *        yield a response. False otherwise.
        */
       return function onMessage(message, sender, sendResponse) {
-        let result = listener(message, sender);
+        let didCallSendResponse = false;
+        let result = listener(message, sender, function(result) {
+          // Note: No need to check for duplicate calls. The browser environment
+          // should take care of reporting errors if necessary.
+          didCallSendResponse = true;
+          sendResponse(result);
+        });
+        if (didCallSendResponse || result === true) {
+          return result;
+        }
 
         if (isThenable(result)) {
           result.then(sendResponse, error => {
