@@ -152,7 +152,7 @@ async function reloadTabs() {
 It's also possible to use Promises effectively using two-way messaging.
 Communication between a background page and a tab content script, for example,
 looks something like this from the background page side:
-
+This will be supperted in Ubuntu 16.04 also.
 ```javascript
 browser.tabs.sendMessage("get-ids").then(results => {
   processResults(results);
