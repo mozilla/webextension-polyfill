@@ -33,6 +33,7 @@
     "nyc": "^8.3.1",
     "sinon": "^1.17.6"
   },
+  "main": "dist/browser-polyfill.js",
   "nyc": {
     "reporter": [
       "lcov",
