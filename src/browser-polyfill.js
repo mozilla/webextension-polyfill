@@ -13,10 +13,9 @@ if (typeof browser === "undefined") {
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
   const wrapAPIs = () => {
-    // NOTE: apiMetadata is associated to the content of the api-metadata.json file
-    // at build time by replacing the following "include" with the content of the
-    // JSON file.
-    const apiMetadata = {/* include("api-metadata.json") */};
+    // Note that `require` does NOT work in general. See discussion here:
+    // https://github.com/mozilla/webextension-polyfill/pull/17#discussion_r99170958
+    const apiMetadata = require("../api-metadata.json"); // eslint-disable-line no-undef
 
     if (Object.keys(apiMetadata).length === 0) {
       throw new Error("api-metadata.json has not been included in browser-polyfill");
