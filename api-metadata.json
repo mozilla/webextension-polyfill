@@ -223,6 +223,12 @@
       "maxArgs": 0
     }
   },
+  "identity": {
+    "launchWebAuthFlow": {
+      "minArgs": 1,
+      "maxArgs": 1
+    }
+  },
   "idle": {
     "queryState": {
       "minArgs": 1,
