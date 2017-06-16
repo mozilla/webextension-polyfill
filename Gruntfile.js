@@ -5,8 +5,8 @@
 /* eslint-env commonjs */
 
 const LICENSE = `/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */`;
+                  * License, v. 2.0. If a copy of the MPL was not distributed with this
+                  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */`;
 
 const MINIFIED_FILE_FOOTER = `\n\n// <%= pkg.name %> v.<%= pkg.version %> (<%= pkg.homepage %>)\n\n${LICENSE}`;
 
@@ -33,8 +33,8 @@ module.exports = function(grunt) {
               match: /\{\/\* include\("(.*?)"\) \*\/\}/,
               replacement: (match, filename) => {
                 return grunt.file.read(filename)
-                            .replace(/\n$/, "")
-                            .replace(/^[^{]/gm, "    $&");
+                  .replace(/\n$/, "")
+                  .replace(/^[^{]/gm, "    $&");
               },
             },
             {
