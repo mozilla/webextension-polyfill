@@ -10,10 +10,11 @@ var _supportsPromises = false;
 try {
   _supportsPromises = browser.runtime.getPlatformInfo() instanceof Promise;
 } catch (e) {
+  console.log("promises not supported.");
 }
 
 if (typeof browser === "undefined" || !_supportsPromises) {
-  var browser = window.browser || window.msBrowser || window.chrome;
+  var _browser = window.browser || window.msBrowser || window.chrome;
 
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
@@ -70,7 +71,7 @@ if (typeof browser === "undefined" || !_supportsPromises) {
      * Creates and returns a function which, when called, will resolve or reject
      * the given promise based on how it is called:
      *
-     * - If, when called, `browser.runtime.lastError` contains a non-null object,
+     * - If, when called, `_browser.runtime.lastError` contains a non-null object,
      *   the promise is rejected with that value.
      * - If the function is called with exactly one argument, the promise is
      *   resolved to that value.
@@ -90,8 +91,8 @@ if (typeof browser === "undefined" || !_supportsPromises) {
      */
     const makeCallback = promise => {
       return (...callbackArgs) => {
-        if (browser.runtime.lastError) {
-          promise.reject(browser.runtime.lastError);
+        if (_browser.runtime.lastError) {
+          promise.reject(_browser.runtime.lastError);
         } else if (callbackArgs.length === 1) {
           promise.resolve(callbackArgs[0]);
         } else {
@@ -348,7 +349,7 @@ if (typeof browser === "undefined" || !_supportsPromises) {
       },
     };
 
-    return wrapObject(browser, staticWrappers, apiMetadata);
+    return wrapObject(_browser, staticWrappers, apiMetadata);
   };
 
   // The build process adds a UMD wrapper around this file, which makes the
