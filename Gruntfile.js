@@ -32,9 +32,7 @@ module.exports = function(grunt) {
             {
               match: /\{\/\* include\("(.*?)"\) \*\/\}/,
               replacement: (match, filename) => {
-                return grunt.file.read(filename)
-                            .replace(/\n$/, "")
-                            .replace(/^[^{]/gm, "    $&");
+                return grunt.file.read(filename).replace(/\n$/, "").replace(/^[^{]/gm, "    $&");
               },
             },
             {
