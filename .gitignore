@@ -4,3 +4,6 @@ dist/*
 ## code coverage
 coverage/
 .nyc_output/
+/.project
+/dist/
+/node_modules/
