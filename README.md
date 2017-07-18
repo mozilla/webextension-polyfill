@@ -1,4 +1,4 @@
-# WebExtension `browser` API Polyfill
+# WebExtension `browser` API Polyfill [![Build Status](https://travis-ci.org/mozilla/webextension-polyfill.svg?branch=master)](https://travis-ci.org/mozilla/webextension-polyfill)
 
 This library allows extensions written for the Promise-based
 WebExtension/BrowserExt API being standardized by the [W3 Browser
