@@ -13,6 +13,19 @@ if (typeof browser === "undefined") {
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
   const wrapAPIs = () => {
+    /*
+     * @typedef apiMetadata
+     * @type {array}
+     * @property {integer} 0
+     *        The minimum number of arguments which must be passed to the
+     *        function. If called with fewer than this number of arguments, the
+     *        wrapper will raise an exception.
+     * @property {integer} 1
+     *        The maximum number of arguments which may be passed to the
+     *        function. If called with more than this number of arguments, the
+     *        wrapper will raise an exception.
+     */
+
     // NOTE: apiMetadata is associated to the content of the api-metadata.json file
     // at build time by replacing the following "include" with the content of the
     // JSON file.
@@ -97,30 +110,21 @@ if (typeof browser === "undefined") {
      *
      * @param {string} name
      *        The name of the method which is being wrapped.
-     * @param {object} metadata
+     * @param {apiMetadata} metadata
      *        Metadata about the method being wrapped.
-     * @param {integer} metadata.minArgs
-     *        The minimum number of arguments which must be passed to the
-     *        function. If called with fewer than this number of arguments, the
-     *        wrapper will raise an exception.
-     * @param {integer} metadata.maxArgs
-     *        The maximum number of arguments which may be passed to the
-     *        function. If called with more than this number of arguments, the
-     *        wrapper will raise an exception.
-     *
      * @returns {function(object, ...*)}
      *       The generated wrapper function.
      */
-    const wrapAsyncFunction = (name, metadata) => {
+    const wrapAsyncFunction = (name, [minArgs, maxArgs]) => {
       const pluralizeArguments = (numArgs) => numArgs == 1 ? "argument" : "arguments";
 
       return function asyncFunctionWrapper(target, ...args) {
-        if (args.length < metadata.minArgs) {
-          throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
+        if (args.length < minArgs) {
+          throw new Error(`Expected at least ${minArgs} ${pluralizeArguments(minArgs)} for ${name}(), got ${args.length}`);
         }
 
-        if (args.length > metadata.maxArgs) {
-          throw new Error(`Expected at most ${metadata.maxArgs} ${pluralizeArguments(metadata.maxArgs)} for ${name}(), got ${args.length}`);
+        if (args.length > maxArgs) {
+          throw new Error(`Expected at most ${maxArgs} ${pluralizeArguments(maxArgs)} for ${name}(), got ${args.length}`);
         }
 
         return new Promise((resolve, reject) => {

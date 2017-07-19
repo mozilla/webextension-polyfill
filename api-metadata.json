@@ -1,512 +1,164 @@
 {
   "alarms": {
-    "clear": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "clearAll": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "get": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "getAll": {
-      "minArgs": 0,
-      "maxArgs": 0
-    }
+    "clear": [0, 1],
+    "clearAll": [0, 0],
+    "get": [0, 1],
+    "getAll": [0, 0]
   },
   "bookmarks": {
-    "create": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "export": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "get": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getChildren": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getRecent": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getTree": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "getSubTree": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "import": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "move": {
-      "minArgs": 2,
-      "maxArgs": 2
-    },
-    "remove": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "removeTree": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "search": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "update": {
-      "minArgs": 2,
-      "maxArgs": 2
-    }
+    "create": [1, 1],
+    "export": [0, 0],
+    "get": [1, 1],
+    "getChildren": [1, 1],
+    "getRecent": [1, 1],
+    "getTree": [0, 0],
+    "getSubTree": [1, 1],
+    "import": [0, 0],
+    "move": [2, 2],
+    "remove": [1, 1],
+    "removeTree": [1, 1],
+    "search": [1, 1],
+    "update": [2, 2]
   },
   "browserAction": {
-    "getBadgeBackgroundColor": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getBadgeText": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getPopup": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getTitle": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "setIcon": {
-      "minArgs": 1,
-      "maxArgs": 1
-    }
+    "getBadgeBackgroundColor": [1, 1],
+    "getBadgeText": [1, 1],
+    "getPopup": [1, 1],
+    "getTitle": [1, 1],
+    "setIcon": [1, 1]
   },
   "commands": {
-    "getAll": {
-      "minArgs": 0,
-      "maxArgs": 0
-    }
+    "getAll": [0, 0]
   },
   "contextMenus": {
-    "update": {
-      "minArgs": 2,
-      "maxArgs": 2
-    },
-    "remove": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "removeAll": {
-      "minArgs": 0,
-      "maxArgs": 0
-    }
+    "update": [2, 2],
+    "remove": [1, 1],
+    "removeAll": [0, 0]
   },
   "cookies": {
-    "get": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getAll": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getAllCookieStores": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "remove": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "set": {
-      "minArgs": 1,
-      "maxArgs": 1
-    }
+    "get": [1, 1],
+    "getAll": [1, 1],
+    "getAllCookieStores": [0, 0],
+    "remove": [1, 1],
+    "set": [1, 1]
   },
   "downloads": {
-    "download": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "cancel": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "erase": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getFileIcon": {
-      "minArgs": 1,
-      "maxArgs": 2
-    },
-    "open": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "pause": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "removeFile": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "resume": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "search": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "show": {
-      "minArgs": 1,
-      "maxArgs": 1
-    }
+    "download": [1, 1],
+    "cancel": [1, 1],
+    "erase": [1, 1],
+    "getFileIcon": [1, 2],
+    "open": [1, 1],
+    "pause": [1, 1],
+    "removeFile": [1, 1],
+    "resume": [1, 1],
+    "search": [1, 1],
+    "show": [1, 1]
   },
   "extension": {
-    "isAllowedFileSchemeAccess": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "isAllowedIncognitoAccess": {
-      "minArgs": 0,
-      "maxArgs": 0
-    }
+    "isAllowedFileSchemeAccess": [0, 0],
+    "isAllowedIncognitoAccess": [0, 0]
   },
   "history": {
-    "addUrl": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getVisits": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "deleteAll": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "deleteRange": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "deleteUrl": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "search": {
-      "minArgs": 1,
-      "maxArgs": 1
-    }
+    "addUrl": [1, 1],
+    "getVisits": [1, 1],
+    "deleteAll": [0, 0],
+    "deleteRange": [1, 1],
+    "deleteUrl": [1, 1],
+    "search": [1, 1]
   },
   "i18n": {
-    "detectLanguage": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getAcceptLanguages": {
-      "minArgs": 0,
-      "maxArgs": 0
-    }
+    "detectLanguage": [1, 1],
+    "getAcceptLanguages": [0, 0]
   },
   "idle": {
-    "queryState": {
-      "minArgs": 1,
-      "maxArgs": 1
-    }
+    "queryState": [1, 1]
   },
   "management": {
-    "get": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getAll": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "getSelf": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "uninstallSelf": {
-      "minArgs": 0,
-      "maxArgs": 1
-    }
+    "get": [1, 1],
+    "getAll": [0, 0],
+    "getSelf": [0, 0],
+    "uninstallSelf": [0, 1]
   },
   "notifications": {
-    "clear": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "create": {
-      "minArgs": 1,
-      "maxArgs": 2
-    },
-    "getAll": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "getPermissionLevel": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "update": {
-      "minArgs": 2,
-      "maxArgs": 2
-    }
+    "clear": [1, 1],
+    "create": [1, 2],
+    "getAll": [0, 0],
+    "getPermissionLevel": [0, 0],
+    "update": [2, 2]
   },
   "pageAction": {
-    "getPopup": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getTitle": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "hide": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "setIcon": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "show": {
-      "minArgs": 0,
-      "maxArgs": 0
-    }
+    "getPopup": [1, 1],
+    "getTitle": [1, 1],
+    "hide": [0, 0],
+    "setIcon": [1, 1],
+    "show": [0, 0]
   },
   "runtime": {
-    "getBackgroundPage": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "getBrowserInfo": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "getPlatformInfo": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "openOptionsPage": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "requestUpdateCheck": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "sendMessage": {
-      "minArgs": 1,
-      "maxArgs": 3
-    },
-    "sendNativeMessage": {
-      "minArgs": 2,
-      "maxArgs": 2
-    },
-    "setUninstallURL": {
-      "minArgs": 1,
-      "maxArgs": 1
-    }
+    "getBackgroundPage": [0, 0],
+    "getBrowserInfo": [0, 0],
+    "getPlatformInfo": [0, 0],
+    "openOptionsPage": [0, 0],
+    "requestUpdateCheck": [0, 0],
+    "sendMessage": [1, 3],
+    "sendNativeMessage": [2, 2],
+    "setUninstallURL": [1, 1]
   },
   "storage": {
     "local": {
-      "clear": {
-        "minArgs": 0,
-        "maxArgs": 0
-      },
-      "get": {
-        "minArgs": 0,
-        "maxArgs": 1
-      },
-      "getBytesInUse": {
-        "minArgs": 0,
-        "maxArgs": 1
-      },
-      "remove": {
-        "minArgs": 1,
-        "maxArgs": 1
-      },
-      "set": {
-        "minArgs": 1,
-        "maxArgs": 1
-      }
+      "clear": [0, 0],
+      "get": [0, 1],
+      "getBytesInUse": [0, 1],
+      "remove": [1, 1],
+      "set": [1, 1]
     },
     "managed": {
-      "get": {
-        "minArgs": 0,
-        "maxArgs": 1
-      },
-      "getBytesInUse": {
-        "minArgs": 0,
-        "maxArgs": 1
-      }
+      "get": [0, 1],
+      "getBytesInUse": [0, 1]
     },
     "sync": {
-      "clear": {
-        "minArgs": 0,
-        "maxArgs": 0
-      },
-      "get": {
-        "minArgs": 0,
-        "maxArgs": 1
-      },
-      "getBytesInUse": {
-        "minArgs": 0,
-        "maxArgs": 1
-      },
-      "remove": {
-        "minArgs": 1,
-        "maxArgs": 1
-      },
-      "set": {
-        "minArgs": 1,
-        "maxArgs": 1
-      }
+      "clear": [0, 0],
+      "get": [0, 1],
+      "getBytesInUse": [0, 1],
+      "remove": [1, 1],
+      "set": [1, 1]
     }
   },
   "tabs": {
-    "create": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "captureVisibleTab": {
-      "minArgs": 0,
-      "maxArgs": 2
-    },
-    "detectLanguage": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "duplicate": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "executeScript": {
-      "minArgs": 1,
-      "maxArgs": 2
-    },
-    "get": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getCurrent": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
-    "getZoom": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "getZoomSettings": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "highlight": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "insertCSS": {
-      "minArgs": 1,
-      "maxArgs": 2
-    },
-    "move": {
-      "minArgs": 2,
-      "maxArgs": 2
-    },
-    "reload": {
-      "minArgs": 0,
-      "maxArgs": 2
-    },
-    "remove": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "query": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "removeCSS": {
-      "minArgs": 1,
-      "maxArgs": 2
-    },
-    "sendMessage": {
-      "minArgs": 2,
-      "maxArgs": 3
-    },
-    "setZoom": {
-      "minArgs": 1,
-      "maxArgs": 2
-    },
-    "setZoomSettings": {
-      "minArgs": 1,
-      "maxArgs": 2
-    },
-    "update": {
-      "minArgs": 1,
-      "maxArgs": 2
-    }
+    "create": [1, 1],
+    "captureVisibleTab": [0, 2],
+    "detectLanguage": [0, 1],
+    "duplicate": [1, 1],
+    "executeScript": [1, 2],
+    "get": [1, 1],
+    "getCurrent": [0, 0],
+    "getZoom": [0, 1],
+    "getZoomSettings": [0, 1],
+    "highlight": [1, 1],
+    "insertCSS": [1, 2],
+    "move": [2, 2],
+    "reload": [0, 2],
+    "remove": [1, 1],
+    "query": [1, 1],
+    "removeCSS": [1, 2],
+    "sendMessage": [2, 3],
+    "setZoom": [1, 2],
+    "setZoomSettings": [1, 2],
+    "update": [1, 2]
   },
   "webNavigation": {
-    "getAllFrames": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "getFrame": {
-      "minArgs": 1,
-      "maxArgs": 1
-    }
+    "getAllFrames": [1, 1],
+    "getFrame": [1, 1]
   },
   "webRequest": {
-    "handlerBehaviorChanged": {
-      "minArgs": 0,
-      "maxArgs": 0
-    }
+    "handlerBehaviorChanged": [0, 0]
   },
   "windows": {
-    "create": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "get": {
-      "minArgs": 1,
-      "maxArgs": 2
-    },
-    "getAll": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "getCurrent": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "getLastFocused": {
-      "minArgs": 0,
-      "maxArgs": 1
-    },
-    "remove": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "update": {
-      "minArgs": 2,
-      "maxArgs": 2
-    }
+    "create": [0, 1],
+    "get": [1, 2],
+    "getAll": [0, 1],
+    "getCurrent": [0, 1],
+    "getLastFocused": [0, 1],
+    "remove": [1, 1],
+    "update": [2, 2]
   }
 }
