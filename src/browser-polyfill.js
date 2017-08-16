@@ -250,7 +250,7 @@ if (typeof browser === "undefined" || !_supportsPromises) {
             return value;
           }
 
-          if(!cache[prop]) {
+          if (!cache[prop]) {
             cache[prop] = value;
           }
           return value;
