@@ -63,6 +63,11 @@ module.exports = function(grunt) {
           babelrc: false,
           comments: false,
           presets: ["babili"],
+          plugins: [
+            ["babel-plugin-transform-builtin-extend", {
+              globals: ["WeakMap"],
+            }],
+          ],
           sourceMap: true,
         },
         files: {
@@ -79,6 +84,9 @@ module.exports = function(grunt) {
                 "webextension-polyfill": "browser",
               },
               exactGlobals: true,
+            }],
+            ["babel-plugin-transform-builtin-extend", {
+              globals: ["WeakMap"],
             }],
           ],
           sourceMap: true,

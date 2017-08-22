@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mozilla/webextension-polyfill",
   "devDependencies": {
+    "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "babel-preset-babili": "0.0.10",
     "chai": "^3.5.0",
