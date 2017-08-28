@@ -7,6 +7,10 @@
 "use strict";
 
 if (typeof browser === "undefined") {
+  // Make extensions more testable (e.g. with sinon-chrome) by allowing a
+  // custom 'chrome' object, e.g. `global.chrome = require('sinon-chrome')`
+  const chrome = typeof window === "undefined" ? global.chrome : window.chrome;
+  
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
   // contents of a function until the first time it's called, and since it will
