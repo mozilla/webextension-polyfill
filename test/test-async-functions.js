@@ -1,6 +1,6 @@
 "use strict";
 
-const {deepEqual, equal, fail, throws} = require("chai").assert;
+const {deepEqual, equal, fail, ok, throws} = require("chai").assert;
 const sinon = require("sinon");
 
 const {setupTestDOMWindow} = require("./setup");
@@ -84,6 +84,61 @@ describe("browser-polyfill", () => {
         throws(() => {
           window.browser.runtime.sendMessage("0", "1", "2", "3");
         }, "Expected at most 3 arguments for sendMessage(), got 4");
+      });
+    });
+
+    it("resolves to a single parameter on singleCallbackArg metadata property", () => {
+      const fakeChrome = {
+        runtime: {lastError: null},
+        devtools: {
+          panels: {
+            create: sinon.spy((title, iconPath, panelURL, cb) => {
+              // when the callback of a API method which specifies the "singleCallbackArg" metadata
+              // is called with two parameters only the first one is resolved by the returned promise.
+              Promise.resolve().then(() => {
+                cb({isFakePanel: true}, "unwanted parameter");
+              });
+            }),
+          },
+        },
+      };
+
+      return setupTestDOMWindow(fakeChrome).then(({browser}) => {
+        return browser.devtools.panels.create("title", "icon.png", "panel.html").then(panel => {
+          ok(fakeChrome.devtools.panels.create.calledOnce,
+             "devtools.panels.create has been called once");
+
+          ok("isFakePanel" in panel && panel.isFakePanel,
+             "Got the expected result from devtools.panels.create");
+        });
+      });
+    });
+
+    it("resolves to a single undefined parameter on singleCallbackArg metadata and no params", () => {
+      const fakeChrome = {
+        runtime: {lastError: null},
+        devtools: {
+          panels: {
+            create: sinon.spy((title, iconPath, panelURL, cb) => {
+              Promise.resolve().then(() => {
+                // when the callback of a API method which specifies the "singleCallbackArg" metadata
+                // is called without any parameter, the returned promise resolves to undefined
+                // instead of an empty array.
+                cb();
+              });
+            }),
+          },
+        },
+      };
+
+      return setupTestDOMWindow(fakeChrome).then(({browser}) => {
+        return browser.devtools.panels.create("title", "icon.png", "panel.html").then(panel => {
+          ok(fakeChrome.devtools.panels.create.calledOnce,
+             "devtools.panels.create has been called once");
+
+          ok(panel === undefined,
+             "Got the expected undefined result from devtools.panels.create");
+        });
       });
     });
   });

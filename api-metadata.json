@@ -135,6 +135,21 @@
       "maxArgs": 1
     }
   },
+  "devtools": {
+    "inspectedWindow": {
+      "eval": {
+        "minArgs": 1,
+        "maxArgs": 2
+      }
+    },
+    "panels": {
+      "create": {
+        "minArgs": 3,
+        "maxArgs": 3,
+        "singleCallbackArg": true
+      }
+    }
+  },
   "downloads": {
     "download": {
       "minArgs": 1,

@@ -6,6 +6,36 @@ const sinon = require("sinon");
 const {setupTestDOMWindow} = require("./setup");
 
 describe("browser-polyfill", () => {
+  describe("proxies non-configurable read-only properties", () => {
+    it("creates a proxy that doesn't raise a Proxy violation exception", () => {
+      const fakeChrome = {};
+
+      Object.defineProperty(fakeChrome, "devtools", {
+        enumarable: true,
+        configurable: false,
+        writable: false,
+        value: {
+          inspectedWindow: {
+            eval: sinon.spy(),
+          },
+        },
+      });
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        window.browser.devtools; // eslint-disable-line
+
+        ok(window.browser.devtools.inspectedWindow,
+           "The non-configurable read-only property can be accessed");
+
+        const res = window.browser.devtools.inspectedWindow.eval("test");
+
+        ok(fakeChrome.devtools.inspectedWindow.eval.calledOnce,
+           "The target API method has been called once");
+        ok(res instanceof window.Promise, "The API method has been wrapped");
+      });
+    });
+  });
+
   describe("proxies non-wrapped functions", () => {
     it("should proxy non-wrapped methods", () => {
       const fakeChrome = {
@@ -75,28 +105,33 @@ describe("browser-polyfill", () => {
     });
 
     it("deletes proxy getter/setter that are not wrapped", () => {
-      const fakeChrome = {};
+      const fakeChrome = {runtime: {}};
       return setupTestDOMWindow(fakeChrome).then(window => {
-        window.browser.newns = {newkey: "test-value"};
+        // Test getter/setter behavior for non wrapped properties on
+        // an API namespace (because the root target of the Proxy object
+        // is an empty object which has the chrome API object as its
+        // prototype and the empty object is not exposed outside of the
+        // polyfill sources).
+        window.browser.runtime.newns = {newkey: "test-value"};
 
-        ok("newns" in window.browser, "The custom namespace is in the wrapper");
-        ok("newns" in window.chrome, "The custom namespace is in the target");
+        ok("newns" in window.browser.runtime, "The custom namespace is in the wrapper");
+        ok("newns" in window.chrome.runtime, "The custom namespace is in the target");
 
-        equal(window.browser.newns.newkey, "test-value",
+        equal(window.browser.runtime.newns.newkey, "test-value",
               "Got the expected result from setting a wrapped property name");
 
-        const setRes = window.browser.newns = {newkey2: "new-value"};
-        equal(window.browser.newns.newkey2, "new-value",
+        const setRes = window.browser.runtime.newns = {newkey2: "new-value"};
+        equal(window.browser.runtime.newns.newkey2, "new-value",
               "The new non-wrapped getter is cached");
         deepEqual(setRes, {newkey2: "new-value"},
                   "Got the expected result from setting a new wrapped property name");
-        deepEqual(window.browser.newns, window.chrome.newns,
+        deepEqual(window.browser.runtime.newns, window.chrome.runtime.newns,
                   "chrome.newns and browser.newns are the same");
 
-        delete window.browser.newns.newkey2;
-        equal(window.browser.newns.newkey2, undefined,
+        delete window.browser.runtime.newns.newkey2;
+        equal(window.browser.runtime.newns.newkey2, undefined,
               "Got the expected result from setting a wrapped property name");
-        ok(!("newkey2" in window.browser.newns),
+        ok(!("newkey2" in window.browser.runtime.newns),
            "The deleted property is not listed anymore");
       });
     });
