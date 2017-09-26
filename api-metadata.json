@@ -295,21 +295,37 @@
       "minArgs": 1,
       "maxArgs": 1
     },
+    "setPopup": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
     "getTitle": {
       "minArgs": 1,
       "maxArgs": 1
     },
+    "setTitle": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
     "hide": {
       "minArgs": 1,
-      "maxArgs": 1
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     },
     "setIcon": {
       "minArgs": 1,
       "maxArgs": 1
     },
-    "show": {
+    "getIcon": {
       "minArgs": 1,
       "maxArgs": 1
+    },
+    "show": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     }
   },
   "runtime": {

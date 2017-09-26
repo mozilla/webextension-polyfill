@@ -141,5 +141,93 @@ describe("browser-polyfill", () => {
         });
       });
     });
+
+    it("returns a Promise for wrapped API methods without a callback on Chrome", () => {
+      const FAKE_ERROR_MSG = "API Schema validation error";
+
+      const fakeChrome = {
+        runtime: {lastError: null},
+        pageAction: {
+          show: sinon.spy((tabId, cb) => {
+            if (cb) {
+              throw new Error("Chrome do not expect a callback");
+            }
+
+            if (tabId == null) {
+              throw new Error(FAKE_ERROR_MSG);
+            }
+          }),
+          hide: sinon.spy((tabId, cb) => {
+            if (cb) {
+              throw new Error("Chrome do not expect a callback");
+            }
+
+            if (tabId == null) {
+              throw new Error(FAKE_ERROR_MSG);
+            }
+          }),
+        },
+      };
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        const {browser, Promise} = window;
+
+        const pageActionShowPromise = browser.pageAction.show(1).catch(err => err);
+        const pageActionHidePromise = browser.pageAction.hide(undefined).catch(err => err);
+
+        ok(pageActionShowPromise instanceof Promise,
+           "browser.pageAction.show returned a promise instance");
+        ok(pageActionHidePromise instanceof Promise,
+           "browser.pageAction.hide returned a promise instance");
+
+        return Promise.all([
+          pageActionShowPromise, pageActionHidePromise,
+        ]).then(([pageActionShowResolved, pageActionHideRejected]) => {
+          ok(fakeChrome.pageAction.show.calledTwice, "chrome.pageAction.show has been called twice");
+          equal(fakeChrome.pageAction.show.firstCall.args.length, 2,
+                "chrome.pageAction.show first call has received a callback parameter");
+          equal(fakeChrome.pageAction.show.secondCall.args.length, 1,
+                "chrome.pageAction.show second call has received a single parameter");
+          equal(pageActionShowResolved, undefined, "pageAction.show resolved successfully");
+
+          ok(fakeChrome.pageAction.hide.calledTwice, "chrome.pageAction.hide has been called twice");
+          equal(fakeChrome.pageAction.hide.firstCall.args.length, 2,
+                "chrome.pageAction.hide first call has received a callback parameter");
+          equal(fakeChrome.pageAction.hide.secondCall.args.length, 1,
+                "chrome.pageAction.hide second call has received a single parameter");
+
+          ok(pageActionHideRejected instanceof Error,
+             "browser.pageAction.hide rejected value is an Error instance");
+          equal(pageActionHideRejected.message, FAKE_ERROR_MSG,
+                "browser.pageAction.hide rejected error has the expected message");
+        }).then(() => {
+          // Call pageAction.show and hide again to ensure that only after a successfull
+          // API call the wrapper will always call the API method without the callback parameter.
+
+          fakeChrome.pageAction.show.reset();
+          fakeChrome.pageAction.hide.reset();
+
+          const secondPageActionShowPromise = browser.pageAction.show(1).catch(err => err);
+          const secondPageActionHidePromise = browser.pageAction.hide(undefined).catch(err => err);
+
+          return Promise.all([secondPageActionShowPromise, secondPageActionHidePromise]);
+        }).then(([pageActionShowResolved, pageActionHideRejected]) => {
+          ok(fakeChrome.pageAction.show.calledOnce, "chrome.pageAction.show has been called once");
+          equal(fakeChrome.pageAction.show.firstCall.args.length, 1,
+                "chrome.pageAction.show call has not received a callback parameter");
+
+          ok(fakeChrome.pageAction.hide.calledTwice, "chrome.pageAction.hide has been called twice");
+          equal(fakeChrome.pageAction.hide.firstCall.args.length, 2,
+                "chrome.pageAction.hide first call has received a callback parameter");
+          equal(fakeChrome.pageAction.hide.secondCall.args.length, 1,
+                "chrome.pageAction.hide second call has received a single parameter");
+
+          ok(pageActionHideRejected instanceof Error,
+             "browser.pageAction.hide rejected value is an Error instance");
+          equal(pageActionHideRejected.message, FAKE_ERROR_MSG,
+                "browser.pageAction.hide rejected error has the expected message");
+        });
+      });
+    });
   });
 });
