@@ -6,7 +6,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-if (typeof browser === "undefined") {
+if ((() => {
+  try {
+    return typeof browser === "undefined" || !(browser.windows.getCurrent() instanceof Promise);
+  } catch (e) {
+    // An Exception is generated if the method requires a callback, 
+    // i.e. it does not support returning a Promise
+    return true;
+  }
+})()) {
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
   // contents of a function until the first time it's called, and since it will
