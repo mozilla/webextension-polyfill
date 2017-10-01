@@ -6,7 +6,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-if (typeof browser === "undefined") {
+if ((() => {
+  try {
+    return typeof browser === "undefined" || !(browser.windows.getCurrent() instanceof Promise);
+  } catch (e) {
+    // An Exception is generated if the method requires a callback, 
+    // i.e. it does not support returning a Promise
+    return true;
+  }
+})()) {
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
   // contents of a function until the first time it's called, and since it will
@@ -87,7 +95,7 @@ if (typeof browser === "undefined") {
      */
     const makeCallback = (promise, metadata) => {
       return (...callbackArgs) => {
-        if (chrome.runtime.lastError) {
+        if (typeof chrome !== "undefined" && typeof chrome.runtime !== "undefined" && chrome.runtime.lastError) {
           promise.reject(chrome.runtime.lastError);
         } else if (metadata.singleCallbackArg || callbackArgs.length === 1) {
           promise.resolve(callbackArgs[0]);
@@ -351,7 +359,8 @@ if (typeof browser === "undefined") {
     // Create an object that has the real target as its prototype
     // to prevent a Proxy violation exception for the devtools API getter
     // (which is a read-only non-configurable property on the original target).
-    const targetObject = Object.create(chrome);
+    // On Edge, the 'browser' object cannot be used directly as the Object.create() argument
+    const targetObject = Object.create(typeof chrome !== "undefined" && typeof chrome.runtime !== "undefined" && chrome || Object.assign({}, browser));
 
     return wrapObject(targetObject, staticWrappers, apiMetadata);
   };
