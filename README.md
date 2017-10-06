@@ -7,6 +7,15 @@ Chrome.
 
 [w3-browserext]: https://www.w3.org/community/browserext/
 
+
+Table of contents
+=================
+
+* [Building](#building)
+* [Basic Setup](#basic-setup)
+* [Using the Promise-based APIs](#using-the-promise-based-apis)
+* [Examples](#examples)
+
 ## Building
 
 To build, assuming you're already installed [node >= 6](https://nodejs.org) and
