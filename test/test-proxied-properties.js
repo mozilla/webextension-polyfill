@@ -8,8 +8,10 @@ const {setupTestDOMWindow} = require("./setup");
 describe("browser-polyfill", () => {
   describe("proxies non-configurable read-only properties", () => {
     it("creates a proxy that doesn't raise a Proxy violation exception", () => {
-      const fakeChrome = {};
+      const fakeChrome = {"devtools": {}};
 
+      // Override the property to make it non-configurable (needed to be sure that
+      // the polyfill is correctly workarounding the Proxy TypeError).
       Object.defineProperty(fakeChrome, "devtools", {
         enumarable: true,
         configurable: false,
@@ -22,8 +24,6 @@ describe("browser-polyfill", () => {
       });
 
       return setupTestDOMWindow(fakeChrome).then(window => {
-        window.browser.devtools; // eslint-disable-line
-
         ok(window.browser.devtools.inspectedWindow,
            "The non-configurable read-only property can be accessed");
 

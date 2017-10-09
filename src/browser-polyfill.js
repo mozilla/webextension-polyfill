@@ -348,10 +348,10 @@ if (typeof browser === "undefined") {
       },
     };
 
-    // Create an object that has the real target as its prototype
+    // Create a new empty object and copy the properties of the original chrome object
     // to prevent a Proxy violation exception for the devtools API getter
     // (which is a read-only non-configurable property on the original target).
-    const targetObject = Object.create(chrome);
+    const targetObject = Object.assign({}, chrome);
 
     return wrapObject(targetObject, staticWrappers, apiMetadata);
   };
