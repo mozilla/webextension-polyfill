@@ -45,8 +45,9 @@
     "build": "grunt",
     "prepublish": "npm run build && npm run test",
     "publish-coverage": "grunt coveralls",
+    "pretest": "grunt eslint",
     "test": "mocha",
-    "test-coverage": "COVERAGE=y nyc mocha",
-    "test-minified": "TEST_MINIFIED_POLYFILL=1 mocha"
+    "test-coverage": "COVERAGE=y nyc npm test",
+    "test-minified": "TEST_MINIFIED_POLYFILL=1 npm test"
   }
 }
