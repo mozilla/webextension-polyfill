@@ -3,6 +3,8 @@ sudo: false
 node_js:
 ## Some of the ES6 syntax used in the browser-polyfill sources is only supported on nodejs >= 6
 - '6'
+- 'lts/*'
+- 'node'
 
 script:
 - npm run build
