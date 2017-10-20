@@ -53,22 +53,40 @@ describe("browser.runtime.onMessage/sendMessage", function() {
 
     const lastExpectedMessage = expectedConsoleMessages.slice(-1).pop();
 
-    // Wait until the last expected message has been received.
-    const res = await waitUntil(() => {
-      return pageConsoleMessages.filter((msg) => {
-        return msg[0] === lastExpectedMessage[0] && msg[1] === lastExpectedMessage[1];
-      }).length > 0;
-    }, 5000).catch(error => error);
+    let unexpectedException;
 
-    deepEqual(pageConsoleMessages, expectedConsoleMessages, "Got the expected console messages");
+    try {
+      // Wait until the last expected message has been received.
+      await waitUntil(() => {
+        return pageConsoleMessages.filter((msg) => {
+          return msg[0] === lastExpectedMessage[0] && msg[1] === lastExpectedMessage[1];
+        }).length > 0;
+      }, 5000);
+    } catch (error) {
+      // Collect any unexpected exception (e.g. a timeout error raised by waitUntil),
+      // it will be part of the deepEqual assertion of the results.
+      unexpectedException = error;
+    }
 
-    await browser.close();
+    let actualResults = {
+      consoleMessages: pageConsoleMessages,
+      unexpectedException,
+    };
 
-    server.close();
+    let expectedResults = {
+      consoleMessages: expectedConsoleMessages,
+      unexpectedException: undefined,
+    };
 
-    if (res instanceof Error) {
-      // Re-throw the unexpected error, if the test didn't fail yet.
-      throw res;
+    try {
+      deepEqual(actualResults, expectedResults, "Got the expected results");
+    } finally {
+      // ensure that we close the browser and the test HTTP server before exiting
+      // the test, even when the assertions fails.
+      await Promise.all([
+        browser.close(),
+        new Promise(resolve => server.close(resolve)),
+      ]);
     }
   });
 });
