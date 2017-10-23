@@ -1,5 +1,8 @@
 {
   "root": true,
+
+  "parser": "babel-eslint",
+
   "parserOptions": {
     "ecmaVersion": 6,
   },
@@ -429,7 +432,7 @@
     "spaced-comment": [2, "always"],
 
     // Require "use strict" to be defined globally in the script.
-    "strict": [2, "global"],
+    "strict": [0, "global"],
 
     // Allow vars to be declared anywhere in the scope.
     "vars-on-top": 0,

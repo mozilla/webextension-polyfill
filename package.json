@@ -17,10 +17,14 @@
   },
   "homepage": "https://github.com/mozilla/webextension-polyfill",
   "devDependencies": {
+    "async-wait-until": "^1.1.5",
+    "babel-eslint": "^8.0.1",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
-    "babel-preset-babili": "0.0.10",
+    "babel-preset-babili": "^0.0.10",
+    "babel-preset-es2017": "^6.24.1",
     "chai": "^3.5.0",
-    "eslint": "3.9.1",
+    "eslint": "^3.9.1",
+    "finalhandler": "^1.1.0",
     "grunt": "^1.0.1",
     "grunt-babel": "^6.0.0",
     "grunt-contrib-concat": "^1.0.1",
@@ -31,6 +35,8 @@
     "jsdom": "^9.6.0",
     "mocha": "^3.1.0",
     "nyc": "^8.3.1",
+    "puppeteer": "^0.10.2",
+    "serve-static": "^1.13.1",
     "sinon": "^1.17.6"
   },
   "nyc": {
@@ -47,6 +53,7 @@
     "publish-coverage": "grunt coveralls",
     "test": "mocha",
     "test-coverage": "COVERAGE=y nyc mocha",
-    "test-minified": "TEST_MINIFIED_POLYFILL=1 mocha"
+    "test-minified": "TEST_MINIFIED_POLYFILL=1 mocha",
+    "test-integration": "mocha -r test/mocha-babel test/integration/test-*"
   }
 }
