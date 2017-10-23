@@ -13,7 +13,14 @@ if (typeof browser === "undefined") {
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
   const wrapAPIs = () => {
+    // NOTE: apiMetadata is associated to the content of the api-metadata.json file
+    // at build time by replacing the following "include" with the content of the
+    // JSON file.
     const apiMetadata = {/* include("api-metadata.json") */};
+
+    if (Object.keys(apiMetadata).length === 0) {
+      throw new Error("api-metadata.json has not been included in browser-polyfill");
+    }
 
     /**
      * A WeakMap subclass which creates and stores a value for any key which does
@@ -69,15 +76,20 @@ if (typeof browser === "undefined") {
      *        The promise's resolution function.
      * @param {function} promise.rejection
      *        The promise's rejection function.
+     * @param {object} metadata
+     *        Metadata about the wrapped method which has created the callback.
+     * @param {integer} metadata.maxResolvedArgs
+     *        The maximum number of arguments which may be passed to the
+     *        callback created by the wrapped async function.
      *
      * @returns {function}
      *        The generated callback function.
      */
-    const makeCallback = promise => {
+    const makeCallback = (promise, metadata) => {
       return (...callbackArgs) => {
         if (chrome.runtime.lastError) {
           promise.reject(chrome.runtime.lastError);
-        } else if (callbackArgs.length === 1) {
+        } else if (metadata.singleCallbackArg || callbackArgs.length === 1) {
           promise.resolve(callbackArgs[0]);
         } else {
           promise.resolve(callbackArgs);
@@ -100,6 +112,9 @@ if (typeof browser === "undefined") {
      *        The maximum number of arguments which may be passed to the
      *        function. If called with more than this number of arguments, the
      *        wrapper will raise an exception.
+     * @param {integer} metadata.maxResolvedArgs
+     *        The maximum number of arguments which may be passed to the
+     *        callback created by the wrapped async function.
      *
      * @returns {function(object, ...*)}
      *       The generated wrapper function.
@@ -117,7 +132,7 @@ if (typeof browser === "undefined") {
         }
 
         return new Promise((resolve, reject) => {
-          target[name](...args, makeCallback({resolve, reject}));
+          target[name](...args, makeCallback({resolve, reject}, metadata));
         });
       };
     };
@@ -333,8 +348,17 @@ if (typeof browser === "undefined") {
       },
     };
 
-    return wrapObject(chrome, staticWrappers, apiMetadata);
+    // Create a new empty object and copy the properties of the original chrome object
+    // to prevent a Proxy violation exception for the devtools API getter
+    // (which is a read-only non-configurable property on the original target).
+    const targetObject = Object.assign({}, chrome);
+
+    return wrapObject(targetObject, staticWrappers, apiMetadata);
   };
 
-  this.browser = wrapAPIs();
+  // The build process adds a UMD wrapper around this file, which makes the
+  // `module` variable available.
+  module.exports = wrapAPIs(); // eslint-disable-line no-undef
+} else {
+  module.exports = browser; // eslint-disable-line no-undef
 }

@@ -8,6 +8,8 @@ const LICENSE = `/* This Source Code Form is subject to the terms of the Mozilla
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */`;
 
+const MINIFIED_FILE_FOOTER = `\n\n// <%= pkg.name %> v.<%= pkg.version %> (<%= pkg.homepage %>)\n\n${LICENSE}`;
+
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
@@ -31,8 +33,8 @@ module.exports = function(grunt) {
               match: /\{\/\* include\("(.*?)"\) \*\/\}/,
               replacement: (match, filename) => {
                 return grunt.file.read(filename)
-                            .replace(/\n$/, "")
-                            .replace(/^[^{]/gm, "    $&");
+                  .replace(/\n$/, "")
+                  .replace(/^[^{]/gm, "    $&");
               },
             },
             {
@@ -55,33 +57,44 @@ module.exports = function(grunt) {
       },
     },
 
-    "closure-compiler": {
-      dist: {
-        files: {
-          "dist/browser-polyfill.min.js": ["dist/browser-polyfill.js"],
-        },
+    babel: {
+      minify: {
         options: {
-          // Closure currently supports only whitespace and comment stripping
-          // when both the input and output languages are ES6.
-          compilation_level: "WHITESPACE_ONLY",
-          language_in: "ECMASCRIPT6_STRICT",
-          language_out: "ECMASCRIPT6",
-          output_wrapper: `${LICENSE}\n%output%`,
+          babelrc: false,
+          comments: false,
+          presets: ["babili"],
+          sourceMap: true,
+        },
+        files: {
+          "dist/browser-polyfill.min.js": "dist/browser-polyfill.js",
+        },
+      },
+      umd: {
+        options: {
+          babelrc: false,
+          comments: true,
+          plugins: [
+            ["transform-es2015-modules-umd", {
+              globals: {
+                "webextension-polyfill": "browser",
+              },
+              exactGlobals: true,
+            }],
+          ],
+          sourceMap: true,
+          moduleId: "webextension-polyfill",
+        },
+        files: {
+          "dist/browser-polyfill.js": "dist/browser-polyfill.js",
         },
       },
     },
 
-    // This currently does not support ES6 classes.
-    uglify: {
-      options: {
-        banner: LICENSE,
-        compress: true,
-      },
-
-      dist: {
-        files: {
-          "dist/browser-polyfill.min.js": ["dist/browser-polyfill.js"],
-        },
+    concat: {
+      license: {
+        src: "dist/browser-polyfill.min.js",
+        dest: "dist/browser-polyfill.min.js",
+        options: {footer: MINIFIED_FILE_FOOTER},
       },
     },
   });
@@ -89,7 +102,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-replace");
   grunt.loadNpmTasks("grunt-coveralls");
-  require("google-closure-compiler").grunt(grunt);
+  grunt.loadNpmTasks("grunt-contrib-concat");
+  grunt.loadNpmTasks("grunt-babel");
 
-  grunt.registerTask("default", ["eslint", "replace", "closure-compiler"]);
+  grunt.registerTask("default", ["eslint", "replace", "babel:umd", "babel:minify", "concat:license"]);
 };

@@ -1,4 +1,4 @@
-# WebExtension `browser` API Polyfill
+# WebExtension `browser` API Polyfill [![Build Status](https://travis-ci.org/mozilla/webextension-polyfill.svg?branch=master)](https://travis-ci.org/mozilla/webextension-polyfill)
 
 This library allows extensions written for the Promise-based
 WebExtension/BrowserExt API being standardized by the [W3 Browser
@@ -7,20 +7,29 @@ Chrome.
 
 [w3-browserext]: https://www.w3.org/community/browserext/
 
+
+Table of contents
+=================
+
+* [Building](#building)
+* [Basic Setup](#basic-setup)
+* [Using the Promise-based APIs](#using-the-promise-based-apis)
+* [Examples](#examples)
+
 ## Building
 
-To build, assuming you're already installed [npm](https://www.npmjs.com/),
-simply run:
+To build, assuming you're already installed [node >= 6](https://nodejs.org) and
+[npm](https://www.npmjs.com/), simply run:
 
 ```sh
 npm install
-grunt
+npm run build
+npm run test
 ```
 
-This will build both non-minified and minified versions of the final library,
-and output them to `dist/browser-polyfill.js` and `dist/browser-polyfill.min.js`,
-respectively.
-
+This will install all the npm dependencies and build both non-minified and minified versions
+of the final library, and output them to `dist/browser-polyfill.js` and `dist/browser-polyfill.min.js`,
+respectively, and finally executes the unit tests on the generated dist files.
 
 ## Basic Setup
 
@@ -74,7 +83,6 @@ browser.tabs.executeScript({file: "content.js"}).then(result => {
   // ...
 });
 ```
-
 
 ## Using the Promise-based APIs
 

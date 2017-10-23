@@ -17,7 +17,7 @@ describe("browser-polyfill", () => {
       runtime: {lastError: null},
     };
     const fakeBrowser = {
-      mycustomns: {mykey: true},
+      mycustomns: {mybrowserkey: true},
     };
 
     return setupTestDOMWindow(fakeChrome, fakeBrowser).then(window => {
@@ -51,9 +51,9 @@ describe("browser-polyfill", () => {
     });
 
     it("returns undefined for property undefined in the target", () => {
-      const fakeChrome = {myns: {mykey: true}};
+      const fakeChrome = {myns: {mychromekey: true}};
       return setupTestDOMWindow(fakeChrome).then(window => {
-        equal(window.browser.myns.mykey, true,
+        equal(window.browser.myns.mychromekey, true,
               "Got the expected result from a wrapped property");
         equal(window.browser.myns.nonexistent, undefined,
               "Got undefined for non existent property");

@@ -6,7 +6,15 @@ node_js:
 
 script:
 - npm run build
-- COVERAGE=y npm run test-coverage
+- npm run test-coverage
+- echo "RE-RUN tests on the minified file" && npm run test-minified
+- echo "RE-RUN tests on the webpack and browserify bundled files" &&
+  npm install -g browserify webpack &&
+  ./test/run-module-bundlers-smoketests.sh
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- echo "RUN integration tests on chrome" &&
+  ./test/run-chrome-smoketests.sh
 
 after_script: npm run publish-coverage
 
@@ -19,3 +27,14 @@ notifications:
     use_notice: true
     template:
     - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (%{build_url})"
+
+deploy:
+  provider: npm
+  email: addons-dev-automation+npm@mozilla.com
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: mozilla/webextension-polyfill
+    branch: master
+  api_key:
+    secure: W1e/XXtsl98NGUYsqlELnrspPW/ULUk74dUMmLC7iqmI8RVvzBgjkxBGmgsToZAbdzeNMlsOeeNz2iF+DSy3UF9bc3PTdHmN8kYU8enqo3P/FKK29rg5udx/HRW2GK06UzEBctOY90OwnUD+J1OaCJ0vMh6EekiP1BXOtrvch6Ruo7SYrwQ0vu5gFM+ifwfpGycTbRd77P6YJzbxYSEJfkQz1R1X7i8pLmi0vTyQa3tUYsQd8WzL6CJsWitojtf0FHGJgzXu2g6iFmkLVC0+dnGCRAxnRbixoYMmJYyEcvgIXlmNB6gl7ortuWKOp82lhXWXZWaYqO9Y8w4X0I8iNQzrLnupwyaC0cK51OPLLZEdgXa+bXmsYi2LYiV72oTCFd7j+f8hcoPOtgkGXJR+5F87zZLy8Ayr62fshWE/sl+dw2b/H5AqER4UNlX1+EiHQHjUtSvYlAmkTX3t4q/c+d0T1U5aM0CbOhS5juYVVqyIFGlUoRdNKDVedn0uCd+D2ItGj9y7yex0z+tc8iKaze0DhQCMq5QTxEU89REEU7Bf3gkpZtXlcmGZX/RTTCe941is7cIrUeJrZXPt5lA+cudBf3t60t7qysHLconQ+TXlDxCBvX7lLF9lZT5z0BKdOA0iL574ABtiJEjPxi0gOIWg2DJh15OZGA5mC4gPsZ4=
