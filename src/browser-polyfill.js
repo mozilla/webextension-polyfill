@@ -14,7 +14,7 @@ try {
 }
 
 if (typeof browser === "undefined" || !_supportsPromises) {
-  var _browser = window.browser || window.msBrowser || window.chrome;
+  var _browser = window.browser || window.msBrowser || window.chrome || browser;
 
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
