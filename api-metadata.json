@@ -340,6 +340,48 @@
       "maxArgs": 1
     }
   },
+  "sessions": {
+    "forgetClosedTab": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "forgetClosedWindow": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "getRecentlyClosed": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "getTabValue": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "getWindowValue": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "removeTabValue": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "removeWindowValue": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "restore": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "setTabValue": {
+      "minArgs": 2,
+      "maxArgs": 3
+    },
+    "setWindowValue": {
+      "minArgs": 2,
+      "maxArgs": 3
+    }
+  },
   "storage": {
     "local": {
       "clear": {
