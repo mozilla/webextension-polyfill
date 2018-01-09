@@ -4,9 +4,8 @@ const path = require("path");
 
 const waitUntil = require("async-wait-until");
 const {deepEqual} = require("chai").assert;
-const puppeteer = require("puppeteer");
 
-const {createHTTPServer} = require("./setup");
+const {createHTTPServer, launchPuppeteer} = require("./setup");
 
 const fixtureExtensionDirName = "runtime-messaging-extension";
 
@@ -20,15 +19,9 @@ describe("browser.runtime.onMessage/sendMessage", function() {
 
     const url = `http://localhost:${server.address().port}`;
 
-    const browser = await puppeteer.launch({
-      // Chrome Extensions are not currently supported in headless mode.
-      headless: false,
-
-      // Custom chrome arguments.
-      args: [
-        `--load-extension=${process.env.TEST_EXTENSIONS_PATH}/${fixtureExtensionDirName}`,
-      ],
-    });
+    const browser = await launchPuppeteer([
+      `--load-extension=${process.env.TEST_EXTENSIONS_PATH}/${fixtureExtensionDirName}`,
+    ]);
 
     const page = await browser.newPage();
 

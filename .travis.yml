@@ -14,7 +14,7 @@ script:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
 - echo "RUN integration tests on chrome" &&
-  ./test/run-chrome-smoketests.sh
+  TRAVIS_CI=true ./test/run-chrome-smoketests.sh
 
 after_script: npm run publish-coverage
 
