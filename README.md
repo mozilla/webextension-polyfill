@@ -115,7 +115,7 @@ API, retrieve a list of tabs which match any of them, reload each of those
 tabs, and notify the user that is has been done:
 
 ```javascript
-browser.storage.get("urls").then(({urls}) => {
+browser.storage.local.get("urls").then(({urls}) => {
   return browser.tabs.query({url: urls});
 }).then(tabs => {
   return Promise.all(
@@ -138,7 +138,7 @@ Or, using an async function:
 ```javascript
 async function reloadTabs() {
   try {
-    let {urls} = await browser.storage.get("urls");
+    let {urls} = await browser.storage.local.get("urls");
 
     let tabs = await browser.tabs.query({url: urls});
 
@@ -173,7 +173,7 @@ And like this from the content script:
 ```javascript
 browser.runtime.onMessage.addListener(msg => {
   if (msg == "get-ids") {
-    return browser.storage.get("idPattern").then(({idPattern}) => {
+    return browser.storage.local.get("idPattern").then(({idPattern}) => {
       return Array.from(document.querySelectorAll(idPattern),
                         elem => elem.textContent);
     });
@@ -186,7 +186,7 @@ or:
 ```javascript
 browser.runtime.onMessage.addListener(async function(msg) {
   if (msg == "get-ids") {
-    let {idPattern} = await browser.storage.get("idPattern");
+    let {idPattern} = await browser.storage.local.get("idPattern");
 
     return Array.from(document.querySelectorAll(idPattern),
                       elem => elem.textContent);
