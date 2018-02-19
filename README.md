@@ -119,7 +119,7 @@ browser.storage.local.get("urls").then(({urls}) => {
   return browser.tabs.query({url: urls});
 }).then(tabs => {
   return Promise.all(
-    Array.from(tabs, tab => browser.tabs.reload(tab.id)));
+    Array.from(tabs, tab => browser.tabs.reload(tab.id))
   );
 }).then(() => {
   return browser.notifications.create({
@@ -143,7 +143,7 @@ async function reloadTabs() {
     let tabs = await browser.tabs.query({url: urls});
 
     await Promise.all(
-      Array.from(tabs, tab => browser.tabs.reload(tab.id)));
+      Array.from(tabs, tab => browser.tabs.reload(tab.id))
     );
 
     await browser.notifications.create({
