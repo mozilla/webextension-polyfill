@@ -482,6 +482,10 @@
     "update": {
       "minArgs": 1,
       "maxArgs": 2
+    },
+    "discard":{
+      "minArgs": 0,
+      "maxArgs": 2
     }
   },
   "webNavigation": {
