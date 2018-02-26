@@ -485,7 +485,7 @@
     },
     "discard":{
       "minArgs": 0,
-      "maxArgs": 2
+      "maxArgs": 1
     }
   },
   "webNavigation": {
