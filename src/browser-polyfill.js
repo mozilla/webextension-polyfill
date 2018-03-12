@@ -132,22 +132,6 @@ if (typeof browser === "undefined") {
         }
 
         return new Promise((resolve, reject) => {
-          function callAPIWithNoCallback() {
-            try {
-              target[name](...args);
-
-              // Update the API method metadata, so that the next API calls will not try to
-              // use the unsupported callback anymore.
-              metadata.fallbackToNoCallback = false;
-              metadata.noCallback = true;
-
-              resolve();
-            } catch (error) {
-              // Catch API parameters validation errors and rejects the promise.
-              reject(error);
-            }
-          }
-
           if (metadata.fallbackToNoCallback) {
             // This API method has currently no callback on Chrome, but it return a promise on Firefox,
             // and so the polyfill will try to call it with a callback first, and it will fallback
@@ -158,10 +142,18 @@ if (typeof browser === "undefined") {
               console.warn(`${name} API method doesn't seem to support the callback parameter, ` +
                            "falling back to call it without a callback: ", cbError);
 
-              callAPIWithNoCallback();
+              target[name](...args);
+
+              // Update the API method metadata, so that the next API calls will not try to
+              // use the unsupported callback anymore.
+              metadata.fallbackToNoCallback = false;
+              metadata.noCallback = true;
+
+              resolve();
             }
           } else if (metadata.noCallback) {
-            callAPIWithNoCallback();
+            target[name](...args);
+            resolve();
           } else {
             target[name](...args, makeCallback({resolve, reject}, metadata));
           }
