@@ -136,4 +136,42 @@ describe("browser-polyfill", () => {
       });
     });
   });
+
+  describe("without side effects", () => {
+    it("should proxy non-wrapped methods", () => {
+      let lazyInitCount = 0;
+      const fakeChrome = {
+        get runtime() {
+          // Chrome lazily initializes API objects by replacing the getter with
+          // the value. The initialization is only allowed to occur once,
+          // after that `undefined` is returned and a warning is printed.
+          // https://chromium.googlesource.com/chromium/src/+/4d6b3a067994ce6dcf0ed9a9efd566c083736952/extensions/renderer/module_system.cc#414
+          //
+          // The polyfill should invoke the getter only once (on the global chrome object).
+          ++lazyInitCount;
+
+          const onMessage = {
+            addListener(listener) {
+              equal(this, onMessage, "onMessage.addListener should be called on the original chrome.onMessage object");
+            },
+          };
+          const value = {onMessage};
+          Object.defineProperty(this, "runtime", {value});
+          return value;
+        },
+      };
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        equal(lazyInitCount, 0, "chrome.runtime should not be initialized without explicit API call");
+
+        window.browser.runtime.onMessage.addListener(() => {});
+        equal(lazyInitCount, 1, "chrome.runtime should be initialized upon accessing browser.runtime");
+
+        window.browser.runtime.onMessage.addListener(() => {});
+        equal(lazyInitCount, 1, "chrome.runtime should be re-used upon accessing browser.runtime");
+
+        window.chrome.runtime.onMessage.addListener(() => {});
+        equal(lazyInitCount, 1, "chrome.runtime should be re-used upon accessing chrome.runtime");
+      });
+    });
+  });
 });

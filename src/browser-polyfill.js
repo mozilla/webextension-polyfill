@@ -191,13 +191,12 @@ if (typeof browser === "undefined") {
      */
     const wrapObject = (target, wrappers = {}, metadata = {}) => {
       let cache = Object.create(null);
-
       let handlers = {
-        has(target, prop) {
+        has(proxyTarget, prop) {
           return prop in target || prop in cache;
         },
 
-        get(target, prop, receiver) {
+        get(proxyTarget, prop, receiver) {
           if (prop in cache) {
             return cache[prop];
           }
@@ -253,7 +252,7 @@ if (typeof browser === "undefined") {
           return value;
         },
 
-        set(target, prop, value, receiver) {
+        set(proxyTarget, prop, value, receiver) {
           if (prop in cache) {
             cache[prop] = value;
           } else {
@@ -262,16 +261,27 @@ if (typeof browser === "undefined") {
           return true;
         },
 
-        defineProperty(target, prop, desc) {
+        defineProperty(proxyTarget, prop, desc) {
           return Reflect.defineProperty(cache, prop, desc);
         },
 
-        deleteProperty(target, prop) {
+        deleteProperty(proxyTarget, prop) {
           return Reflect.deleteProperty(cache, prop);
         },
       };
 
-      return new Proxy(target, handlers);
+      // Per contract of the Proxy API, the "get" proxy handler must return the
+      // original value of the target if that value is declared read-only and
+      // non-configurable. For this reason, we create an object with the
+      // prototype set to `target` instead of using `target` directly.
+      // Otherwise we cannot return a custom object for APIs that
+      // are declared read-only and non-configurable, such as `chrome.devtools`.
+      //
+      // The proxy handlers themselves will still use the original `target`
+      // instead of the `proxyTarget`, so that the methods and properties are
+      // dereferenced via the original targets.
+      let proxyTarget = Object.create(target);
+      return new Proxy(proxyTarget, handlers);
     };
 
     /**
@@ -348,12 +358,7 @@ if (typeof browser === "undefined") {
       },
     };
 
-    // Create a new empty object and copy the properties of the original chrome object
-    // to prevent a Proxy violation exception for the devtools API getter
-    // (which is a read-only non-configurable property on the original target).
-    const targetObject = Object.assign({}, chrome);
-
-    return wrapObject(targetObject, staticWrappers, apiMetadata);
+    return wrapObject(chrome, staticWrappers, apiMetadata);
   };
 
   // The build process adds a UMD wrapper around this file, which makes the
