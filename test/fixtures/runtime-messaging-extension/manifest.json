@@ -20,5 +20,8 @@
       "browser-polyfill.js",
       "background.js"
     ]
+  },
+  "page_action": {
+    "default_title": "a page action"
   }
 }
