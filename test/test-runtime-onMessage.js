@@ -176,7 +176,7 @@ describe("browser-polyfill", () => {
       return setupTestDOMWindow(fakeChrome).then(window => {
         const listenerReturnsFalse = sinon.spy((msg, sender, sendResponse) => {
           waitPromises.push(Promise.resolve().then(() => {
-            sendResponse("Ignored sendReponse callback on returned Promise");
+            sendResponse("Ignored sendReponse callback on returned false");
           }));
 
           return false;
@@ -184,7 +184,7 @@ describe("browser-polyfill", () => {
 
         const listenerReturnsValue = sinon.spy((msg, sender, sendResponse) => {
           waitPromises.push(Promise.resolve().then(() => {
-            sendResponse("Ignored sendReponse callback on returned Promise");
+            sendResponse("Ignored sendReponse callback on non boolean/thenable return values");
           }));
 
           // Any return value that is not a promise should not be sent as a response,
