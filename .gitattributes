@@ -1,0 +1,5 @@
+# Let git decide for most files
+* text=auto
+
+# Specify line ending for js files
+**/*.js text eol=lf
