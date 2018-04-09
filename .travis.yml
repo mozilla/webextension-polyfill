@@ -9,7 +9,7 @@ script:
 - npm run test-coverage
 - echo "RE-RUN tests on the minified file" && npm run test-minified
 - echo "RE-RUN tests on the webpack and browserify bundled files" &&
-  npm install -g browserify webpack &&
+  npm install -g browserify webpack webpack-cli &&
   ./test/run-module-bundlers-smoketests.sh
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
