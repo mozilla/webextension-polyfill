@@ -104,9 +104,8 @@ The major differences are:
 * Rather than nesting callbacks when a sequence of operations depend on each
   other, Promise chaining is generally used instead.
 
-* For users of an ES7 transpiler, such as Babel, the resulting Promises are
-  generally used with `async` and `await`, rather than dealt with
-  directly.
+* The resulting Promises can be also used with `async` and `await`, rather
+  than dealt with directly.
 
 ## Examples
 
