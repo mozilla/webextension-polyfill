@@ -97,6 +97,21 @@ if (typeof browser === "undefined") {
       };
     };
 
+    const makeCallbackForSendMessage = (promise, metadata) => {
+      return (...callbackArgs) => {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          promise.reject((lastError instanceof Error) ? lastError : new Error((typeof lastError == "object" && lastError.message) ? String(lastError.message) : "An unexpected error occurred"));
+        } else if (callbackArgs.length == 1 && typeof (callbackArgs[0]) == "object" && typeof (callbackArgs[0].name) == "string" && callbackArgs[0].name == "Error" && typeof (callbackArgs[0].message == "string")) {
+          promise.reject(new Error(callbackArgs[0].message));
+        } else if (metadata.singleCallbackArg || callbackArgs.length === 1) {
+          promise.resolve(callbackArgs[0]);
+        } else {
+          promise.resolve(callbackArgs);
+        }
+      };
+    };
+    
     /**
      * Creates a wrapper function for a method with the given name and metadata.
      *
