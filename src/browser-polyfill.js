@@ -423,7 +423,7 @@ if (typeof browser === "undefined") {
         if (isThenable(result)) {
           result.then(sendResponse, error => {
             console.error(error);
-            sendResponse(error);
+            sendResponse((typeof error == "object" && error instanceof Error) ? {name: "Error", message: error.message} : error);
             // sendResponse({name: "Error", message: (typeof error == "object" && error.message) ? String(error.message) : "An unexpected error occurred"});
           });
 
