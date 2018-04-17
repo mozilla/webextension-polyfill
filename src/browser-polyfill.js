@@ -436,6 +436,11 @@ if (typeof browser === "undefined") {
     const staticWrappers = {
       runtime: {
         onMessage: wrapEvent(onMessageWrappers),
+        onMessageExternal: wrapEvent(onMessageWrappers),
+        sendMessage: wrapAsyncFunctionSendMessage("sendMessage", {"minArgs": 1, "maxArgs": 3}),
+      },
+      tabs: {
+        sendMessage: wrapAsyncFunctionSendMessage("sendMessage", {"minArgs": 2, "maxArgs": 3})
       },
     };
 
