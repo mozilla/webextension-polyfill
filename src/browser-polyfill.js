@@ -102,7 +102,7 @@ if (typeof browser === "undefined") {
         const lastError = chrome.runtime.lastError;
         if (lastError) {
           promise.reject((lastError instanceof Error) ? lastError : new Error((typeof lastError == "object" && lastError.message) ? String(lastError.message) : "An unexpected error occurred"));
-        } else if (callbackArgs.length == 1 && typeof (callbackArgs[0]) == "object" && typeof (callbackArgs[0].name) == "string" && callbackArgs[0].name == "Error" && typeof (callbackArgs[0].message == "string")) {
+        } else if (callbackArgs.length == 1 && typeof(callbackArgs[0]) == "object" && typeof(callbackArgs[0].name) == "string" && callbackArgs[0].name == "Error" && typeof(callbackArgs[0].message == "string")) {
           promise.reject(new Error(callbackArgs[0].message));
         } else if (metadata.singleCallbackArg || callbackArgs.length === 1) {
           promise.resolve(callbackArgs[0]);
@@ -111,7 +111,7 @@ if (typeof browser === "undefined") {
         }
       };
     };
-    
+
     /**
      * Creates a wrapper function for a method with the given name and metadata.
      *
@@ -217,7 +217,7 @@ if (typeof browser === "undefined") {
         });
       };
     };
-    
+
     /**
      * Wraps an existing method of the target object, so that calls to it are
      * intercepted by the given wrapper function. The wrapper function receives,
@@ -440,7 +440,7 @@ if (typeof browser === "undefined") {
         sendMessage: wrapAsyncFunctionSendMessage("sendMessage", {"minArgs": 1, "maxArgs": 3}),
       },
       tabs: {
-        sendMessage: wrapAsyncFunctionSendMessage("sendMessage", {"minArgs": 2, "maxArgs": 3})
+        sendMessage: wrapAsyncFunctionSendMessage("sendMessage", {"minArgs": 2, "maxArgs": 3}),
       },
     };
 
