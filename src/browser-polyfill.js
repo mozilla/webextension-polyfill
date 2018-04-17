@@ -176,6 +176,48 @@ if (typeof browser === "undefined") {
       };
     };
 
+    const wrapAsyncFunctionSendMessage = (name, metadata) => {
+      const pluralizeArguments = (numArgs) => numArgs == 1 ? "argument" : "arguments";
+
+      return function asyncFunctionWrapper(target, ...args) {
+        if (args.length < metadata.minArgs) {
+          throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
+        }
+
+        if (args.length > metadata.maxArgs) {
+          throw new Error(`Expected at most ${metadata.maxArgs} ${pluralizeArguments(metadata.maxArgs)} for ${name}(), got ${args.length}`);
+        }
+
+        return new Promise((resolve, reject) => {
+          if (metadata.fallbackToNoCallback) {
+            // This API method has currently no callback on Chrome, but it return a promise on Firefox,
+            // and so the polyfill will try to call it with a callback first, and it will fallback
+            // to not passing the callback if the first call fails.
+            try {
+              target[name](...args, makeCallbackForSendMessage({resolve, reject}, metadata));
+            } catch (cbError) {
+              console.warn(`${name} API method doesn't seem to support the callback parameter, ` +
+                           "falling back to call it without a callback: ", cbError);
+
+              target[name](...args);
+
+              // Update the API method metadata, so that the next API calls will not try to
+              // use the unsupported callback anymore.
+              metadata.fallbackToNoCallback = false;
+              metadata.noCallback = true;
+
+              resolve();
+            }
+          } else if (metadata.noCallback) {
+            target[name](...args);
+            resolve();
+          } else {
+            target[name](...args, makeCallbackForSendMessage({resolve, reject}, metadata));
+          }
+        });
+      };
+    };
+    
     /**
      * Wraps an existing method of the target object, so that calls to it are
      * intercepted by the given wrapper function. The wrapper function receives,
