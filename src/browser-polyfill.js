@@ -101,8 +101,8 @@ if (typeof browser === "undefined") {
       return (...callbackArgs) => {
         const lastError = chrome.runtime.lastError;
         if (lastError) {
-          promise.reject((lastError instanceof Error) ? lastError : new Error((typeof lastError == "object" && lastError.message) ? String(lastError.message) : "An unexpected error occurred"));
-        } else if (callbackArgs.length == 1 && typeof(callbackArgs[0]) == "object" && typeof(callbackArgs[0].name) == "string" && callbackArgs[0].name == "Error" && typeof(callbackArgs[0].message == "string")) {
+          promise.reject((lastError instanceof Error) ? lastError : new Error((typeof lastError == "object" && lastError && lastError.message) ? String(lastError.message) : "An unexpected error occurred"));
+        } else if (callbackArgs.length == 1 && typeof(callbackArgs[0]) == "object" && callbackArgs[0] && typeof(callbackArgs[0].name) == "string" && callbackArgs[0].name == "Error" && typeof(callbackArgs[0].message == "string")) {
           promise.reject(new Error(callbackArgs[0].message));
         } else if (metadata.singleCallbackArg || callbackArgs.length === 1) {
           promise.resolve(callbackArgs[0]);
@@ -423,8 +423,8 @@ if (typeof browser === "undefined") {
         if (isThenable(result)) {
           result.then(sendResponse, error => {
             console.error(error);
-            sendResponse((typeof error == "object" && error instanceof Error) ? {name: "Error", message: error.message} : error);
-            // sendResponse({name: "Error", message: (typeof error == "object" && error.message) ? String(error.message) : "An unexpected error occurred"});
+            sendResponse((typeof error == "object" && error && error instanceof Error) ? {name: "Error", message: error.message} : error);
+            // sendResponse({name: "Error", message: (typeof error == "object" && error && error.message) ? String(error.message) : "An unexpected error occurred"});
           });
 
           return true;
