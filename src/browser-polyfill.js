@@ -97,6 +97,21 @@ if (typeof browser === "undefined") {
       };
     };
 
+    const makeCallbackForSendMessage = (promise, metadata) => {
+      return (...callbackArgs) => {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          promise.reject((lastError instanceof Error) ? lastError : new Error((typeof lastError == "object" && lastError && lastError.message) ? String(lastError.message) : "An unexpected error occurred"));
+        } else if (callbackArgs.length == 1 && typeof(callbackArgs[0]) == "object" && callbackArgs[0] && typeof(callbackArgs[0].name) == "string" && callbackArgs[0].name == "Error" && typeof(callbackArgs[0].message == "string")) {
+          promise.reject(new Error(callbackArgs[0].message));
+        } else if (metadata.singleCallbackArg || callbackArgs.length === 1) {
+          promise.resolve(callbackArgs[0]);
+        } else {
+          promise.resolve(callbackArgs);
+        }
+      };
+    };
+
     /**
      * Creates a wrapper function for a method with the given name and metadata.
      *
@@ -156,6 +171,48 @@ if (typeof browser === "undefined") {
             resolve();
           } else {
             target[name](...args, makeCallback({resolve, reject}, metadata));
+          }
+        });
+      };
+    };
+
+    const wrapAsyncFunctionSendMessage = (name, metadata) => {
+      const pluralizeArguments = (numArgs) => numArgs == 1 ? "argument" : "arguments";
+
+      return function asyncFunctionWrapper(target, ...args) {
+        if (args.length < metadata.minArgs) {
+          throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
+        }
+
+        if (args.length > metadata.maxArgs) {
+          throw new Error(`Expected at most ${metadata.maxArgs} ${pluralizeArguments(metadata.maxArgs)} for ${name}(), got ${args.length}`);
+        }
+
+        return new Promise((resolve, reject) => {
+          if (metadata.fallbackToNoCallback) {
+            // This API method has currently no callback on Chrome, but it return a promise on Firefox,
+            // and so the polyfill will try to call it with a callback first, and it will fallback
+            // to not passing the callback if the first call fails.
+            try {
+              target[name](...args, makeCallbackForSendMessage({resolve, reject}, metadata));
+            } catch (cbError) {
+              console.warn(`${name} API method doesn't seem to support the callback parameter, ` +
+                           "falling back to call it without a callback: ", cbError);
+
+              target[name](...args);
+
+              // Update the API method metadata, so that the next API calls will not try to
+              // use the unsupported callback anymore.
+              metadata.fallbackToNoCallback = false;
+              metadata.noCallback = true;
+
+              resolve();
+            }
+          } else if (metadata.noCallback) {
+            target[name](...args);
+            resolve();
+          } else {
+            target[name](...args, makeCallbackForSendMessage({resolve, reject}, metadata));
           }
         });
       };
@@ -366,7 +423,8 @@ if (typeof browser === "undefined") {
         if (isThenable(result)) {
           result.then(sendResponse, error => {
             console.error(error);
-            sendResponse(error);
+            sendResponse((typeof error == "object" && error && error instanceof Error) ? {name: "Error", message: error.message} : error);
+            // sendResponse({name: "Error", message: (typeof error == "object" && error && error.message) ? String(error.message) : "An unexpected error occurred"});
           });
 
           return true;
@@ -379,6 +437,11 @@ if (typeof browser === "undefined") {
     const staticWrappers = {
       runtime: {
         onMessage: wrapEvent(onMessageWrappers),
+        onMessageExternal: wrapEvent(onMessageWrappers),
+        sendMessage: wrapAsyncFunctionSendMessage("sendMessage", {"minArgs": 1, "maxArgs": 3}),
+      },
+      tabs: {
+        sendMessage: wrapAsyncFunctionSendMessage("sendMessage", {"minArgs": 2, "maxArgs": 3}),
       },
     };
 
