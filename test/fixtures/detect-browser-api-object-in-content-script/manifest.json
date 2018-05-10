@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "test-detect-browser-api-object-in-content-script",
+  "version": "0.1",
+  "description": "test-detect-browser-api-object-in-content-script",
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*"
+      ],
+      "js": [
+        "browser-polyfill.js",
+        "tape.js",
+        "content.js"
+      ]
+    }
+  ],
+  "permissions": []
+}

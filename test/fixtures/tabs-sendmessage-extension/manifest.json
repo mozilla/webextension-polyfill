@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "test-extension-runtime-messaging",
+  "name": "test-tabs-sendmessage",
   "version": "0.1",
-  "description": "test-extension-runtime-messaging",
+  "description": "test-tabs-sendmessage",
   "content_scripts": [
     {
       "matches": [
@@ -21,8 +21,5 @@
       "browser-polyfill.js",
       "background.js"
     ]
-  },
-  "page_action": {
-    "default_title": "a page action"
   }
 }
