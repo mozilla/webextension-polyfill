@@ -22,9 +22,13 @@
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "babel-preset-babili": "^0.0.10",
     "babel-preset-es2017": "^6.24.1",
+    "browserify": "^16.2.2",
     "chai": "^3.5.0",
+    "chromedriver": "^2.38.3",
     "eslint": "^3.9.1",
     "finalhandler": "^1.1.0",
+    "geckodriver": "^1.11.0",
+    "global-replaceify": "^1.0.0",
     "grunt": "^1.0.1",
     "grunt-babel": "^6.0.0",
     "grunt-contrib-concat": "^1.0.1",
@@ -35,9 +39,13 @@
     "jsdom": "^9.6.0",
     "mocha": "^3.1.0",
     "nyc": "^8.3.1",
-    "puppeteer": "^0.10.2",
+    "selenium-webdriver": "^4.0.0-alpha.1",
     "serve-static": "^1.13.1",
-    "sinon": "^1.17.6"
+    "shelljs": "^0.8.2",
+    "sinon": "^1.17.6",
+    "tap-nirvana": "^1.0.8",
+    "tape-async": "^2.3.0",
+    "tmp": "0.0.33"
   },
   "nyc": {
     "reporter": [
@@ -54,6 +62,6 @@
     "test": "mocha",
     "test-coverage": "COVERAGE=y nyc mocha",
     "test-minified": "TEST_MINIFIED_POLYFILL=1 mocha",
-    "test-integration": "mocha -r test/mocha-babel test/integration/test-*"
+    "test-integration": "tape test/integration/test-*"
   }
 }

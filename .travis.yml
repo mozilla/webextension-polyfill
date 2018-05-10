@@ -2,7 +2,8 @@ language: node_js
 sudo: false
 node_js:
 ## Some of the ES6 syntax used in the browser-polyfill sources is only supported on nodejs >= 6
-- '6'
+## and the selenium-webdriver dependency used by the integration tests requires nodejs >= 8.
+- '8'
 
 script:
 - npm run build
@@ -14,7 +15,14 @@ script:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
 - echo "RUN integration tests on chrome" &&
-  TRAVIS_CI=true ./test/run-chrome-smoketests.sh
+  TRAVIS_CI=true ./test/run-browsers-smoketests.sh
+
+## See https://docs.travis-ci.com/user/chrome
+sudo: required
+
+addons:
+  firefox: 'latest'
+  chrome: 'stable'
 
 after_script: npm run publish-coverage
 
