@@ -6,13 +6,61 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-if (typeof browser === "undefined") {
+/**
+ * Returns true if the given object is defined and has an entry with
+ * the name `key` and the value of object[key] isn’t undefined.
+ *
+ * @param {*} object The object to test.
+ * @param {*} key The entry to test for.
+ * @returns {boolean} True if the value for obj[key] is defined.
+ */
+const isDefined = (object, key) => {
+  if (typeof object !== "object" || object === null) {
+    return false;
+  }
+  return key in object && typeof object[key] !== "undefined";
+};
+
+/**
+ * Returns true if the given object is an object with a `then` method, and can
+ * therefore be assumed to behave as a Promise.
+ *
+ * @param {*} value The value to test.
+ * @returns {boolean} True if the value is thenable.
+ */
+const isThenable = value => {
+  return value && typeof value === "object" && typeof value.then === "function";
+};
+
+if (!isDefined(window, "browser") || !(() => {
+  // If `browser.runtime.lastError` doesn’t exist, assume promies are supported.
+  let supportsPromises = !(isDefined(window.browser, "runtime")
+    ? isDefined(window.browser.runtime, "lastError")
+    : isDefined(window.browser, "extension")
+    && isDefined(window.browser.extension, "lastError"));
+  if (supportsPromises) {
+    return true;
+  }
+  if (!supportsPromises) {
+    try {
+      supportsPromises |= isThenable(window.browser.runtime.getPlatformInfo());
+    } catch (e) {
+      try {
+        // Microsoft Edge doesn’t support `browser.runtime.getPlatformInfo()`
+        supportsPromises |= isThenable(window.browser.windows.get(browser.windows.WINDOW_ID_CURRENT));
+      } catch (e2) {
+        // Do nothing.
+      }
+    }
+  }
+  return supportsPromises;
+})()) {
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
   // contents of a function until the first time it's called, and since it will
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
-  const wrapAPIs = () => {
+  const wrapAPIs = chrome => {
     // NOTE: apiMetadata is associated to the content of the api-metadata.json file
     // at build time by replacing the following "include" with the content of the
     // JSON file.
@@ -46,17 +94,6 @@ if (typeof browser === "undefined") {
         return super.get(key);
       }
     }
-
-    /**
-     * Returns true if the given object is an object with a `then` method, and can
-     * therefore be assumed to behave as a Promise.
-     *
-     * @param {*} value The value to test.
-     * @returns {boolean} True if the value is thenable.
-     */
-    const isThenable = value => {
-      return value && typeof value === "object" && typeof value.then === "function";
-    };
 
     /**
      * Creates and returns a function which, when called, will resolve or reject
@@ -387,7 +424,7 @@ if (typeof browser === "undefined") {
 
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
-  module.exports = wrapAPIs(); // eslint-disable-line no-undef
+  module.exports = wrapAPIs(window.browser || window.chrome); // eslint-disable-line no-undef
 } else {
-  module.exports = browser; // eslint-disable-line no-undef
+  module.exports = window.browser; // eslint-disable-line no-undef
 }

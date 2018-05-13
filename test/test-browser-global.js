@@ -1,6 +1,6 @@
 "use strict";
 
-const {deepEqual, equal, ok} = require("chai").assert;
+const {deepEqual, equal, notEqual, ok} = require("chai").assert;
 
 const {setupTestDOMWindow} = require("./setup");
 
@@ -12,7 +12,7 @@ describe("browser-polyfill", () => {
     });
   });
 
-  it("does not override the global browser namespace if it already exists", () => {
+  it("does not override the global browser namespace if it already exists and supports promises", () => {
     const fakeChrome = {
       runtime: {lastError: null},
     };
@@ -23,6 +23,38 @@ describe("browser-polyfill", () => {
     return setupTestDOMWindow(fakeChrome, fakeBrowser).then(window => {
       deepEqual(window.browser, fakeBrowser,
                 "The existing browser has not been wrapped");
+    });
+  });
+
+  it("wraps the global browser namespace if it doesn’t support promises", () => {
+    const fakePlatformInfo = {
+      os: "test",
+      arch: "test",
+    };
+
+    const fakeBrowser = {
+      runtime: {
+        lastError: null,
+        getPlatformInfo: (cb) => {
+          if (typeof cb !== "function") {
+            throw new Error(cb + " is not a callback");
+          }
+          cb(fakePlatformInfo);
+        },
+      },
+    };
+
+    return setupTestDOMWindow(undefined, fakeBrowser).then(window => {
+      console.log(window.browser.runtime.getPlatformInfo());
+      notEqual(window.browser, fakeBrowser,
+               "The existing browser has been wrapped");
+      return Promise.all([
+        window,
+        window.browser.runtime.getPlatformInfo(),
+      ]);
+    }).then(([window, platformInfo]) => {
+      deepEqual(platformInfo, fakePlatformInfo,
+                "The wrapped browser returns the expected value");
     });
   });
 
