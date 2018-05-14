@@ -40,8 +40,12 @@ describe("browser.runtime.onMessage/sendMessage", function() {
 
     const expectedConsoleMessages = [
       [extensionName, "content script loaded"],
-      [extensionName, "content script message sent"],
-      [extensionName, "content script received reply", {"reply": "background page reply"}],
+      [extensionName, "test - returned resolved Promise - received", "bg page reply 1"],
+      [extensionName, "test - returned value - received", "second listener reply"],
+      [extensionName, "test - synchronous sendResponse - received", "bg page reply 3"],
+      [extensionName, "test - asynchronous sendResponse - received", "bg page reply 4"],
+      [extensionName, "test - second listener sendResponse - received", "second listener reply"],
+      [extensionName, "content script messages sent"],
     ];
 
     const lastExpectedMessage = expectedConsoleMessages.slice(-1).pop();

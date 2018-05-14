@@ -361,18 +361,51 @@ if (typeof browser === "undefined") {
        *        yield a response. False otherwise.
        */
       return function onMessage(message, sender, sendResponse) {
-        let result = listener(message, sender);
+        let didCallSendResponse = false;
 
-        if (isThenable(result)) {
+        let wrappedSendResponse;
+        let sendResponsePromise = new Promise(resolve => {
+          wrappedSendResponse = function(response) {
+            didCallSendResponse = true;
+            resolve(response);
+          };
+        });
+
+        let result = listener(message, sender, wrappedSendResponse);
+
+        const isResultThenable = result !== true && isThenable(result);
+
+        // If the listener didn't returned true or a Promise, or called
+        // wrappedSendResponse synchronously, we can exit earlier
+        // because there will be no response sent from this listener.
+        if (result !== true && !isResultThenable && !didCallSendResponse) {
+          return false;
+        }
+
+        // If the listener returned a Promise, send the resolved value as a
+        // result, otherwise wait the promise related to the wrappedSendResponse
+        // callback to resolve and send it as a response.
+        if (isResultThenable) {
           result.then(sendResponse, error => {
             console.error(error);
-            sendResponse(error);
+            // TODO: the error object is not serializable and so for now we just send
+            // `undefined`. Nevertheless, as being discussed in #97, this is not yet
+            // providing the expected behavior (the promise received from the sender should
+            // be rejected when the promise returned by the listener is being rejected).
+            sendResponse(undefined);
           });
-
-          return true;
-        } else if (result !== undefined) {
-          sendResponse(result);
+        } else {
+          sendResponsePromise.then(sendResponse, error => {
+            console.error(error);
+            // TODO: same as above, we are currently sending `undefined` in this scenario
+            // because the error oject is not serializable, but it is not yet the behavior
+            // that this scenario should present.
+            sendResponse(undefined);
+          });
         }
+
+        // Let Chrome know that the listener is replying.
+        return true;
       };
     });
 
