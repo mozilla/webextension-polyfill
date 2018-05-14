@@ -33,6 +33,12 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       // a reply from the second listener.
       return false;
 
+    case "test - sendMessage with returned rejected Promise with Error value":
+      return Promise.reject(new Error("rejected-error-value"));
+
+    case "test - sendMessage with returned rejected Promise with non-Error value":
+      return Promise.reject("rejected-non-error-value");
+
     default:
       return Promise.resolve(
         `Unxpected message received by the background page: ${JSON.stringify(msg)}\n`);
