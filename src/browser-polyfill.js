@@ -104,6 +104,8 @@ if (typeof browser === "undefined") {
       };
     };
 
+    const pluralizeArguments = (numArgs) => numArgs == 1 ? "argument" : "arguments";
+
     /**
      * Creates a wrapper function for a method with the given name and metadata.
      *
@@ -127,8 +129,6 @@ if (typeof browser === "undefined") {
      *       The generated wrapper function.
      */
     const wrapAsyncFunction = (name, metadata) => {
-      const pluralizeArguments = (numArgs) => numArgs == 1 ? "argument" : "arguments";
-
       return function asyncFunctionWrapper(target, ...args) {
         if (args.length < metadata.minArgs) {
           throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
@@ -385,7 +385,12 @@ if (typeof browser === "undefined") {
           };
         });
 
-        let result = listener(message, sender, wrappedSendResponse);
+        let result;
+        try {
+          result = listener(message, sender, wrappedSendResponse);
+        } catch (err) {
+          result = Promise.reject(err);
+        }
 
         const isResultThenable = result !== true && isThenable(result);
 
@@ -396,26 +401,42 @@ if (typeof browser === "undefined") {
           return false;
         }
 
+        // A small helper to send the message if the promise resolves
+        // and an error if the promise rejects (a wrapped sendMessage has
+        // to translate the message into a resolved promise or a rejected
+        // promise).
+        const sendPromisedResult = (promise) => {
+          promise.then(msg => {
+            // send the message value.
+            sendResponse(msg);
+          }, error => {
+            // Send a JSON representation of the error if the rejected value
+            // is an instance of error, or the object itself otherwise.
+            let message;
+            if (error && (error instanceof Error ||
+                typeof error.message === "string")) {
+              message = error.message;
+            } else {
+              message = "An unexpected error occurred";
+            }
+
+            sendResponse({
+              __mozWebExtensionPolyfillReject__: true,
+              message,
+            });
+          }).catch(err => {
+            // Print an error on the console if unable to send the response.
+            console.error("Failed to send onMessage rejected reply", err);
+          });
+        };
+
         // If the listener returned a Promise, send the resolved value as a
         // result, otherwise wait the promise related to the wrappedSendResponse
         // callback to resolve and send it as a response.
         if (isResultThenable) {
-          result.then(sendResponse, error => {
-            console.error(error);
-            // TODO: the error object is not serializable and so for now we just send
-            // `undefined`. Nevertheless, as being discussed in #97, this is not yet
-            // providing the expected behavior (the promise received from the sender should
-            // be rejected when the promise returned by the listener is being rejected).
-            sendResponse(undefined);
-          });
+          sendPromisedResult(result);
         } else {
-          sendResponsePromise.then(sendResponse, error => {
-            console.error(error);
-            // TODO: same as above, we are currently sending `undefined` in this scenario
-            // because the error oject is not serializable, but it is not yet the behavior
-            // that this scenario should present.
-            sendResponse(undefined);
-          });
+          sendPromisedResult(sendResponsePromise);
         }
 
         // Let Chrome know that the listener is replying.
@@ -423,9 +444,42 @@ if (typeof browser === "undefined") {
       };
     });
 
+    const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
+        // Convert back the JSON representation of the error into
+        // an Error instance.
+        reject(new Error(reply.message));
+      } else {
+        resolve(reply);
+      }
+    };
+
+    const wrappedSendMessage = (name, metadata, apiNamespaceObj, ...args) => {
+      if (args.length < metadata.minArgs) {
+        throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
+      }
+
+      if (args.length > metadata.maxArgs) {
+        throw new Error(`Expected at most ${metadata.maxArgs} ${pluralizeArguments(metadata.maxArgs)} for ${name}(), got ${args.length}`);
+      }
+
+      return new Promise((resolve, reject) => {
+        const wrappedCb = wrappedSendMessageCallback.bind(null, {resolve, reject});
+        args.push(wrappedCb);
+        apiNamespaceObj.sendMessage(...args);
+      });
+    };
+
     const staticWrappers = {
       runtime: {
         onMessage: wrapEvent(onMessageWrappers),
+        onMessageExternal: wrapEvent(onMessageWrappers),
+        sendMessage: wrappedSendMessage.bind(null, "sendMessage", {minArgs: 1, maxArgs: 3}),
+      },
+      tabs: {
+        sendMessage: wrappedSendMessage.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
       },
     };
 
