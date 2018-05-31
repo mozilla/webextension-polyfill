@@ -16,6 +16,8 @@ Table of contents
 * [Using the Promise-based APIs](#using-the-promise-based-apis)
 * [Examples](#examples)
 
+---
+
 ## Building
 
 To build, assuming you're already installed [node >= 6](https://nodejs.org) and
@@ -30,6 +32,8 @@ npm run test
 This will install all the npm dependencies and build both non-minified and minified versions
 of the final library, and output them to `dist/browser-polyfill.js` and `dist/browser-polyfill.min.js`,
 respectively, and finally executes the unit tests on the generated dist files.
+
+---
 
 ## Basic Setup
 
@@ -84,6 +88,8 @@ browser.tabs.executeScript({file: "content.js"}).then(result => {
 });
 ```
 
+---
+
 ## Using the Promise-based APIs
 
 The Promise-based APIs in the `browser` namespace work, for the most part,
@@ -106,6 +112,8 @@ The major differences are:
 
 * The resulting Promises can be also used with `async` and `await`, rather
   than dealt with directly.
+
+---
 
 ## Examples
 
