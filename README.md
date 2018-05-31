@@ -11,10 +11,15 @@ Chrome.
 Table of contents
 =================
 
+* [Installing](#install)
 * [Building](#building)
 * [Basic Setup](#basic-setup)
 * [Using the Promise-based APIs](#using-the-promise-based-apis)
 * [Examples](#examples)
+
+## Installing
+
+Install the ready package from https://unpkg.com/webextension-polyfill
 
 ## Building
 
