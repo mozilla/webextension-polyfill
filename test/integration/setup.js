@@ -13,11 +13,27 @@ const test = require("tape-async");
 const tmp = require("tmp");
 const {cp} = require("shelljs");
 
+const args = require("yargs")
+  .option("browser", {
+    alias: "b",
+    description: "The browser to use",
+    type: "string",
+  })
+  .option("headless", {
+    alias: "hl",
+    description: "If the browser should be launched in headless mode",
+    type: "boolean",
+  })
+  .alias("help", ["h", "?"])
+  .alias("version", "v")
+  .argv;
+
 const TEST_TIMEOUT = 5000;
 
 const launchBrowser = async (launchOptions) => {
-  const browser = launchOptions.browser || process.env.TEST_BROWSER_TYPE;
+  const browser = launchOptions.browser || args.browser || process.env.TEST_BROWSER_TYPE;
   const extensionPath = launchOptions.extensionPath;
+  const headless = args.headless || (process.env.HEADLESS === "1");
 
   let driver;
 
@@ -25,7 +41,7 @@ const launchBrowser = async (launchOptions) => {
     const chrome = require("selenium-webdriver/chrome");
     const chromedriver = require("chromedriver");
 
-    if (process.env.HEADLESS === "1") {
+    if (headless) {
       console.warn("WARN: Chrome doesn't currently support extensions in headless mode. " +
                    "Falling back to non-headless mode");
     }
@@ -56,7 +72,7 @@ const launchBrowser = async (launchOptions) => {
 
     const options = new firefox.Options();
 
-    if (process.env.HEADLESS === "1") {
+    if (headless) {
       options.headless();
     }
 
@@ -74,7 +90,8 @@ const launchBrowser = async (launchOptions) => {
   } else {
     const errorHelpMsg = (
       "Set a supported browser (firefox or chrome) " +
-      "using the TEST_BROWSER_TYPE environment var.");
+      "using the TEST_BROWSER_TYPE environment var " +
+      "or the --browser command line parameter.");
     throw new Error(`Target browser not supported yet: ${browser}. ${errorHelpMsg}`);
   }
 

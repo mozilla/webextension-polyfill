@@ -45,7 +45,8 @@
     "sinon": "^1.17.6",
     "tap-nirvana": "^1.0.8",
     "tape-async": "^2.3.0",
-    "tmp": "0.0.33"
+    "tmp": "0.0.33",
+    "yargs": "^11.1.0"
   },
   "nyc": {
     "reporter": [
