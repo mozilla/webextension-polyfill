@@ -99,6 +99,8 @@ module.exports = function(grunt) {
     },
   });
 
+  grunt.util.linefeed = "\n";
+
   grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-replace");
   grunt.loadNpmTasks("grunt-coveralls");
