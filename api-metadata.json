@@ -93,6 +93,48 @@
       "maxArgs": 1
     }
   },
+  "browsingData": {
+    "remove": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "removeCache": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeCookies": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeDownloads": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeFormData": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeHistory": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeLocalStorage": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removePasswords": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removePluginData": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "settings": {
+      "minArgs": 0,
+      "maxArgs": 0
+    }
+  },
   "commands": {
     "getAll": {
       "minArgs": 0,
