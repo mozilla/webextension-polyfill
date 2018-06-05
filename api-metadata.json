@@ -126,10 +126,6 @@
     }
   },
   "contextMenus": {
-    "update": {
-      "minArgs": 2,
-      "maxArgs": 2
-    },
     "remove": {
       "minArgs": 1,
       "maxArgs": 1
@@ -137,6 +133,10 @@
     "removeAll": {
       "minArgs": 0,
       "maxArgs": 0
+    },
+    "update": {
+      "minArgs": 2,
+      "maxArgs": 2
     }
   },
   "cookies": {
