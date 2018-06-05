@@ -533,6 +533,10 @@
       "minArgs": 0,
       "maxArgs": 1
     },
+    "discard": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
     "duplicate": {
       "minArgs": 1,
       "maxArgs": 1
