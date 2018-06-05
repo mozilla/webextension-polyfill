@@ -447,13 +447,13 @@
     }
   },
   "tabs": {
-    "create": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
     "captureVisibleTab": {
       "minArgs": 0,
       "maxArgs": 2
+    },
+    "create": {
+      "minArgs": 1,
+      "maxArgs": 1
     },
     "detectLanguage": {
       "minArgs": 0,
@@ -495,15 +495,15 @@
       "minArgs": 2,
       "maxArgs": 2
     },
+    "query": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
     "reload": {
       "minArgs": 0,
       "maxArgs": 2
     },
     "remove": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "query": {
       "minArgs": 1,
       "maxArgs": 1
     },
