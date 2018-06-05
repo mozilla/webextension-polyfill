@@ -22,10 +22,6 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "export": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
     "get": {
       "minArgs": 1,
       "maxArgs": 1
@@ -38,15 +34,11 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "getTree": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
     "getSubTree": {
       "minArgs": 1,
       "maxArgs": 1
     },
-    "import": {
+    "getTree": {
       "minArgs": 0,
       "maxArgs": 0
     },
