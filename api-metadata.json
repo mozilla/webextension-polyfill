@@ -235,10 +235,6 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "getVisits": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
     "deleteAll": {
       "minArgs": 0,
       "maxArgs": 0
@@ -248,6 +244,10 @@
       "maxArgs": 1
     },
     "deleteUrl": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "getVisits": {
       "minArgs": 1,
       "maxArgs": 1
     },
