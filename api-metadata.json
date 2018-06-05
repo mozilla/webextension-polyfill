@@ -422,6 +422,20 @@
       "maxArgs": 1
     }
   },
+  "sessions": {
+    "getDevices": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
+    "getRecentlyClosed": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
+    "restore": {
+      "minArgs": 0,
+      "maxArgs": 1
+    }
+  },
   "storage": {
     "local": {
       "clear": {
