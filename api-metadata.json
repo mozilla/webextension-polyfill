@@ -64,6 +64,16 @@
     }
   },
   "browserAction": {
+    "disable": {
+      "minArgs": 0,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
+    "enable": {
+      "minArgs": 0,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
     "getBadgeBackgroundColor": {
       "minArgs": 1,
       "maxArgs": 1
@@ -80,9 +90,33 @@
       "minArgs": 1,
       "maxArgs": 1
     },
+    "openPopup": {
+      "minArgs": 0,
+      "maxArgs": 0
+    },
+    "setBadgeBackgroundColor": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
+    "setBadgeText": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
     "setIcon": {
       "minArgs": 1,
       "maxArgs": 1
+    },
+    "setPopup": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
+    "setTitle": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     }
   },
   "browsingData": {
