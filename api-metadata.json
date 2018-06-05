@@ -177,11 +177,11 @@
     }
   },
   "downloads": {
-    "download": {
+    "cancel": {
       "minArgs": 1,
       "maxArgs": 1
     },
-    "cancel": {
+    "download": {
       "minArgs": 1,
       "maxArgs": 1
     },
@@ -195,7 +195,8 @@
     },
     "open": {
       "minArgs": 1,
-      "maxArgs": 1
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     },
     "pause": {
       "minArgs": 1,
@@ -215,7 +216,8 @@
     },
     "show": {
       "minArgs": 1,
-      "maxArgs": 1
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     }
   },
   "extension": {
