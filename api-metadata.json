@@ -327,19 +327,9 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "setPopup": {
-      "minArgs": 1,
-      "maxArgs": 1,
-      "fallbackToNoCallback": true
-    },
     "getTitle": {
       "minArgs": 1,
       "maxArgs": 1
-    },
-    "setTitle": {
-      "minArgs": 1,
-      "maxArgs": 1,
-      "fallbackToNoCallback": true
     },
     "hide": {
       "minArgs": 1,
@@ -350,9 +340,15 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "getIcon": {
+    "setPopup": {
       "minArgs": 1,
-      "maxArgs": 1
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
+    "setTitle": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     },
     "show": {
       "minArgs": 1,
