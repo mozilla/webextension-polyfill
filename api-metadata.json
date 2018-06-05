@@ -291,6 +291,10 @@
       "minArgs": 0,
       "maxArgs": 0
     },
+    "setEnabled": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
     "uninstallSelf": {
       "minArgs": 0,
       "maxArgs": 1
