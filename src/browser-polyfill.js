@@ -15,6 +15,9 @@
  * @returns {boolean} True if the value for obj[key] is defined.
  */
 const isDefined = (object, key) => {
+  if (object === window && window !== this) {
+    object = this;
+  }
   if (typeof object !== "object" || object === null) {
     return false;
   }
@@ -525,7 +528,7 @@ if (!isDefined(window, "browser") || !(() => {
 
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
-  module.exports = wrapAPIs(window.browser || window.chrome); // eslint-disable-line no-undef
+  module.exports = wrapAPIs(browser || chrome); // eslint-disable-line no-undef
 } else {
-  module.exports = window.browser; // eslint-disable-line no-undef
+  module.exports = browser; // eslint-disable-line no-undef
 }
