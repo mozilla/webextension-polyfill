@@ -22,10 +22,6 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "export": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
     "get": {
       "minArgs": 1,
       "maxArgs": 1
@@ -38,15 +34,11 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "getTree": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
     "getSubTree": {
       "minArgs": 1,
       "maxArgs": 1
     },
-    "import": {
+    "getTree": {
       "minArgs": 0,
       "maxArgs": 0
     },
@@ -72,6 +64,16 @@
     }
   },
   "browserAction": {
+    "disable": {
+      "minArgs": 0,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
+    "enable": {
+      "minArgs": 0,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
     "getBadgeBackgroundColor": {
       "minArgs": 1,
       "maxArgs": 1
@@ -88,9 +90,75 @@
       "minArgs": 1,
       "maxArgs": 1
     },
+    "openPopup": {
+      "minArgs": 0,
+      "maxArgs": 0
+    },
+    "setBadgeBackgroundColor": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
+    "setBadgeText": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
     "setIcon": {
       "minArgs": 1,
       "maxArgs": 1
+    },
+    "setPopup": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
+    "setTitle": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    }
+  },
+  "browsingData": {
+    "remove": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "removeCache": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeCookies": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeDownloads": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeFormData": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeHistory": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeLocalStorage": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removePasswords": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removePluginData": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "settings": {
+      "minArgs": 0,
+      "maxArgs": 0
     }
   },
   "commands": {
@@ -100,10 +168,6 @@
     }
   },
   "contextMenus": {
-    "update": {
-      "minArgs": 2,
-      "maxArgs": 2
-    },
     "remove": {
       "minArgs": 1,
       "maxArgs": 1
@@ -111,6 +175,10 @@
     "removeAll": {
       "minArgs": 0,
       "maxArgs": 0
+    },
+    "update": {
+      "minArgs": 2,
+      "maxArgs": 2
     }
   },
   "cookies": {
@@ -151,11 +219,11 @@
     }
   },
   "downloads": {
-    "download": {
+    "cancel": {
       "minArgs": 1,
       "maxArgs": 1
     },
-    "cancel": {
+    "download": {
       "minArgs": 1,
       "maxArgs": 1
     },
@@ -169,7 +237,8 @@
     },
     "open": {
       "minArgs": 1,
-      "maxArgs": 1
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     },
     "pause": {
       "minArgs": 1,
@@ -189,7 +258,8 @@
     },
     "show": {
       "minArgs": 1,
-      "maxArgs": 1
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     }
   },
   "extension": {
@@ -207,10 +277,6 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "getVisits": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
     "deleteAll": {
       "minArgs": 0,
       "maxArgs": 0
@@ -220,6 +286,10 @@
       "maxArgs": 1
     },
     "deleteUrl": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "getVisits": {
       "minArgs": 1,
       "maxArgs": 1
     },
@@ -263,6 +333,10 @@
       "minArgs": 0,
       "maxArgs": 0
     },
+    "setEnabled": {
+      "minArgs": 2,
+      "maxArgs": 2
+    },
     "uninstallSelf": {
       "minArgs": 0,
       "maxArgs": 1
@@ -295,19 +369,9 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "setPopup": {
-      "minArgs": 1,
-      "maxArgs": 1,
-      "fallbackToNoCallback": true
-    },
     "getTitle": {
       "minArgs": 1,
       "maxArgs": 1
-    },
-    "setTitle": {
-      "minArgs": 1,
-      "maxArgs": 1,
-      "fallbackToNoCallback": true
     },
     "hide": {
       "minArgs": 1,
@@ -318,14 +382,38 @@
       "minArgs": 1,
       "maxArgs": 1
     },
-    "getIcon": {
+    "setPopup": {
       "minArgs": 1,
-      "maxArgs": 1
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
+    },
+    "setTitle": {
+      "minArgs": 1,
+      "maxArgs": 1,
+      "fallbackToNoCallback": true
     },
     "show": {
       "minArgs": 1,
       "maxArgs": 1,
       "fallbackToNoCallback": true
+    }
+  },
+  "permissions": {
+    "contains": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "getAll": {
+      "minArgs": 0,
+      "maxArgs": 0
+    },
+    "remove": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "request": {
+      "minArgs": 1,
+      "maxArgs": 1
     }
   },
   "runtime": {
@@ -359,6 +447,20 @@
     },
     "setUninstallURL": {
       "minArgs": 1,
+      "maxArgs": 1
+    }
+  },
+  "sessions": {
+    "getDevices": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
+    "getRecentlyClosed": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
+    "restore": {
+      "minArgs": 0,
       "maxArgs": 1
     }
   },
@@ -419,15 +521,19 @@
     }
   },
   "tabs": {
-    "create": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
     "captureVisibleTab": {
       "minArgs": 0,
       "maxArgs": 2
     },
+    "create": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
     "detectLanguage": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
+    "discard": {
       "minArgs": 0,
       "maxArgs": 1
     },
@@ -467,15 +573,15 @@
       "minArgs": 2,
       "maxArgs": 2
     },
+    "query": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
     "reload": {
       "minArgs": 0,
       "maxArgs": 2
     },
     "remove": {
-      "minArgs": 1,
-      "maxArgs": 1
-    },
-    "query": {
       "minArgs": 1,
       "maxArgs": 1
     },
@@ -498,6 +604,12 @@
     "update": {
       "minArgs": 1,
       "maxArgs": 2
+    }
+  },
+  "topSites": {
+    "get": {
+      "minArgs": 0,
+      "maxArgs": 0
     }
   },
   "webNavigation": {
