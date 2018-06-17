@@ -35,7 +35,7 @@ const isThenable = value => {
   return value && typeof value === "object" && typeof value.then === "function";
 };
 
-if (!isDefined(window, "browser") || !(() => {
+if (typeof browser === "undefined" || !(() => {
   // If `browser.runtime.lastError` doesn’t exist, assume promies are supported.
   let supportsPromises = !(isDefined(window.browser, "runtime")
     ? isDefined(window.browser.runtime, "lastError")
@@ -528,7 +528,7 @@ if (!isDefined(window, "browser") || !(() => {
 
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
-  module.exports = wrapAPIs(browser || chrome); // eslint-disable-line no-undef
+  module.exports = wrapAPIs(typeof browser !== "undefined" ? browser : chrome); // eslint-disable-line no-undef
 } else {
   module.exports = browser; // eslint-disable-line no-undef
 }
