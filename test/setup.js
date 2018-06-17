@@ -45,8 +45,7 @@ function setupTestDOMWindow(chromeObject, browserObject = undefined) {
     if (browserObject) {
       window.browser = browserObject;
     } else {
-      // TODO: change into `delete window.browser` once tmpvar/jsdom#1622 has been fixed.
-      window.browser = undefined;
+      delete window.browser;
     }
 
     const scriptEl = window.document.createElement("script");
