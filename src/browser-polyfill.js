@@ -36,14 +36,11 @@ const supportsPromises = () => {
   }
   try {
     return isThenable(browser.runtime.getPlatformInfo());
-  } catch (error) {
-    // Microsoft Edge doesn’t support `browser.runtime.getPlatformInfo()`
-    try {
-      return isThenable(browser.windows.get(browser.windows.WINDOW_ID_CURRENT));
-    } catch (error) {
-      // This comment needs to be here to make eslint shut up.
-    }
-  }
+  } catch (error) {/* silence ESLint */}
+  // Microsoft Edge doesn’t support `browser.runtime.getPlatformInfo()`
+  try {
+    return isThenable(browser.windows.get(browser.windows.WINDOW_ID_CURRENT));
+  } catch (error) {/* silence ESLint */}
   return false;
 };
 
