@@ -7,24 +7,6 @@
 "use strict";
 
 /**
- * Returns true if the given object is defined and has an entry with
- * the name `key` and the value of object[key] isn’t undefined.
- *
- * @param {*} object The object to test.
- * @param {*} key The entry to test for.
- * @returns {boolean} True if the value for obj[key] is defined.
- */
-const isDefined = (object, key) => {
-  if (object === window && window !== this) {
-    object = this;
-  }
-  if (typeof object !== "object" || object === null) {
-    return false;
-  }
-  return key in object && typeof object[key] !== "undefined";
-};
-
-/**
  * Returns true if the given object is an object with a `then` method, and can
  * therefore be assumed to behave as a Promise.
  *
@@ -35,29 +17,37 @@ const isThenable = value => {
   return value && typeof value === "object" && typeof value.then === "function";
 };
 
-if (typeof browser === "undefined" || !(() => {
-  // If `browser.runtime.lastError` doesn’t exist, assume promies are supported.
-  let supportsPromises = !(isDefined(window.browser, "runtime")
-    ? isDefined(window.browser.runtime, "lastError")
-    : isDefined(window.browser, "extension")
-    && isDefined(window.browser.extension, "lastError"));
-  if (supportsPromises) {
+/**
+ * Checks if the current browser supports
+ * the Promise-based WebExtension APIs.
+ *
+ * @returns {boolean} True if yes.
+ */
+const supportsPromises = () => {
+  if (typeof browser === "undefined") {
+    return false;
+  }
+  // If `browser.runtime.lastError` doesn’t exist, assume promises are supported.
+  if (browser.runtime && typeof browser.runtime.lastError === "undefined") {
     return true;
   }
-  if (!supportsPromises) {
+  if (browser.extension && typeof browser.extension.lastError === "undefined") {
+    return true;
+  }
+  try {
+    return isThenable(browser.runtime.getPlatformInfo());
+  } catch (error) {
+    // Microsoft Edge doesn’t support `browser.runtime.getPlatformInfo()`
     try {
-      supportsPromises |= isThenable(window.browser.runtime.getPlatformInfo());
-    } catch (e) {
-      try {
-        // Microsoft Edge doesn’t support `browser.runtime.getPlatformInfo()`
-        supportsPromises |= isThenable(window.browser.windows.get(browser.windows.WINDOW_ID_CURRENT));
-      } catch (e2) {
-        // Do nothing.
-      }
+      return isThenable(browser.windows.get(browser.windows.WINDOW_ID_CURRENT));
+    } catch (error) {
+      // This comment needs to be here to make eslint shut up.
     }
   }
-  return supportsPromises;
-})()) {
+  return false;
+};
+
+if (!supportsPromises()) {
   const SEND_RESPONSE_DEPRECATION_WARNING = `
       Returning a Promise is the preferred way to send a reply from an
       onMessage/onMessageExternal listener, as the sendResponse will be
