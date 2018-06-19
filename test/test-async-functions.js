@@ -12,6 +12,7 @@ describe("browser-polyfill", () => {
         alarms: {clear: sinon.stub()},
         runtime: {
           lastError: null,
+          openOptionsPage: sinon.stub(),
           requestUpdateCheck: sinon.stub(),
         },
         tabs: {
@@ -31,10 +32,15 @@ describe("browser-polyfill", () => {
         fakeChrome.runtime.requestUpdateCheck
           .onFirstCall().callsArgWith(0, "res1", "res2");
 
+        // Test for no callback arguments.
+        fakeChrome.runtime.openOptionsPage
+          .onFirstCall().callsArg(0);
+
         return Promise.all([
           window.browser.alarms.clear("test1"),
           window.browser.tabs.query({active: true}),
           window.browser.runtime.requestUpdateCheck(),
+          window.browser.runtime.openOptionsPage(),
         ]);
       }).then(results => {
         equal(results[0], "res1", "Fake alarms.clear call resolved to a single value");
@@ -42,6 +48,8 @@ describe("browser-polyfill", () => {
                   "Fake tabs.query resolved to an array of values");
         deepEqual(results[2], ["res1", "res2"],
                   "Fake runtime.requestUpdateCheck resolved to an array of values");
+
+        equal(results[3], undefined, "Fake runtime.openOptionsPage resolved to a void value.");
       });
     });
 

@@ -96,7 +96,7 @@ if (typeof browser === "undefined") {
       return (...callbackArgs) => {
         if (chrome.runtime.lastError) {
           promise.reject(chrome.runtime.lastError);
-        } else if (metadata.singleCallbackArg || callbackArgs.length === 1) {
+        } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
           promise.resolve(callbackArgs[0]);
         } else {
           promise.resolve(callbackArgs);
