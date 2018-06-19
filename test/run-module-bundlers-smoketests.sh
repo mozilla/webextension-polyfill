@@ -1,4 +1,6 @@
 #!/bin/bash
+set -eo pipefail
+
 echo ""
 echo "Test webextension-polyfill bundled with webpack"
 echo "==============================================="
