@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "test-privacy",
+  "version": "0.1",
+  "description": "test-privacy",
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*"
+      ],
+      "js": [
+        "browser-polyfill.js",
+        "tape.js",
+        "content.js"
+      ]
+    }
+  ],
+  "permissions": ["privacy"],
+  "background": {
+    "scripts": [
+      "browser-polyfill.js",
+      "background.js"
+    ]
+  }
+}

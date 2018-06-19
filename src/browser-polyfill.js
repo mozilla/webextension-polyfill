@@ -490,6 +490,24 @@ if (typeof browser === "undefined") {
         sendMessage: wrappedSendMessage.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
       },
     };
+    const settingMetadata = {
+      clear: {minArgs: 1, maxArgs: 1},
+      get: {minArgs: 1, maxArgs: 1},
+      set: {minArgs: 1, maxArgs: 1},
+    };
+    apiMetadata.privacy = {
+      network: {
+        networkPredictionEnabled: settingMetadata,
+        webRTCIPHandlingPolicy: settingMetadata,
+      },
+      services: {
+        passwordSavingEnabled: settingMetadata,
+      },
+      websites: {
+        hyperlinkAuditingEnabled: settingMetadata,
+        referrersEnabled: settingMetadata,
+      },
+    };
 
     return wrapObject(chrome, staticWrappers, apiMetadata);
   };
