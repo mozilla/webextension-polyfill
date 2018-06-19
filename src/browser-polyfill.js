@@ -13,6 +13,8 @@ if (typeof browser === "undefined") {
       removed from the specs (See
       https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/runtime/onMessage)
     `.replace(/\s+/g, " ").trim();
+  const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE =
+    "The message port closed before a response was received.";
 
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
@@ -446,7 +448,23 @@ if (typeof browser === "undefined") {
 
     const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
       if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
+        // Passing a callback to `chrome.runtime.sendMessage`
+        // (`chrome.runtime.sendMessage("some_message", response => {
+        // console.log(response) })`) is a mistake if the other end does not
+        // send a response. As an extension author you know whether that's the
+        // case or not, so Chrome reports this as an error. However, in order to
+        // polyfill the Promise version
+        // (`browser.runtime.sendMessage("some_message").then(response => {
+        // console.log(response) })`) we have to *always* use the callback,
+        // because the polyfill can't know if the other end will send a response
+        // or not. This makes the error irrelevant. Ignore it and resolve with
+        // nothing instead. See:
+        // https://github.com/mozilla/webextension-polyfill/issues/130
+        if (chrome.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+          resolve();
+        } else {
+          reject(chrome.runtime.lastError);
+        }
       } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
         // Convert back the JSON representation of the error into
         // an Error instance.
