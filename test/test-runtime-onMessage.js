@@ -239,4 +239,24 @@ describe("browser-polyfill", () => {
       });
     });
   });
+
+  it("ignores a certain chrome.runtime.lastError", () => {
+    const fakeChrome = {
+      runtime: {
+        lastError: {
+          message: "The message port closed before a response was received.",
+        },
+        sendMessage: sinon.stub(),
+      },
+    };
+
+    return setupTestDOMWindow(fakeChrome).then(window => {
+      fakeChrome.runtime.sendMessage
+        .onFirstCall().callsArgWith(1, ["res1", "res2"]);
+
+      return window.browser.runtime.sendMessage("some_message").then(
+        (...args) => deepEqual(args, [undefined], "The error was ignored")
+      );
+    });
+  });
 });
