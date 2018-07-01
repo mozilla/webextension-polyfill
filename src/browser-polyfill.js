@@ -15,7 +15,7 @@ if (typeof browser === "undefined") {
   // contents of a function until the first time it's called, and since it will
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
-  const wrapAPIs = () => {
+  const wrapAPIs = extensionAPIs => {
     // NOTE: apiMetadata is associated to the content of the api-metadata.json file
     // at build time by replacing the following "include" with the content of the
     // JSON file.
@@ -90,8 +90,8 @@ if (typeof browser === "undefined") {
      */
     const makeCallback = (promise, metadata) => {
       return (...callbackArgs) => {
-        if (chrome.runtime.lastError) {
-          promise.reject(chrome.runtime.lastError);
+        if (extensionAPIs.runtime.lastError) {
+          promise.reject(extensionAPIs.runtime.lastError);
         } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
           promise.resolve(callbackArgs[0]);
         } else {
@@ -441,14 +441,14 @@ if (typeof browser === "undefined") {
     });
 
     const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
-      if (chrome.runtime.lastError) {
+      if (extensionAPIs.runtime.lastError) {
         // Detect when none of the listeners replied to the sendMessage call and resolve
         // the promise to undefined as in Firefox.
         // See https://github.com/mozilla/webextension-polyfill/issues/130
-        if (chrome.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+        if (extensionAPIs.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
           resolve();
         } else {
-          reject(chrome.runtime.lastError);
+          reject(extensionAPIs.runtime.lastError);
         }
       } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
         // Convert back the JSON representation of the error into
@@ -504,12 +504,12 @@ if (typeof browser === "undefined") {
       },
     };
 
-    return wrapObject(chrome, staticWrappers, apiMetadata);
+    return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
   };
 
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
-  module.exports = wrapAPIs(); // eslint-disable-line no-undef
+  module.exports = wrapAPIs(chrome); // eslint-disable-line no-undef
 } else {
   module.exports = browser; // eslint-disable-line no-undef
 }
