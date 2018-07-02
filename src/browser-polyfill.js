@@ -7,6 +7,7 @@
 "use strict";
 
 if (typeof browser === "undefined") {
+  const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
   const SEND_RESPONSE_DEPRECATION_WARNING = `
       Returning a Promise is the preferred way to send a reply from an
       onMessage/onMessageExternal listener, as the sendResponse will be
@@ -446,7 +447,14 @@ if (typeof browser === "undefined") {
 
     const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
       if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
+        // Detect when none of the listers replied to the sendMessage call and resolve
+        // the promise to undefined as in Firefox.
+        // See https://github.com/mozilla/webextension-polyfill/issues/130
+        if (chrome.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+          resolve();
+        } else {
+          reject(chrome.runtime.lastError);
+        }
       } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
         // Convert back the JSON representation of the error into
         // an Error instance.
