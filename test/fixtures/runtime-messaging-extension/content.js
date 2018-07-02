@@ -75,3 +75,8 @@ test("sendMessage with listener callback throws", async (t) => {
     t.equal(err.message, "listener throws", "Got an error with the expected message");
   }
 });
+
+test("sendMessage and no listener answers", async (t) => {
+  const reply = await browser.runtime.sendMessage("test - sendMessage and no listener answers");
+  t.equal(reply, undefined, "Got undefined reply as expected");
+});
