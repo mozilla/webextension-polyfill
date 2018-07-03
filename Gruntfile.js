@@ -44,6 +44,12 @@ module.exports = function(grunt) {
                 "timestamp": "<%= grunt.template.today() %>",
               },
             },
+            {
+              match: /const ([A-Z$_][A-Z0-9$_]*) = `([^`${}]*)`\.replace\(\/([^/]+)\/(\w*), "([^"]+)"\).trim\(\);/g,
+              replacement: (match, constant, text, regexp, flags, replace) => {
+                return `const ${constant} = ${JSON.stringify(text.replace(RegExp(regexp, flags), replace).trim())};`;
+              },
+            },
           ],
         },
         files: [
