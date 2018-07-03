@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mozilla/webextension-polyfill",
   "devDependencies": {
+    "@types/grunt": "^0.4.23",
     "async-wait-until": "^1.1.5",
     "babel-eslint": "^8.0.1",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",

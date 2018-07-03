@@ -3,6 +3,7 @@
 "use strict";
 
 /* eslint-env commonjs */
+const path = require("path");
 
 const LICENSE = `/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,6 +11,7 @@ const LICENSE = `/* This Source Code Form is subject to the terms of the Mozilla
 
 const MINIFIED_FILE_FOOTER = `\n\n// <%= pkg.name %> v.<%= pkg.version %> (<%= pkg.homepage %>)\n\n${LICENSE}`;
 
+/** @param {IGrunt} grunt */
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
@@ -32,6 +34,10 @@ module.exports = function(grunt) {
             {
               match: /\{\/\* include\("(.*?)"\) \*\/\}/,
               replacement: (match, filename) => {
+                if (path.extname(filename) === ".json") {
+                  let result = JSON.stringify(grunt.file.readJSON(filename), null, "");
+                  return result.replace(/"([a-zA-Z_$][a-zA-Z0-9_$]*)":/gi, "$1:");
+                }
                 return grunt.file.read(filename)
                   .replace(/\n$/, "")
                   .replace(/^[^{]/gm, "    $&");
