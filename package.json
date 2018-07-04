@@ -18,6 +18,7 @@
   "homepage": "https://github.com/mozilla/webextension-polyfill",
   "devDependencies": {
     "async-wait-until": "^1.1.5",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^8.0.1",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "babel-preset-babili": "^0.0.10",
@@ -44,6 +45,7 @@
     "shelljs": "^0.8.2",
     "sinon": "^1.17.6",
     "tap-nirvana": "^1.0.8",
+    "tape": "^4.9.1",
     "tape-async": "^2.3.0",
     "tmp": "0.0.33"
   },
