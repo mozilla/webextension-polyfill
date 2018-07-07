@@ -20,7 +20,7 @@ if (typeof browser === "undefined") {
   // contents of a function until the first time it's called, and since it will
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
-  const new_ApiProxy/*wrapAPIs*/ = (apiTarget) => {
+  const new_ApiProxy = (apiTarget) => {
     // NOTE: apiMetadata is associated to the content of the api-metadata.json file
     // at build time by replacing the following "include" with the content of the
     // JSON file.
@@ -93,10 +93,10 @@ if (typeof browser === "undefined") {
      * @returns {function}
      *        The generated callback function.
      */
-    const new_CallbackProxy/*makeCallback*/ = (promise, metadata) => {
+    const new_CallbackProxy = (promise, metadata) => {
       return (...callbackArgs) => {
-        if (apiTarget/*chrome*/.runtime.lastError) {
-          promise.reject(apiTarget/*chrome*/.runtime.lastError);
+        if (apiTarget.runtime.lastError) {
+          promise.reject(apiTarget.runtime.lastError);
         } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
           promise.resolve(callbackArgs[0]);
         } else {
@@ -129,7 +129,7 @@ if (typeof browser === "undefined") {
      * @returns {function(object, ...*)}
      *       The generated wrapper function.
      */
-    const new_FunctionWrapper/*wrapAsyncFunction*/ = (name, metadata) => {
+    const new_FunctionWrapper = (name, metadata) => {
       return function asyncFunctionWrapper(target, ...args) {
         if (args.length < metadata.minArgs) {
           throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
@@ -145,7 +145,7 @@ if (typeof browser === "undefined") {
             // and so the polyfill will try to call it with a callback first, and it will fallback
             // to not passing the callback if the first call fails.
             try {
-              target[name](...args, new_CallbackProxy/*makeCallback*/({resolve, reject}, metadata));
+              target[name](...args, new_CallbackProxy({resolve, reject}, metadata));
             } catch (cbError) {
               console.warn(`${name} API method doesn't seem to support the callback parameter, ` +
                            "falling back to call it without a callback: ", cbError);
@@ -163,7 +163,7 @@ if (typeof browser === "undefined") {
             target[name](...args);
             resolve();
           } else {
-            target[name](...args, new_CallbackProxy/*makeCallback*/({resolve, reject}, metadata));
+            target[name](...args, new_CallbackProxy({resolve, reject}, metadata));
           }
         });
       };
@@ -188,7 +188,7 @@ if (typeof browser === "undefined") {
      *        A Proxy object for the given method, which invokes the given wrapper
      *        method in its place.
      */
-    const new_FunctionProxy/*wrapMethod*/ = (target, method, wrapper) => {
+    const new_FunctionProxy = (target, method, wrapper) => {
       return new Proxy(method, {
         apply(targetMethod, thisObj, args) {
           return wrapper.call(thisObj, target, ...args);
@@ -221,7 +221,7 @@ if (typeof browser === "undefined") {
      *
      * @returns {Proxy<object>}
      */
-    const new_ObjectProxy/*wrapObject*/ = (target, wrappers = {}, metadata = {}) => {
+    const new_ObjectProxy = (target, wrappers = {}, metadata = {}) => {
       let cache = Object.create(null);
       let handlers = {
         has(proxyTarget, prop) {
@@ -245,12 +245,12 @@ if (typeof browser === "undefined") {
 
             if (typeof wrappers[prop] === "function") {
               // We have a special-case wrapper for this method.
-              value = new_FunctionProxy/*wrapMethod*/(target, target[prop], wrappers[prop]);
+              value = new_FunctionProxy(target, target[prop], wrappers[prop]);
             } else if (hasOwnProperty(metadata, prop)) {
               // This is an async method that we have metadata for. Create a
               // Promise wrapper for it.
-              let wrapper = new_FunctionWrapper/*wrapAsyncFunction*/(prop, metadata[prop]);
-              value = new_FunctionProxy/*wrapMethod*/(target, target[prop], wrapper);
+              let wrapper = new_FunctionWrapper(prop, metadata[prop]);
+              value = new_FunctionProxy(target, target[prop], wrapper);
             } else {
               // This is a method that we don't know or care about. Return the
               // original method, bound to the underlying object.
@@ -262,7 +262,7 @@ if (typeof browser === "undefined") {
             // This is an object that we need to do some wrapping for the children
             // of. Create a sub-object wrapper for it with the appropriate child
             // metadata.
-            value = new_ObjectProxy/*wrapObject*/(value, wrappers[prop], metadata[prop]);
+            value = new_ObjectProxy(value, wrappers[prop], metadata[prop]);
           } else {
             // We don't need to do any wrapping for this property,
             // so just forward all access to the underlying object.
@@ -332,7 +332,7 @@ if (typeof browser === "undefined") {
      *
      * @returns {object}
      */
-    const new_EventWrapper/*wrapEvent*/ = wrapperMap => ({
+    const new_EventWrapper = wrapperMap => ({
       addListener(target, listener, ...args) {
         target.addListener(wrapperMap.get(listener), ...args);
       },
@@ -349,7 +349,7 @@ if (typeof browser === "undefined") {
     // Keep track if the deprecation warning has been logged at least once.
     let loggedSendResponseDeprecationWarning = false;
 
-    const listenerProxies/*onMessageWrappers*/ = new DefaultWeakMap(listener => {
+    const listenerProxies = new DefaultWeakMap(listener => {
       if (typeof listener !== "function") {
         return listener;
       }
@@ -445,15 +445,15 @@ if (typeof browser === "undefined") {
       };
     });
 
-    const unbound_CallbackProxy/*wrappedSendMessageCallback*/ = ({reject, resolve}, reply) => {
-      if (apiTarget/*chrome*/.runtime.lastError) {
+    const unbound_CallbackProxy = ({reject, resolve}, reply) => {
+      if (apiTarget.runtime.lastError) {
         // Detect when none of the listers replied to the sendMessage call and resolve
         // the promise to undefined as in Firefox.
         // See https://github.com/mozilla/webextension-polyfill/issues/130
-        if (apiTarget/*chrome*/.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+        if (apiTarget.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
           resolve();
         } else {
-          reject(apiTarget/*chrome*/.runtime.lastError);
+          reject(apiTarget.runtime.lastError);
         }
       } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
         // Convert back the JSON representation of the error into
@@ -464,7 +464,7 @@ if (typeof browser === "undefined") {
       }
     };
 
-    const unbound_SendMessageWrapper/*wrappedSendMessage*/ = (name, metadata, apiNamespaceObj, ...args) => {
+    const unbound_SendMessageWrapper = (name, metadata, apiNamespaceObj, ...args) => {
       if (args.length < metadata.minArgs) {
         throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
       }
@@ -474,29 +474,29 @@ if (typeof browser === "undefined") {
       }
 
       return new Promise((resolve, reject) => {
-        const wrappedCb = unbound_CallbackProxy/*wrappedSendMessageCallback*/.bind(null, {resolve, reject});
+        const wrappedCb = unbound_CallbackProxy.bind(null, {resolve, reject});
         args.push(wrappedCb);
         apiNamespaceObj.sendMessage(...args);
       });
     };
 
-    const apiWrappers/*staticWrappers*/ = {
+    const apiWrappers = {
       runtime: {
-        onMessage: new_EventWrapper/*wrapEvent*/(listenerProxies/*onMessageWrappers*/),
-        onMessageExternal: new_EventWrapper/*wrapEvent*/(listenerProxies/*onMessageWrappers*/),
-        sendMessage: unbound_SendMessageWrapper/*wrappedSendMessage*/.bind(null, "sendMessage", {minArgs: 1, maxArgs: 3}),
+        onMessage: new_EventWrapper(listenerProxies),
+        onMessageExternal: new_EventWrapper(listenerProxies),
+        sendMessage: unbound_SendMessageWrapper.bind(null, "sendMessage", {minArgs: 1, maxArgs: 3}),
       },
       tabs: {
-        sendMessage: unbound_SendMessageWrapper/*wrappedSendMessage*/.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
+        sendMessage: unbound_SendMessageWrapper.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
       },
     };
 
-    return new_ObjectProxy/*wrapObject*/(apiTarget/*chrome*/, apiWrappers/*staticWrappers*/, apiMetadata);
+    return new_ObjectProxy(apiTarget, apiWrappers, apiMetadata);
   };
 
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
-  module.exports = new_ApiProxy/*wrapAPIs*/(chrome); // eslint-disable-line no-undef
+  module.exports = new_ApiProxy(chrome); // eslint-disable-line no-undef
 } else {
   module.exports = browser; // eslint-disable-line no-undef
 }
