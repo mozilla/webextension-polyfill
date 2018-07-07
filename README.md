@@ -18,7 +18,7 @@ Table of contents
 
 ## Building
 
-To build, assuming you're already installed [node >= 6](https://nodejs.org) and
+To build, assuming you've already installed [node >= 6](https://nodejs.org) and
 [npm](https://www.npmjs.com/), simply run:
 
 ```sh
