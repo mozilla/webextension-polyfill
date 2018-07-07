@@ -173,7 +173,7 @@ if (typeof browser === "undefined") {
      * Wraps an existing method of the target object, so that calls to it are
      * intercepted by the given wrapper function. The wrapper function receives,
      * as its first argument, the original `target` object, followed by each of
-     * the arguments passed to the orginal method.
+     * the arguments passed to the original method.
      *
      * @param {object} target
      *        The original target object that the wrapped method belongs to.
@@ -447,7 +447,7 @@ if (typeof browser === "undefined") {
 
     const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
       if (chrome.runtime.lastError) {
-        // Detect when none of the listers replied to the sendMessage call and resolve
+        // Detect when none of the listeners replied to the sendMessage call and resolve
         // the promise to undefined as in Firefox.
         // See https://github.com/mozilla/webextension-polyfill/issues/130
         if (chrome.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
