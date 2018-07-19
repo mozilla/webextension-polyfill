@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eo pipefail
 
+DIRNAME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
+export PATH=$PATH:$DIRNAME/node_modules/.bin/
+
 echo ""
 echo "Test webextension-polyfill bundled with webpack"
 echo "==============================================="
