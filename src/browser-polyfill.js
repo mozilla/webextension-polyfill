@@ -129,7 +129,7 @@ if (typeof browser === "undefined") {
      * @returns {function(object, ...*)}
      *       The generated wrapper function.
      */
-    const new_FunctionWrapper = (name, metadata) => {
+    const makeFunctionWrapper = (name, metadata) => {
       return function asyncFunctionWrapper(target, ...args) {
         if (args.length < metadata.minArgs) {
           throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
@@ -188,7 +188,7 @@ if (typeof browser === "undefined") {
      *        A Proxy object for the given method, which invokes the given wrapper
      *        method in its place.
      */
-    const new_FunctionProxy = (target, method, wrapper) => {
+    const makeFunctionProxy = (target, method, wrapper) => {
       return new Proxy(method, {
         apply(targetMethod, thisObj, args) {
           return wrapper.call(thisObj, target, ...args);
@@ -209,7 +209,7 @@ if (typeof browser === "undefined") {
      *        An object tree containing wrapper functions for special cases. Any
      *        function present in this object tree is called in place of the
      *        method in the same location in the `target` object tree. These
-     *        wrapper methods are invoked as described in {@see new_FunctionProxy}.
+     *        wrapper methods are invoked as described in {@see makeFunctionProxy}.
      *
      * @param {object} [metadata = {}]
      *        An object tree containing metadata used to automatically generate
@@ -217,7 +217,7 @@ if (typeof browser === "undefined") {
      *        the `target` object tree which has a corresponding metadata object
      *        in the same location in the `metadata` tree is replaced with an
      *        automatically-generated wrapper function, as described in
-     *        {@see new_FunctionWrapper}
+     *        {@see makeFunctionWrapper}
      *
      * @returns {Proxy<object>}
      */
@@ -245,12 +245,12 @@ if (typeof browser === "undefined") {
 
             if (typeof wrappers[prop] === "function") {
               // We have a special-case wrapper for this method.
-              value = new_FunctionProxy(target, target[prop], wrappers[prop]);
+              value = makeFunctionProxy(target, target[prop], wrappers[prop]);
             } else if (hasOwnProperty(metadata, prop)) {
               // This is an async method that we have metadata for. Create a
               // Promise wrapper for it.
-              let wrapper = new_FunctionWrapper(prop, metadata[prop]);
-              value = new_FunctionProxy(target, target[prop], wrapper);
+              let wrapper = makeFunctionWrapper(prop, metadata[prop]);
+              value = makeFunctionProxy(target, target[prop], wrapper);
             } else {
               // This is a method that we don't know or care about. Return the
               // original method, bound to the underlying object.
@@ -464,7 +464,7 @@ if (typeof browser === "undefined") {
       }
     };
 
-    const unbound_SendMessageWrapper = (name, metadata, apiNamespaceObj, ...args) => {
+    const sendMessageWrapper = (name, metadata, apiNamespaceObj, ...args) => {
       if (args.length < metadata.minArgs) {
         throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
       }
@@ -484,10 +484,10 @@ if (typeof browser === "undefined") {
       runtime: {
         onMessage: makeEventWrapper(onMessageListeners),
         onMessageExternal: makeEventWrapper(onMessageListeners),
-        sendMessage: unbound_SendMessageWrapper.bind(null, "sendMessage", {minArgs: 1, maxArgs: 3}),
+        sendMessage: sendMessageWrapper.bind(null, "sendMessage", {minArgs: 1, maxArgs: 3}),
       },
       tabs: {
-        sendMessage: unbound_SendMessageWrapper.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
+        sendMessage: sendMessageWrapper.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
       },
     };
 
