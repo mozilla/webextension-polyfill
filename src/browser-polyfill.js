@@ -20,7 +20,7 @@ if (typeof browser === "undefined") {
   // contents of a function until the first time it's called, and since it will
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
-  const makeApiProxy = (apiTarget) => {
+  const makeApiPolyfill = (apiTarget) => {
     // NOTE: apiMetadata is associated to the content of the api-metadata.json file
     // at build time by replacing the following "include" with the content of the
     // JSON file.
@@ -188,7 +188,7 @@ if (typeof browser === "undefined") {
      *        A Proxy object for the given method, which invokes the given wrapper
      *        method in its place.
      */
-    const makeFunctionProxy = (target, method, wrapper) => {
+    const makeFunctionPolyfill = (target, method, wrapper) => {
       return new Proxy(method, {
         apply(targetMethod, thisObj, args) {
           return wrapper.call(thisObj, target, ...args);
@@ -209,7 +209,7 @@ if (typeof browser === "undefined") {
      *        An object tree containing wrapper functions for special cases. Any
      *        function present in this object tree is called in place of the
      *        method in the same location in the `target` object tree. These
-     *        wrapper methods are invoked as described in {@see makeFunctionProxy}.
+     *        wrapper methods are invoked as described in {@see makeFunctionPolyfill}.
      *
      * @param {object} [metadata = {}]
      *        An object tree containing metadata used to automatically generate
@@ -221,7 +221,7 @@ if (typeof browser === "undefined") {
      *
      * @returns {Proxy<object>}
      */
-    const makeObjectProxy = (target, wrappers = {}, metadata = {}) => {
+    const makeObjectPolyfill = (target, wrappers = {}, metadata = {}) => {
       let cache = Object.create(null);
       let handlers = {
         has(proxyTarget, prop) {
@@ -245,12 +245,12 @@ if (typeof browser === "undefined") {
 
             if (typeof wrappers[prop] === "function") {
               // We have a special-case wrapper for this method.
-              value = makeFunctionProxy(target, target[prop], wrappers[prop]);
+              value = makeFunctionPolyfill(target, target[prop], wrappers[prop]);
             } else if (hasOwnProperty(metadata, prop)) {
               // This is an async method that we have metadata for. Create a
               // Promise wrapper for it.
               let wrapper = makeFunctionWrapper(prop, metadata[prop]);
-              value = makeFunctionProxy(target, target[prop], wrapper);
+              value = makeFunctionPolyfill(target, target[prop], wrapper);
             } else {
               // This is a method that we don't know or care about. Return the
               // original method, bound to the underlying object.
@@ -262,7 +262,7 @@ if (typeof browser === "undefined") {
             // This is an object that we need to do some wrapping for the children
             // of. Create a sub-object wrapper for it with the appropriate child
             // metadata.
-            value = makeObjectProxy(value, wrappers[prop], metadata[prop]);
+            value = makeObjectPolyfill(value, wrappers[prop], metadata[prop]);
           } else {
             // We don't need to do any wrapping for this property,
             // so just forward all access to the underlying object.
@@ -491,12 +491,12 @@ if (typeof browser === "undefined") {
       },
     };
 
-    return makeObjectProxy(apiTarget, apiWrappers, apiMetadata);
+    return makeObjectPolyfill(apiTarget, apiWrappers, apiMetadata);
   };
 
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
-  module.exports = makeApiProxy(chrome); // eslint-disable-line no-undef
+  module.exports = makeApiPolyfill(chrome); // eslint-disable-line no-undef
 } else {
   module.exports = browser; // eslint-disable-line no-undef
 }
