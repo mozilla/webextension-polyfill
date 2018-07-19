@@ -1,4 +1,4 @@
-# WebExtension `browser` API Polyfill [![Build Status](https://travis-ci.org/mozilla/webextension-polyfill.svg?branch=master)](https://travis-ci.org/mozilla/webextension-polyfill) [![npm version](https://img.shields.io/npm/v/webextension-polyfill.svg?style=flat)](https://www.npmjs.com/package/webextension-polyfill)
+# WebExtension `browser` API Polyfill [![Build Status](https://travis-ci.org/mozilla/webextension-polyfill.svg?branch=master)](https://travis-ci.org/mozilla/webextension-polyfill) [![npm version](https://badge.fury.io/js/webextension-polyfill.svg)](https://www.npmjs.com/package/webextension-polyfill)
 
 This library allows extensions that use the Promise-based WebExtension/BrowserExt API being standardized by the
 [W3 Browser Extensions][w3-browserext] group to run on Google Chrome with minimal or no changes.
