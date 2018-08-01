@@ -309,5 +309,5 @@ If the content script code result is a Promise, the promise returned by `browser
 
 Read the [contributing section](CONTRIBUTING.md) for additional information about how to build the library from this repository and how to contribute and test changes.
 
-[PR-114]: https://github.com/mozilla/webextension-polyfill/pull/114_
+[PR-114]: https://github.com/mozilla/webextension-polyfill/pull/114
 [I-102]: https://github.com/mozilla/webextension-polyfill/issues/102#issuecomment-379365343
