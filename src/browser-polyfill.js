@@ -6,9 +6,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-if (typeof browser === "undefined") {
+// Detect Microsoft Edge
+const edge = navigator.userAgent.indexOf("Edge");
+// Check whether the browser namespace is undefined (Chrome, Opera, etc.)
+const browserUndefined = typeof browser === "undefined";
+// Avoid specifying browser or chrome
+let extensionAPIs;
+
+if (browserUndefined || edge) {
   const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
   const SEND_RESPONSE_DEPRECATION_WARNING = "Returning a Promise is the preferred way to send a reply from an onMessage/onMessageExternal listener, as the sendResponse will be removed from the specs (See https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage)";
+
+  if (browserUndefined) {
+    extensionAPIs = chrome;
+  } else {
+    extensionAPIs = browser;
+  }
 
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
@@ -90,8 +103,8 @@ if (typeof browser === "undefined") {
      */
     const makeCallback = (promise, metadata) => {
       return (...callbackArgs) => {
-        if (chrome.runtime.lastError) {
-          promise.reject(chrome.runtime.lastError);
+        if (extensionAPIs.runtime.lastError) {
+          promise.reject(extensionAPIs.runtime.lastError);
         } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
           promise.resolve(callbackArgs[0]);
         } else {
@@ -275,7 +288,11 @@ if (typeof browser === "undefined") {
             return value;
           }
 
-          cache[prop] = value;
+          // Microsoft Edge throws "Assignment to read-only properties is not
+          // allowed in strict mode" for cache[prop] = value;
+          Object.defineProperty(cache, prop, {
+            value: value,
+          });
           return value;
         },
 
@@ -441,14 +458,14 @@ if (typeof browser === "undefined") {
     });
 
     const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
-      if (chrome.runtime.lastError) {
+      if (extensionAPIs.runtime.lastError) {
         // Detect when none of the listeners replied to the sendMessage call and resolve
         // the promise to undefined as in Firefox.
         // See https://github.com/mozilla/webextension-polyfill/issues/130
-        if (chrome.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+        if (extensionAPIs.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
           resolve();
         } else {
-          reject(chrome.runtime.lastError);
+          reject(extensionAPIs.runtime.lastError);
         }
       } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
         // Convert back the JSON representation of the error into
@@ -504,7 +521,7 @@ if (typeof browser === "undefined") {
       },
     };
 
-    return wrapObject(chrome, staticWrappers, apiMetadata);
+    return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
   };
 
   // The build process adds a UMD wrapper around this file, which makes the
