@@ -27,7 +27,9 @@ test("browser api object in background page", async (t) => {
 
   if (navigator.userAgent.includes("Firefox/")) {
     t.ok(reply.browserIsUnchanged, "browser API object should not be changed on Firefox");
+    t.ok(reply.windowBrowserIsUnchanged, "window.browser API object should not be changed on Firefox");
   } else {
     t.ok(!reply.browserIsUnchanged, "browser API object should have been defined by the polyfill");
+    t.ok(!reply.windowBrowserIsUnchanged, "window.browser API object should have been defined by the polyfill");
   }
 });

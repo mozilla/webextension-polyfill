@@ -1,15 +1,14 @@
 /* global originalAPIObjects */
 
-// Register an additional message handler that always reply after
-// a small latency time.
-browser.runtime.onMessage.addListener(async (msg, sender) => {
+browser.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg !== "test-api-object-in-background-page") {
-    return false;
+    throw new Error(`Unexpected message received: ${msg}`);
   }
 
-  return Promise.resolve({
+  return {
     browserIsDefined: !!browser,
     chromeIsDefined: !!chrome,
     browserIsUnchanged: browser === originalAPIObjects.browser,
-  });
+    windowBrowserIsUnchanged: window.browser === originalAPIObjects.browser,
+  };
 });
