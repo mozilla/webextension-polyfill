@@ -1,0 +1,20 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <title>Test Extension Background page</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <!--
+             The following two DOM elements ensure that the polyfill doesn't detect the
+             globals defined for these DOM element ids as the Extensions API objects.
+        -->
+        <div id="browser"></div>
+        <div id="browser"></div>
+        <div id="chrome"></div>
+
+        <script src="copy-original-api-objects.js"></script>
+        <script src="browser-polyfill.js"></script>
+        <script src="background.js"></script>
+    </body>
+</html>
