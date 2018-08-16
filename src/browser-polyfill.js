@@ -15,7 +15,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
   // contents of a function until the first time it's called, and since it will
   // never actually need to be called, this allows the polyfill to be included
   // in Firefox nearly for free.
-  const wrapAPIs = () => {
+  const makeApiPolyfill = (apiTarget) => {
     // NOTE: apiMetadata is associated to the content of the api-metadata.json file
     // at build time by replacing the following "include" with the content of the
     // JSON file.
@@ -90,8 +90,8 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      */
     const makeCallback = (promise, metadata) => {
       return (...callbackArgs) => {
-        if (chrome.runtime.lastError) {
-          promise.reject(chrome.runtime.lastError);
+        if (apiTarget.runtime.lastError) {
+          promise.reject(apiTarget.runtime.lastError);
         } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
           promise.resolve(callbackArgs[0]);
         } else {
@@ -124,7 +124,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * @returns {function(object, ...*)}
      *       The generated wrapper function.
      */
-    const wrapAsyncFunction = (name, metadata) => {
+    const makeFunctionWrapper = (name, metadata) => {
       return function asyncFunctionWrapper(target, ...args) {
         if (args.length < metadata.minArgs) {
           throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
@@ -183,7 +183,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        A Proxy object for the given method, which invokes the given wrapper
      *        method in its place.
      */
-    const wrapMethod = (target, method, wrapper) => {
+    const makeFunctionPolyfill = (target, method, wrapper) => {
       return new Proxy(method, {
         apply(targetMethod, thisObj, args) {
           return wrapper.call(thisObj, target, ...args);
@@ -204,7 +204,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        An object tree containing wrapper functions for special cases. Any
      *        function present in this object tree is called in place of the
      *        method in the same location in the `target` object tree. These
-     *        wrapper methods are invoked as described in {@see wrapMethod}.
+     *        wrapper methods are invoked as described in {@see makeFunctionPolyfill}.
      *
      * @param {object} [metadata = {}]
      *        An object tree containing metadata used to automatically generate
@@ -212,11 +212,11 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        the `target` object tree which has a corresponding metadata object
      *        in the same location in the `metadata` tree is replaced with an
      *        automatically-generated wrapper function, as described in
-     *        {@see wrapAsyncFunction}
+     *        {@see makeFunctionWrapper}
      *
      * @returns {Proxy<object>}
      */
-    const wrapObject = (target, wrappers = {}, metadata = {}) => {
+    const makeObjectPolyfill = (target, wrappers = {}, metadata = {}) => {
       let cache = Object.create(null);
       let handlers = {
         has(proxyTarget, prop) {
@@ -240,12 +240,12 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
 
             if (typeof wrappers[prop] === "function") {
               // We have a special-case wrapper for this method.
-              value = wrapMethod(target, target[prop], wrappers[prop]);
+              value = makeFunctionPolyfill(target, target[prop], wrappers[prop]);
             } else if (hasOwnProperty(metadata, prop)) {
               // This is an async method that we have metadata for. Create a
               // Promise wrapper for it.
-              let wrapper = wrapAsyncFunction(prop, metadata[prop]);
-              value = wrapMethod(target, target[prop], wrapper);
+              let wrapper = makeFunctionWrapper(prop, metadata[prop]);
+              value = makeFunctionPolyfill(target, target[prop], wrapper);
             } else {
               // This is a method that we don't know or care about. Return the
               // original method, bound to the underlying object.
@@ -257,7 +257,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
             // This is an object that we need to do some wrapping for the children
             // of. Create a sub-object wrapper for it with the appropriate child
             // metadata.
-            value = wrapObject(value, wrappers[prop], metadata[prop]);
+            value = makeObjectPolyfill(value, wrappers[prop], metadata[prop]);
           } else {
             // We don't need to do any wrapping for this property,
             // so just forward all access to the underlying object.
@@ -327,7 +327,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *
      * @returns {object}
      */
-    const wrapEvent = wrapperMap => ({
+    const makeEventWrapper = wrapperMap => ({
       addListener(target, listener, ...args) {
         target.addListener(wrapperMap.get(listener), ...args);
       },
@@ -344,7 +344,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     // Keep track if the deprecation warning has been logged at least once.
     let loggedSendResponseDeprecationWarning = false;
 
-    const onMessageWrappers = new DefaultWeakMap(listener => {
+    const onMessageListeners = new DefaultWeakMap(listener => {
       if (typeof listener !== "function") {
         return listener;
       }
@@ -440,15 +440,15 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       };
     });
 
-    const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
-      if (chrome.runtime.lastError) {
+    const sendMessageCallback = ({reject, resolve}, reply) => {
+      if (apiTarget.runtime.lastError) {
         // Detect when none of the listeners replied to the sendMessage call and resolve
         // the promise to undefined as in Firefox.
         // See https://github.com/mozilla/webextension-polyfill/issues/130
-        if (chrome.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+        if (apiTarget.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
           resolve();
         } else {
-          reject(chrome.runtime.lastError);
+          reject(apiTarget.runtime.lastError);
         }
       } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
         // Convert back the JSON representation of the error into
@@ -459,7 +459,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       }
     };
 
-    const wrappedSendMessage = (name, metadata, apiNamespaceObj, ...args) => {
+    const sendMessageWrapper = (name, metadata, apiNamespaceObj, ...args) => {
       if (args.length < metadata.minArgs) {
         throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
       }
@@ -469,20 +469,20 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       }
 
       return new Promise((resolve, reject) => {
-        const wrappedCb = wrappedSendMessageCallback.bind(null, {resolve, reject});
+        const wrappedCb = sendMessageCallback.bind(null, {resolve, reject});
         args.push(wrappedCb);
         apiNamespaceObj.sendMessage(...args);
       });
     };
 
-    const staticWrappers = {
+    const apiWrappers = {
       runtime: {
-        onMessage: wrapEvent(onMessageWrappers),
-        onMessageExternal: wrapEvent(onMessageWrappers),
-        sendMessage: wrappedSendMessage.bind(null, "sendMessage", {minArgs: 1, maxArgs: 3}),
+        onMessage: makeEventWrapper(onMessageListeners),
+        onMessageExternal: makeEventWrapper(onMessageListeners),
+        sendMessage: sendMessageWrapper.bind(null, "sendMessage", {minArgs: 1, maxArgs: 3}),
       },
       tabs: {
-        sendMessage: wrappedSendMessage.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
+        sendMessage: sendMessageWrapper.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
       },
     };
     const settingMetadata = {
@@ -504,12 +504,12 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       },
     };
 
-    return wrapObject(chrome, staticWrappers, apiMetadata);
+    return makeObjectPolyfill(apiTarget, apiWrappers, apiMetadata);
   };
 
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
-  module.exports = wrapAPIs(); // eslint-disable-line no-undef
+  module.exports = makeApiPolyfill(chrome); // eslint-disable-line no-undef
 } else {
   module.exports = browser; // eslint-disable-line no-undef
 }
