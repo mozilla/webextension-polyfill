@@ -6,5 +6,13 @@
   </head>
   <body>
     <h1>Browser Polyfill Test Page</h1>
+
+    <!--
+         The following two DOM elements ensure that the polyfill doesn't detect the
+         globals defined for these DOM element ids as the Extensions API objects.
+    -->
+    <div id="browser"></div>
+    <div id="browser"></div>
+    <div id="chrome"></div>
   </body>
 </html>

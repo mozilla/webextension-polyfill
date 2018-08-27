@@ -43,10 +43,12 @@ function setupTestDOMWindow(chromeObject, browserObject = undefined) {
 
     // Set (or reset) the browser property.
     if (browserObject) {
-      window.browser = browserObject;
+      // Make the fake browser object a `window.Object` instance, so that
+      // it passes the `Object.getPrototypeOf(browser) !== Object.prototype`
+      // check, otherwise it is going to be overridden by the polyfill (See #153).
+      window.browser = Object.assign(window.Object(), browserObject);
     } else {
-      // TODO: change into `delete window.browser` once tmpvar/jsdom#1622 has been fixed.
-      window.browser = undefined;
+      delete window.browser;
     }
 
     const scriptEl = window.document.createElement("script");

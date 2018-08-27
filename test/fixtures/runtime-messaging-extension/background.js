@@ -45,6 +45,9 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     case "test - sendMessage with listener callback throws":
       throw new Error("listener throws");
 
+    case "test - sendMessage and no listener answers":
+      return undefined;
+
     default:
       return Promise.resolve(
         `Unxpected message received by the background page: ${JSON.stringify(msg)}\n`);
@@ -52,6 +55,10 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg === "test - sendMessage and no listener answers") {
+    return undefined;
+  }
+
   setTimeout(() => {
     sendResponse("second listener reply");
   }, 100);

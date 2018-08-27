@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "test-detect-browser-api-object-in-content-script",
+  "name": "test-privacy",
   "version": "0.1",
-  "description": "test-detect-browser-api-object-in-content-script",
+  "description": "test-privacy",
   "content_scripts": [
     {
       "matches": [
@@ -15,5 +15,11 @@
       ]
     }
   ],
-  "permissions": []
+  "permissions": ["privacy"],
+  "background": {
+    "scripts": [
+      "browser-polyfill.js",
+      "background.js"
+    ]
+  }
 }

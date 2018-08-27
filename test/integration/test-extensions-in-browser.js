@@ -18,6 +18,11 @@ defineExtensionTests({
 });
 
 defineExtensionTests({
-  description: "polyfill should detect an existent browser API object in content scripts",
-  extensions: ["detect-browser-api-object-in-content-script"],
+  description: "polyfill should detect an existing browser API object in content scripts and extension pages",
+  extensions: ["detect-existing-browser-api-object"],
+});
+
+defineExtensionTests({
+  description: "Instance of BrowserSetting API",
+  extensions: ["privacy-setting-extension"],
 });

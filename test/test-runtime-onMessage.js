@@ -238,5 +238,30 @@ describe("browser-polyfill", () => {
         });
       });
     });
+
+    it("resolves to undefined when no listeners reply", () => {
+      const fakeChrome = {
+        runtime: {
+          // This error message is defined as CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE
+          // in the polyfill sources and it is used to recognize when Chrome has detected that
+          // none of the listeners replied.
+          lastError: {
+            message: "The message port closed before a response was received.",
+          },
+          sendMessage: sinon.stub(),
+        },
+      };
+
+      fakeChrome.runtime.sendMessage.onFirstCall().callsArgWith(1, [undefined]);
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        const promise = window.browser.runtime.sendMessage("some_message");
+        ok(fakeChrome.runtime.sendMessage.calledOnce, "sendMessage has been called once");
+
+        return promise.then(reply => {
+          deepEqual(reply, undefined, "sendMessage promise should be resolved to undefined");
+        });
+      });
+    });
   });
 });

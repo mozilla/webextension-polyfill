@@ -1,5 +1,4 @@
 language: node_js
-sudo: false
 node_js:
 ## Some of the ES6 syntax used in the browser-polyfill sources is only supported on nodejs >= 6
 ## and the selenium-webdriver dependency used by the integration tests requires nodejs >= 8.
@@ -14,7 +13,7 @@ script:
   ./test/run-module-bundlers-smoketests.sh
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
-- echo "RUN integration tests on chrome" &&
+- echo "RUN integration tests on real browsers" &&
   TRAVIS_CI=true ./test/run-browsers-smoketests.sh
 
 ## See https://docs.travis-ci.com/user/chrome
@@ -45,4 +44,4 @@ deploy:
     repo: mozilla/webextension-polyfill
     branch: master
   api_key:
-    secure: W1e/XXtsl98NGUYsqlELnrspPW/ULUk74dUMmLC7iqmI8RVvzBgjkxBGmgsToZAbdzeNMlsOeeNz2iF+DSy3UF9bc3PTdHmN8kYU8enqo3P/FKK29rg5udx/HRW2GK06UzEBctOY90OwnUD+J1OaCJ0vMh6EekiP1BXOtrvch6Ruo7SYrwQ0vu5gFM+ifwfpGycTbRd77P6YJzbxYSEJfkQz1R1X7i8pLmi0vTyQa3tUYsQd8WzL6CJsWitojtf0FHGJgzXu2g6iFmkLVC0+dnGCRAxnRbixoYMmJYyEcvgIXlmNB6gl7ortuWKOp82lhXWXZWaYqO9Y8w4X0I8iNQzrLnupwyaC0cK51OPLLZEdgXa+bXmsYi2LYiV72oTCFd7j+f8hcoPOtgkGXJR+5F87zZLy8Ayr62fshWE/sl+dw2b/H5AqER4UNlX1+EiHQHjUtSvYlAmkTX3t4q/c+d0T1U5aM0CbOhS5juYVVqyIFGlUoRdNKDVedn0uCd+D2ItGj9y7yex0z+tc8iKaze0DhQCMq5QTxEU89REEU7Bf3gkpZtXlcmGZX/RTTCe941is7cIrUeJrZXPt5lA+cudBf3t60t7qysHLconQ+TXlDxCBvX7lLF9lZT5z0BKdOA0iL574ABtiJEjPxi0gOIWg2DJh15OZGA5mC4gPsZ4=
+    secure: K4rZPsnERK4hiVJICp2MGjLSiL64AeDc0yxmr54/ZlbAYy5OhtDrtaZ0L65eGx+HuIgVQbduSNn1zBN/Bx7w8zmYVyXdTVD1HqXuopS+vmBTrwW/d28uKdpCcMo311ODbk//AL3ylTCeOMkSsLsbb5Io6zcEpuw0VLtSNSrytaA85vcUIj2l8iurLrThN3r7iIsIEHceCzDo3KDx/o4yh7cEKs0FP9Jl8A6jm8sTt/j3jLmsxFFXp/SWOvPCQFX1hCu2uLgCtoLbFJlaDq2+RzsEXv4K5Ee5coVtc4vLRiNjC1UP7cHqfN8VZ0I2LeVT79MRmLqRAccGCSMdarFgoA2SW1laNch0vXy6hBSluh+OVJVPDrz7Xdyy70rt+57tJYFCtpZ24E6X+GNyOOMYfIsatvv59h5R6vE3hWvNZVtiOhYw9wMrKBA9rLkzyoCXeEVu4BuU834RbeeYUAg9VR6WZ1U2nD4IxGr33mSPDqsA6tOhr7tM0kEmg2eVe8qHop8BRtUAhQfkY6C+kfRkPE0OZBq4kiWcfugRJyKI7rAp9T5JNUSLW5X1KrvRv0RBaDr8SKFaWHE4N5Dbt/u2zluq+wJn/n5IxvEFDHSAzxLWBDz+LsmZ1eXRdfA+Pu4cyIKjMX1O8yPAnX8RCTc9oq8Qj74l5rXzCJtmygRdf2I=
