@@ -67,7 +67,7 @@ and linked to the github releases:
 ## Basic Setup
 
 In order to use the polyfill, it must be loaded into any context where `browser` APIs are accessed. The most common cases
-are background and content scripts, which can be specified in `manifest.json`:
+are background and content scripts, which can be specified in `manifest.json` (make sure to include the `browser-polyfill.js` script before any other scripts that use it):
 
 ```javascript
 {
