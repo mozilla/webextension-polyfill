@@ -1,4 +1,4 @@
-Hi! Thanks for your interest in helping to make the "cross-browser extension" developers life easier by contributing to the `webextension-polyfill` library.
+Hi! Thanks for your interest in helping to make the "cross-browser extension" developers life easier by contributing to the `webextension-polyfill-for-webpack` library.
 
 This document provides some additional information that you may find useful while looking at how to apply changes to this library and submit them for review.
 
@@ -15,9 +15,9 @@ To build, assuming you've already installed [node >= 6](https://nodejs.org) and
 [npm](https://www.npmjs.com/), simply run:
 
 ```sh
-git clone https://github.com/mozilla/webextension-polyfill.git
+git clone https://github.com/mozilla/webextension-polyfill-for-webpack.git
 
-cd webextension-polyfill
+cd webextension-polyfill-for-webpack
 
 npm install
 
