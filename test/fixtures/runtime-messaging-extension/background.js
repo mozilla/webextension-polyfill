@@ -10,7 +10,7 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       try {
         browser.pageAction.show(sender.tab.id);
       } catch (err) {
-        return Promise.resolve(`Unexpected error on pageAction.show: ${err}`);
+        return Promise.resolve(`Unexpected error on pageAction.show: ${err}::${err.stack}`);
       }
 
       return Promise.resolve("bg page reply 1");

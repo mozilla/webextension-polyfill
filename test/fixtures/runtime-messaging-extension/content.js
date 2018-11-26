@@ -77,6 +77,10 @@ test("sendMessage with listener callback throws", async (t) => {
 });
 
 test("sendMessage and no listener answers", async (t) => {
+  if (navigator.userAgent.includes("Edge/")) {
+    t.skip("runtime.sendMessage never resolves on Edge if no listener answers");
+    return;
+  }
   const reply = await browser.runtime.sendMessage("test - sendMessage and no listener answers");
   t.equal(reply, undefined, "Got undefined reply as expected");
 });

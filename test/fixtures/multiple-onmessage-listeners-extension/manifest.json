@@ -1,12 +1,13 @@
 {
   "manifest_version": 2,
   "name": "test-multiple-onmessage-listeners",
+  "author": "Fake Author",
   "version": "0.1",
   "description": "test-multiple-onmessage-listeners",
   "content_scripts": [
     {
       "matches": [
-        "http://localhost/*"
+        "http://*/*"
       ],
       "js": [
         "browser-polyfill.js",
@@ -20,6 +21,7 @@
     "scripts": [
       "browser-polyfill.js",
       "background.js"
-    ]
+    ],
+    "persistent": true
   }
 }

@@ -1,15 +1,17 @@
 {
   "manifest_version": 2,
   "name": "test-detect-browser-api-object-in-content-script",
+  "author": "Fake Author",
   "version": "0.1",
   "description": "test-detect-browser-api-object-in-content-script",
   "background": {
-    "page": "background.html"
+    "page": "background.html",
+    "persistent": true
   },
   "content_scripts": [
     {
       "matches": [
-        "http://localhost/*"
+        "http://*/*"
       ],
       "js": [
         "copy-original-api-objects.js",

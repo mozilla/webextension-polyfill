@@ -16,7 +16,7 @@ const {cp} = require("shelljs");
 const TEST_TIMEOUT = 5000;
 
 const launchBrowser = async (launchOptions) => {
-  const browser = launchOptions.browser || process.env.TEST_BROWSER_TYPE;
+  const browser = launchOptions.browser;
   const extensionPath = launchOptions.extensionPath;
 
   let driver;
@@ -71,9 +71,42 @@ const launchBrowser = async (launchOptions) => {
       .setParameter("temporary", true);
 
     await driver.execute(command);
+  } else if (browser === "edge") {
+    const edge = require("selenium-webdriver/edge");
+    const edgeLocalStatePath = path.join(process.env.LOCALAPPDATA,
+                                         "Packages", "Microsoft.MicrosoftEdge_8wekyb3d8bbwe", "LocalState");
+    const destExtensionDir = path.join(edgeLocalStatePath, path.basename(extensionPath) + "-" + Date.now());
+
+    const shell = require("shelljs");
+    console.log("Copying test extension from", extensionPath, "to", destExtensionDir);
+    shell.cp("-rf", extensionPath, destExtensionDir);
+
+    const options = new edge.Options();
+    options.set("extensionPaths", [destExtensionDir]);
+
+    let edgeDriver = await new Builder()
+      .forBrowser("MicrosoftEdge")
+      .setEdgeOptions(options)
+      .setEdgeService(new edge.ServiceBuilder())
+      .build();
+    driver = Object.create(null);
+    Object.setPrototypeOf(driver, edgeDriver);
+    const cleanup = async () => {
+      console.log("Removing temp extension dir", destExtensionDir);
+      shell.rm("-rf", destExtensionDir);
+    };
+    driver.close = async () => {
+      await edgeDriver.close();
+      await cleanup();
+    };
+    driver.quit = async () => {
+      // await new Promise(() => {});
+      await edgeDriver.quit();
+      await cleanup();
+    };
   } else {
     const errorHelpMsg = (
-      "Set a supported browser (firefox or chrome) " +
+      "Set a supported browser (firefox, chrome or edge) " +
       "using the TEST_BROWSER_TYPE environment var.");
     throw new Error(`Target browser not supported yet: ${browser}. ${errorHelpMsg}`);
   }
@@ -98,13 +131,16 @@ const createHTTPServer = async (path) => {
   });
 };
 
-async function runExtensionTest(t, server, driver, extensionDirName) {
+async function runExtensionTest(t, server, driver, extensionDirName, browser) {
   try {
     const url = `http://localhost:${server.address().port}`;
     const userAgent = await driver.executeScript(() => window.navigator.userAgent);
 
-    t.pass(`Connected to browser: ${userAgent}"`);
-
+    t.pass(`Connected to ${browser} browser: ${userAgent}"`);
+    if (browser === "edge") {
+      // Edge seems to need a little latency to be able to start the background page.
+      await driver.sleep(500);
+    }
     await driver.get(url);
 
     // Merge tap results from the connected browser.
@@ -138,22 +174,39 @@ const bundleTapeStandalone = async (destDir) => {
 
   const stream = b.bundle();
   const onceStreamEnd = awaitStreamEnd(stream);
-  stream.pipe(fs.createWriteStream(bundleFileName));
+  const destFileStream = fs.createWriteStream(bundleFileName);
+  const onceWritten = new Promise(resolve => {
+    destFileStream.on("close", resolve);
+  });
+  stream.pipe(destFileStream);
 
-  await onceStreamEnd;
+  await Promise.all([onceStreamEnd, onceWritten]);
 };
 
 test.onFailure(() => {
   process.exit(1);
 });
 
-const defineExtensionTests = ({description, extensions}) => {
+const defineExtensionTests = ({description, extensions, exit, skip}) => {
   for (const extensionDirName of extensions) {
     test(`${description} (test extension: ${extensionDirName})`, async (tt) => {
       let timeout;
       let driver;
       let server;
       let tempDir;
+
+      let browser = process.env.TEST_BROWSER_TYPE;
+
+      if (skip) {
+        if (skip === true) {
+          tt.skip("Test extension skipped");
+          return;
+        } else if (skip === browser || skip.includes(browser)) {
+          tt.skip("Test extension skipped on: " + browser);
+          return;
+        }
+        console.log(`Skip condition ignored: '${skip}' != '${browser}'`);
+      }
 
       try {
         const srcExtensionPath = path.resolve(
@@ -169,9 +222,9 @@ const defineExtensionTests = ({description, extensions}) => {
         await bundleTapeStandalone(extensionPath);
 
         server = await createHTTPServer(path.join(__dirname, "..", "fixtures"));
-        driver = await launchBrowser({extensionPath});
+        driver = await launchBrowser({extensionPath, browser});
         await Promise.race([
-          runExtensionTest(tt, server, driver, extensionDirName),
+          runExtensionTest(tt, server, driver, extensionDirName, browser),
           new Promise((resolve, reject) => {
             timeout = setTimeout(() => reject(new Error(`test timeout after ${TEST_TIMEOUT}`)), TEST_TIMEOUT);
           }),
@@ -179,6 +232,14 @@ const defineExtensionTests = ({description, extensions}) => {
       } finally {
         clearTimeout(timeout);
         if (driver) {
+          if (exit === false) {
+            process.stdin.on("data", async () => {
+              await driver.quit();
+              process.exit(2);
+            });
+            console.log("Press Enter to exit.");
+            await new Promise(() => {});
+          }
           await driver.quit();
           driver = null;
         }

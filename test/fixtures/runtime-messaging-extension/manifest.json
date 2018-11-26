@@ -2,11 +2,12 @@
   "manifest_version": 2,
   "name": "test-extension-runtime-messaging",
   "version": "0.1",
+  "author": "Fake Author",
   "description": "test-extension-runtime-messaging",
   "content_scripts": [
     {
       "matches": [
-        "http://localhost/*"
+        "http://*/*"
       ],
       "js": [
         "browser-polyfill.js",
@@ -20,7 +21,8 @@
     "scripts": [
       "browser-polyfill.js",
       "background.js"
-    ]
+    ],
+    "persistent": true
   },
   "page_action": {
     "default_title": "a page action"

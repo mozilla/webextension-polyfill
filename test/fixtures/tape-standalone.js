@@ -3,7 +3,9 @@ const tape = require("tape-async");
 const DEFAULT_TIMEOUT = 500;
 
 let browser = "unknown";
-if (navigator.userAgent.includes("Chrome/")) {
+if (navigator.userAgent.includes("Edge/")) {
+  browser = "Edge";
+} else if (navigator.userAgent.includes("Chrome/")) {
   browser = "Chrome";
 } else if (navigator.userAgent.includes("Firefox/")) {
   browser = "Firefox";

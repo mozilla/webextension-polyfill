@@ -25,4 +25,7 @@ defineExtensionTests({
 defineExtensionTests({
   description: "Instance of BrowserSetting API",
   extensions: ["privacy-setting-extension"],
+
+  // The privacy settings API is completely missing in Edge.
+  skip: "edge",
 });

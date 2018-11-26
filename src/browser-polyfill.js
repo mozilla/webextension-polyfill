@@ -275,6 +275,14 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
             return value;
           }
 
+          // Use defineProperty to assign the prop value to the cache object,
+          // Edge throws when the __proto__ property is assigned in strict mode.
+          Object.defineProperty(cache, prop, {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value,
+          });
           cache[prop] = value;
           return value;
         },
