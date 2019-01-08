@@ -5,8 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
+/// <reference path="./types.d.ts"/>
 
-if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.prototype) {
+/**
+ * Checks if the `browser` namespace object is an actual
+ * `browser` namespace object and not an element with
+ * the `[id]` attribute with a value of `browser`.
+ */
+const HAS_BROWSER_NAMESPACE = (typeof browser !== "undefined" && Object.getPrototypeOf(browser) === Object.prototype);
+
+if (!HAS_BROWSER_NAMESPACE) {
   const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
   const SEND_RESPONSE_DEPRECATION_WARNING = "Returning a Promise is the preferred way to send a reply from an onMessage/onMessageExternal listener, as the sendResponse will be removed from the specs (See https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage)";
 
@@ -19,6 +27,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     // NOTE: apiMetadata is associated to the content of the api-metadata.json file
     // at build time by replacing the following "include" with the content of the
     // JSON file.
+    /** @type {NamespaceMetadata} */
     const apiMetadata = {/* include("api-metadata.json") */};
 
     if (Object.keys(apiMetadata).length === 0) {
@@ -30,17 +39,26 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * not exist when accessed, but behaves exactly as an ordinary WeakMap
      * otherwise.
      *
-     * @param {function} createItem
-     *        A function which will be called in order to create the value for any
-     *        key which does not exist, the first time it is accessed. The
-     *        function receives, as its only argument, the key being created.
+     * @template {object} K
+     * @template V
      */
     class DefaultWeakMap extends WeakMap {
+      /**
+       * @param {function(K):V} createItem
+       *        A function which will be called in order to create the value for any
+       *        key which does not exist, the first time it is accessed. The
+       *        function receives, as its only argument, the key being created.
+       * @param {ReadonlyArray<[K, V]>} [items]
+       */
       constructor(createItem, items = undefined) {
         super(items);
         this.createItem = createItem;
       }
 
+      /**
+       * @param {K} key
+       * @returns {V}
+       */
       get(key) {
         if (!this.has(key)) {
           this.set(key, this.createItem(key));
@@ -72,34 +90,37 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * - Otherwise, the promise is resolved to an array containing all of the
      *   function's arguments.
      *
+     * @template T
+     *
      * @param {object} promise
      *        An object containing the resolution and rejection functions of a
      *        promise.
-     * @param {function} promise.resolve
+     * @param {function((T|T[])):void} promise.resolve
      *        The promise's resolution function.
-     * @param {function} promise.rejection
+     * @param {function(Error):void} promise.reject
      *        The promise's rejection function.
-     * @param {object} metadata
+     * @param {FunctionMetadata} metadata
      *        Metadata about the wrapped method which has created the callback.
-     * @param {integer} metadata.maxResolvedArgs
-     *        The maximum number of arguments which may be passed to the
-     *        callback created by the wrapped async function.
      *
-     * @returns {function}
+     * @returns {function(...T)}
      *        The generated callback function.
      */
-    const makeCallback = (promise, metadata) => {
+    const makeCallback = ({resolve, reject}, metadata) => {
       return (...callbackArgs) => {
         if (extensionAPIs.runtime.lastError) {
-          promise.reject(extensionAPIs.runtime.lastError);
+          reject(extensionAPIs.runtime.lastError);
         } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
-          promise.resolve(callbackArgs[0]);
+          resolve(callbackArgs[0]);
         } else {
-          promise.resolve(callbackArgs);
+          resolve(callbackArgs);
         }
       };
     };
 
+    /**
+     * @param {number} numArgs
+     * @returns {string}
+     */
     const pluralizeArguments = (numArgs) => numArgs == 1 ? "argument" : "arguments";
 
     /**
@@ -107,21 +128,10 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *
      * @param {string} name
      *        The name of the method which is being wrapped.
-     * @param {object} metadata
+     * @param {FunctionMetadata} metadata
      *        Metadata about the method being wrapped.
-     * @param {integer} metadata.minArgs
-     *        The minimum number of arguments which must be passed to the
-     *        function. If called with fewer than this number of arguments, the
-     *        wrapper will raise an exception.
-     * @param {integer} metadata.maxArgs
-     *        The maximum number of arguments which may be passed to the
-     *        function. If called with more than this number of arguments, the
-     *        wrapper will raise an exception.
-     * @param {integer} metadata.maxResolvedArgs
-     *        The maximum number of arguments which may be passed to the
-     *        callback created by the wrapped async function.
      *
-     * @returns {function(object, ...*)}
+     * @returns {function(object, ...*):Promise}
      *       The generated wrapper function.
      */
     const wrapAsyncFunction = (name, metadata) => {
@@ -170,16 +180,18 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * as its first argument, the original `target` object, followed by each of
      * the arguments passed to the original method.
      *
-     * @param {object} target
+     * @template {function} M
+     *
+     * @param {any} target
      *        The original target object that the wrapped method belongs to.
-     * @param {function} method
+     * @param {M} method
      *        The method being wrapped. This is used as the target of the Proxy
      *        object which is created to wrap the method.
      * @param {function} wrapper
      *        The wrapper function which is called in place of a direct invocation
      *        of the wrapped method.
      *
-     * @returns {Proxy<function>}
+     * @returns {M}
      *        A Proxy object for the given method, which invokes the given wrapper
      *        method in its place.
      */
@@ -191,30 +203,41 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       });
     };
 
+    /**
+     * Determines whether an object has a property with the specified name.
+     *
+     * @param {any} target The object to test.
+     * @param {string | number | symbol} v A property name.
+     *
+     * @type {function(any, string | number | symbol):boolean}
+     */
     let hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
 
     /**
      * Wraps an object in a Proxy which intercepts and wraps certain methods
      * based on the given `wrappers` and `metadata` objects.
      *
-     * @param {object} target
+     * @template T
+     *
+     * @param {T} target
      *        The target object to wrap.
      *
-     * @param {object} [wrappers = {}]
+     * @param {object} [wrappers]
      *        An object tree containing wrapper functions for special cases. Any
      *        function present in this object tree is called in place of the
      *        method in the same location in the `target` object tree. These
-     *        wrapper methods are invoked as described in {@see wrapMethod}.
+     *        wrapper methods are invoked as described in {@link wrapMethod}.
      *
-     * @param {object} [metadata = {}]
+     * @param {NamespaceMetadata} [metadata]
      *        An object tree containing metadata used to automatically generate
      *        Promise-based wrapper functions for asynchronous. Any function in
      *        the `target` object tree which has a corresponding metadata object
      *        in the same location in the `metadata` tree is replaced with an
      *        automatically-generated wrapper function, as described in
-     *        {@see wrapAsyncFunction}
+     *        {@link wrapAsyncFunction}
      *
-     * @returns {Proxy<object>}
+     * @returns {T}
+     *        A Proxy object for the given target.
      */
     const wrapObject = (target, wrappers = {}, metadata = {}) => {
       let cache = Object.create(null);
@@ -297,16 +320,18 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
         },
       };
 
-      // Per contract of the Proxy API, the "get" proxy handler must return the
-      // original value of the target if that value is declared read-only and
-      // non-configurable. For this reason, we create an object with the
-      // prototype set to `target` instead of using `target` directly.
-      // Otherwise we cannot return a custom object for APIs that
-      // are declared read-only and non-configurable, such as `chrome.devtools`.
-      //
-      // The proxy handlers themselves will still use the original `target`
-      // instead of the `proxyTarget`, so that the methods and properties are
-      // dereferenced via the original targets.
+      /**
+       * Per contract of the Proxy API, the "get" proxy handler must return the
+       * original value of the target if that value is declared read-only and
+       * non-configurable. For this reason, we create an object with the
+       * prototype set to `target` instead of using `target` directly.
+       * Otherwise we cannot return a custom object for APIs that
+       * are declared read-only and non-configurable, such as `chrome.devtools`.
+       *
+       * The proxy handlers themselves will still use the original `target`
+       * instead of the `proxyTarget`, so that the methods and properties are
+       * dereferenced via the original targets.
+       */
       let proxyTarget = Object.create(target);
       return new Proxy(proxyTarget, handlers);
     };
@@ -320,22 +345,37 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * retrieve the original wrapper, so that  attempts to remove a
      * previously-added listener work as expected.
      *
-     * @param {DefaultWeakMap<function, function>} wrapperMap
+     * @template V
+     *
+     * @param {DefaultWeakMap<function, V>} wrapperMap
      *        A DefaultWeakMap object which will create the appropriate wrapper
      *        for a given listener function when one does not exist, and retrieve
      *        an existing one when it does.
-     *
-     * @returns {object}
+     * @returns {{addListener:function(*,V,...any):void,hasListener:function(*,V):boolean,removeListener:function(*,V):void}}
      */
     const wrapEvent = wrapperMap => ({
+      /**
+       * @param {*} target
+       * @param {V} listener
+       * @param  {...any} args
+       */
       addListener(target, listener, ...args) {
         target.addListener(wrapperMap.get(listener), ...args);
       },
 
+      /**
+       * @param {*} target
+       * @param {V} listener
+       * @returns {boolean}
+       */
       hasListener(target, listener) {
         return target.hasListener(wrapperMap.get(listener));
       },
 
+      /**
+       * @param {*} target
+       * @param {V} listener
+       */
       removeListener(target, listener) {
         target.removeListener(wrapperMap.get(listener));
       },
@@ -344,7 +384,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     // Keep track if the deprecation warning has been logged at least once.
     let loggedSendResponseDeprecationWarning = false;
 
-    const onMessageWrappers = new DefaultWeakMap(listener => {
+    const onMessageWrappers = new DefaultWeakMap((/** @type {function} */ listener) => {
       if (typeof listener !== "function") {
         return listener;
       }
@@ -440,6 +480,18 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       };
     });
 
+    /**
+     * The wrapped `sendMessage` callback.
+     *
+     * @param {object} promise
+     *        An object containing the resolution and rejection functions of a
+     *        promise.
+     * @param {function(*):void} promise.resolve
+     *        The promise's resolution function.
+     * @param {function(Error):void} promise.reject
+     *        The promise's rejection function.
+     * @param {*} reply
+     */
     const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
       if (extensionAPIs.runtime.lastError) {
         // Detect when none of the listeners replied to the sendMessage call and resolve
@@ -459,6 +511,13 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       }
     };
 
+    /**
+     * @param {string} name
+     * @param {FunctionMetadata} metadata
+     * @param {{sendMessage:function(...any):void}} apiNamespaceObj
+     * @param  {...any} args
+     * @returns {Promise<any>}
+     */
     const wrappedSendMessage = (name, metadata, apiNamespaceObj, ...args) => {
       if (args.length < metadata.minArgs) {
         throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
@@ -485,6 +544,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
         sendMessage: wrappedSendMessage.bind(null, "sendMessage", {minArgs: 2, maxArgs: 3}),
       },
     };
+    /** @type {NamespaceMetadata} */
     const settingMetadata = {
       clear: {minArgs: 1, maxArgs: 1},
       get: {minArgs: 1, maxArgs: 1},
