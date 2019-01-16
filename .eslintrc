@@ -10,10 +10,8 @@
   "env": {
     "browser": true,
     "es6": true,
+    "node": true,
     "webextensions": true,
-
-    // The script gets processed by UMD, so we have access to CommonJS globals.
-    "commonjs": true,
   },
 
   "globals": {

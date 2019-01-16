@@ -1,7 +1,6 @@
 {
   "env": {
     "mocha": true,
-    "node": true,
   },
   "rules": {
     "max-nested-callbacks": ["warn", 6]
