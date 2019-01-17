@@ -6,7 +6,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.prototype) {
+/**
+ * Checks if the `browser` namespace object is an actual
+ * `browser` namespace object and not an element with
+ * the `[id]` attribute with a value of `browser`.
+ */
+const HAS_BROWSER_NAMESPACE = (typeof browser !== "undefined" && Object.getPrototypeOf(browser) === Object.prototype);
+
+if (!HAS_BROWSER_NAMESPACE) {
   const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
   const SEND_RESPONSE_DEPRECATION_WARNING = "Returning a Promise is the preferred way to send a reply from an onMessage/onMessageExternal listener, as the sendResponse will be removed from the specs (See https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage)";
 
@@ -30,17 +37,26 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * not exist when accessed, but behaves exactly as an ordinary WeakMap
      * otherwise.
      *
-     * @param {function} createItem
-     *        A function which will be called in order to create the value for any
-     *        key which does not exist, the first time it is accessed. The
-     *        function receives, as its only argument, the key being created.
+     * @template {object} K
+     * @template V
      */
     class DefaultWeakMap extends WeakMap {
+      /**
+       * @param {function(K):V} createItem
+       *        A function which will be called in order to create the value for any
+       *        key which does not exist, the first time it is accessed. The
+       *        function receives, as its only argument, the key being created.
+       * @param {ReadonlyArray<[K, V]>} [items]
+       */
       constructor(createItem, items = undefined) {
         super(items);
         this.createItem = createItem;
       }
 
+      /**
+       * @param {K} key
+       * @returns {V}
+       */
       get(key) {
         if (!this.has(key)) {
           this.set(key, this.createItem(key));
@@ -72,20 +88,19 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * - Otherwise, the promise is resolved to an array containing all of the
      *   function's arguments.
      *
+     * @template T
+     *
      * @param {object} promise
      *        An object containing the resolution and rejection functions of a
      *        promise.
-     * @param {function} promise.resolve
+     * @param {function((T|T[])):void} promise.resolve
      *        The promise's resolution function.
-     * @param {function} promise.rejection
+     * @param {function(Error):void} promise.reject
      *        The promise's rejection function.
-     * @param {object} metadata
+     * @param {FunctionMetadata} metadata
      *        Metadata about the wrapped method which has created the callback.
-     * @param {integer} metadata.maxResolvedArgs
-     *        The maximum number of arguments which may be passed to the
-     *        callback created by the wrapped async function.
      *
-     * @returns {function}
+     * @returns {function(...T):void}
      *        The generated callback function.
      */
     const makeCallback = (promise, metadata) => {
@@ -109,19 +124,16 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        The name of the method which is being wrapped.
      * @param {object} metadata
      *        Metadata about the method being wrapped.
-     * @param {integer} metadata.minArgs
+     * @param {number} metadata.minArgs
      *        The minimum number of arguments which must be passed to the
      *        function. If called with fewer than this number of arguments, the
      *        wrapper will raise an exception.
-     * @param {integer} metadata.maxArgs
+     * @param {number} metadata.maxArgs
      *        The maximum number of arguments which may be passed to the
      *        function. If called with more than this number of arguments, the
      *        wrapper will raise an exception.
-     * @param {integer} metadata.maxResolvedArgs
-     *        The maximum number of arguments which may be passed to the
-     *        callback created by the wrapped async function.
      *
-     * @returns {function(object, ...*)}
+     * @returns {function(object, ...*):Promise}
      *       The generated wrapper function.
      */
     const wrapAsyncFunction = (name, metadata) => {
@@ -170,16 +182,18 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * as its first argument, the original `target` object, followed by each of
      * the arguments passed to the original method.
      *
-     * @param {object} target
+     * @template {function} M
+     *
+     * @param {any} target
      *        The original target object that the wrapped method belongs to.
-     * @param {function} method
+     * @param {M} method
      *        The method being wrapped. This is used as the target of the Proxy
      *        object which is created to wrap the method.
      * @param {function} wrapper
      *        The wrapper function which is called in place of a direct invocation
      *        of the wrapped method.
      *
-     * @returns {Proxy<function>}
+     * @returns {M}
      *        A Proxy object for the given method, which invokes the given wrapper
      *        method in its place.
      */
@@ -191,33 +205,46 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       });
     };
 
+    /**
+     * Determines whether an object has a property with the specified name.
+     *
+     * @param {any} target The object to test.
+     * @param {string | number | symbol} v A property name.
+     *
+     * @type {function(any, string | number | symbol):boolean}
+     */
     let hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
 
     /**
      * Wraps an object in a Proxy which intercepts and wraps certain methods
      * based on the given `wrappers` and `metadata` objects.
      *
-     * @param {object} target
+     * @template T
+     *
+     * @param {T} target
      *        The target object to wrap.
      *
-     * @param {object} [wrappers = {}]
+     * @param {object} [wrappers]
      *        An object tree containing wrapper functions for special cases. Any
      *        function present in this object tree is called in place of the
      *        method in the same location in the `target` object tree. These
-     *        wrapper methods are invoked as described in {@see wrapMethod}.
+     *        wrapper methods are invoked as described in {@link wrapMethod}.
      *
-     * @param {object} [metadata = {}]
+     * @param {object} [metadata]
      *        An object tree containing metadata used to automatically generate
      *        Promise-based wrapper functions for asynchronous. Any function in
      *        the `target` object tree which has a corresponding metadata object
      *        in the same location in the `metadata` tree is replaced with an
      *        automatically-generated wrapper function, as described in
-     *        {@see wrapAsyncFunction}
+     *        {@link wrapAsyncFunction}
      *
-     * @returns {Proxy<object>}
+     * @returns {T}
+     *        A Proxy object for the given target.
      */
     const wrapObject = (target, wrappers = {}, metadata = {}) => {
+      /** @type {Partial<T>} */
       let cache = Object.create(null);
+      /** @type {ProxyHandler<T>} */
       let handlers = {
         has(proxyTarget, prop) {
           return prop in target || prop in cache;
@@ -297,16 +324,18 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
         },
       };
 
-      // Per contract of the Proxy API, the "get" proxy handler must return the
-      // original value of the target if that value is declared read-only and
-      // non-configurable. For this reason, we create an object with the
-      // prototype set to `target` instead of using `target` directly.
-      // Otherwise we cannot return a custom object for APIs that
-      // are declared read-only and non-configurable, such as `chrome.devtools`.
-      //
-      // The proxy handlers themselves will still use the original `target`
-      // instead of the `proxyTarget`, so that the methods and properties are
-      // dereferenced via the original targets.
+      /**
+       * Per contract of the Proxy API, the "get" proxy handler must return the
+       * original value of the target if that value is declared read-only and
+       * non-configurable. For this reason, we create an object with the
+       * prototype set to `target` instead of using `target` directly.
+       * Otherwise we cannot return a custom object for APIs that
+       * are declared read-only and non-configurable, such as `chrome.devtools`.
+       *
+       * The proxy handlers themselves will still use the original `target`
+       * instead of the `proxyTarget`, so that the methods and properties are
+       * dereferenced via the original targets.
+       */
       let proxyTarget = Object.create(target);
       return new Proxy(proxyTarget, handlers);
     };
@@ -344,7 +373,10 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     // Keep track if the deprecation warning has been logged at least once.
     let loggedSendResponseDeprecationWarning = false;
 
-    const onMessageWrappers = new DefaultWeakMap(listener => {
+    const onMessageWrappers = new DefaultWeakMap((
+      /** @type {(message, sender: object, sendResponse: (response?: any) => void) => boolean | Promise<any> | void} */
+      listener
+    ) => {
       if (typeof listener !== "function") {
         return listener;
       }
@@ -355,18 +387,19 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
        * callback. If the listener function returns a Promise, the response is
        * sent when the promise either resolves or rejects.
        *
-       * @param {*} message
+       * @param {any} message
        *        The message sent by the other end of the channel.
        * @param {object} sender
        *        Details about the sender of the message.
-       * @param {function(*)} sendResponse
+       * @param {function(any):void} sendResponse
        *        A callback which, when called with an arbitrary argument, sends
        *        that value as a response.
+       *
        * @returns {boolean}
        *        True if the wrapped listener returned a Promise, which will later
        *        yield a response. False otherwise.
        */
-      return function onMessage(message, sender, sendResponse) {
+      return function onMessage(message, sender, /** @type {(response?: any) => void} */ sendResponse) {
         let didCallSendResponse = false;
 
         let wrappedSendResponse;
@@ -397,10 +430,14 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
           return false;
         }
 
-        // A small helper to send the message if the promise resolves
-        // and an error if the promise rejects (a wrapped sendMessage has
-        // to translate the message into a resolved promise or a rejected
-        // promise).
+        /**
+         * A small helper to send the message if the promise resolves
+         * and an error if the promise rejects (a wrapped sendMessage has
+         * to translate the message into a resolved promise or a rejected
+         * promise).
+         *
+         * @param {Promise<any>} promise
+         */
         const sendPromisedResult = (promise) => {
           promise.then(msg => {
             // send the message value.
@@ -487,8 +524,8 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     };
     const settingMetadata = {
       clear: {minArgs: 1, maxArgs: 1},
-      get: {minArgs: 1, maxArgs: 1},
-      set: {minArgs: 1, maxArgs: 1},
+      get:   {minArgs: 1, maxArgs: 1},
+      set:   {minArgs: 1, maxArgs: 1},
     };
     apiMetadata.privacy = {
       network: {
