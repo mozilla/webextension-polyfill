@@ -1,0 +1,59 @@
+{
+  "definitions": {
+
+    "function_metadata": {
+      "type": "object",
+      "properties": {
+        "minArgs": {
+          "description": "The minimum number of arguments which must be passed to the function. If called with fewer than this number of arguments, the wrapper will raise an exception.",
+          "type": "number"
+        },
+        "maxArgs": {
+          "description": "The maximum number of arguments which may be passed to the function. If called with more than this number of arguments, the wrapper will raise an exception.",
+          "type": "number"
+        },
+        "fallbackToNoCallback": {
+          "description": "If the function doesn't take a callback parameter in some browsers and throws an error when a callback is passed.",
+          "type": "boolean"
+        },
+        "noCallback": {
+          "description": "Set when `fallbackToNoCallback` is set and this browser doesn't support callbacks for this function.\nMUST NOT BE SET IN api-metadata.json.",
+          "type": "boolean"
+        },
+        "singleCallbackArg": {
+          "description": "If the function callback takes only one parameter in some browsers.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "minArgs",
+        "maxArgs"
+      ],
+      "not": {
+        "anyOf": [
+          {"required": ["noCallback"]}
+        ]
+      },
+      "additionalProperties": false
+    },
+
+    "namespace_metadata": {
+      "type": "object",
+      "not": {
+        "anyOf": [
+          {"required": ["minArgs"]},
+          {"required": ["maxArgs"]}
+        ]
+      },
+      "additionalProperties": {
+        "anyOf": [
+          { "$ref": "#/definitions/function_metadata" },
+          { "$ref": "#/definitions/namespace_metadata" }
+        ]
+      }
+    }
+
+  },
+
+  "$ref": "#/definitions/namespace_metadata"
+}
