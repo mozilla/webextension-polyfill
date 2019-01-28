@@ -1,6 +1,8 @@
 {
   "env": {
+    "browser": true,
     "node": false,
+    "webextensions": true,
   },
   "globals": {
     // Allow the `module` global, but not the `require(…)` function

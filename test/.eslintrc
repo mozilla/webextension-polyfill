@@ -1,6 +1,8 @@
 {
   "env": {
+    "browser": true,
     "mocha": true,
+    "webextensions": true,
   },
   "rules": {
     "max-nested-callbacks": ["warn", 6]
