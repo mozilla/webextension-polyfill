@@ -16,7 +16,7 @@ const {cp} = require("shelljs");
 const TEST_TIMEOUT = 5000;
 
 const launchBrowser = async (launchOptions) => {
-  const browser = launchOptions.browser || process.env.TEST_BROWSER_TYPE;
+  const browser = launchOptions.browser;
   const extensionPath = launchOptions.extensionPath;
 
   let driver;
@@ -98,12 +98,12 @@ const createHTTPServer = async (path) => {
   });
 };
 
-async function runExtensionTest(t, server, driver, extensionDirName) {
+async function runExtensionTest(t, server, driver, extensionDirName, browser) {
   try {
     const url = `http://localhost:${server.address().port}`;
     const userAgent = await driver.executeScript(() => window.navigator.userAgent);
 
-    t.pass(`Connected to browser: ${userAgent}"`);
+    t.pass(`Connected to ${browser} browser: ${userAgent}"`);
 
     await driver.get(url);
 
@@ -138,22 +138,45 @@ const bundleTapeStandalone = async (destDir) => {
 
   const stream = b.bundle();
   const onceStreamEnd = awaitStreamEnd(stream);
-  stream.pipe(fs.createWriteStream(bundleFileName));
+  const destFileStream = fs.createWriteStream(bundleFileName);
+  const onceWritten = new Promise(resolve => {
+    destFileStream.on("close", resolve);
+  });
+  stream.pipe(destFileStream);
 
-  await onceStreamEnd;
+  await Promise.all([onceStreamEnd, onceWritten]);
 };
 
 test.onFailure(() => {
   process.exit(1);
 });
 
-const defineExtensionTests = ({description, extensions}) => {
+/**
+ * @param {object} parameters
+ * @param {string} parameters.description
+ * @param {string[]} parameters.extensions
+ * @param {boolean|string|string[]} [parameters.skip]
+ */
+const defineExtensionTests = ({description, extensions, skip}) => {
   for (const extensionDirName of extensions) {
     test(`${description} (test extension: ${extensionDirName})`, async (tt) => {
       let timeout;
       let driver;
       let server;
       let tempDir;
+
+      const browser = process.env.TEST_BROWSER_TYPE;
+
+      if (skip) {
+        if (skip === true) {
+          tt.skip("Test extension skipped");
+          return;
+        } else if (skip instanceof Array ? skip.includes(browser) : skip === browser) {
+          tt.skip("Test extension skipped on: " + browser);
+          return;
+        }
+        console.log(`Skip condition ignored: '${skip}' != '${browser}'`);
+      }
 
       try {
         const srcExtensionPath = path.resolve(
@@ -169,9 +192,9 @@ const defineExtensionTests = ({description, extensions}) => {
         await bundleTapeStandalone(extensionPath);
 
         server = await createHTTPServer(path.join(__dirname, "..", "fixtures"));
-        driver = await launchBrowser({extensionPath});
+        driver = await launchBrowser({extensionPath, browser});
         await Promise.race([
-          runExtensionTest(tt, server, driver, extensionDirName),
+          runExtensionTest(tt, server, driver, extensionDirName, browser),
           new Promise((resolve, reject) => {
             timeout = setTimeout(() => reject(new Error(`test timeout after ${TEST_TIMEOUT}`)), TEST_TIMEOUT);
           }),

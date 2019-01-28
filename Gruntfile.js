@@ -2,13 +2,11 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-/* eslint-env commonjs */
-
 const LICENSE = `/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */`;
 
-const MINIFIED_FILE_FOOTER = `\n\n// <%= pkg.name %> v.<%= pkg.version %> (<%= pkg.homepage %>)\n\n${LICENSE}`;
+const MINIFIED_FILE_FOOTER = `\n// <%= pkg.name %> v.<%= pkg.version %> (<%= pkg.homepage %>)\n\n${LICENSE}\n`;
 
 module.exports = function(grunt) {
   grunt.initConfig({
@@ -22,7 +20,7 @@ module.exports = function(grunt) {
 
     eslint: {
       src: ["src/browser-polyfill.js", "Gruntfile.js"],
-      test: ["test/**/*.js"],
+      test: ["test/**/*.js", "scripts/**/*.js"],
     },
 
     replace: {

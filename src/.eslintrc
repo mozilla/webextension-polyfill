@@ -1,0 +1,9 @@
+{
+  "env": {
+    "node": false,
+  },
+  "globals": {
+    // Allow the `module` global, but not the `require(…)` function
+    "module": false,
+  },
+}
