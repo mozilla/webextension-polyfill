@@ -60,7 +60,7 @@ For extensions that do not include a package.json file and/or prefer to download
 
 - https://unpkg.com/webextension-polyfill/dist/
 
-and linked to the github releases:
+and linked to the Github releases:
 
 - https://github.com/mozilla/webextension-polyfill/releases
 
@@ -311,9 +311,9 @@ If the content script code result is a Promise, the promise returned by `browser
 
 Once the first Chrome-based MSEdge version is going to be released, we will be able to verify if any actual changes to this polyfill is needed to officially support the Chrome-based MSEdge versions.
 
-In the meantime, for addon developers that still have to work on MSEdge extensions before it is switched to the next Chromium-based version, the MSEdge `--ms-preload` manifest key and the [Microsoft Edge Extension Toolkit](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/porting-chrome-extensions)'s Chrome API bridge can be used to be able to load the webextension-polyfill without any MSEdge specific changes.
+In the meantime, for extension developers that still have to work on MSEdge extensions before it is switched to the next Chromium-based version, the MSEdge `--ms-preload` manifest key and the [Microsoft Edge Extension Toolkit](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/porting-chrome-extensions)'s Chrome API bridge can be used to be able to load the webextension-polyfill without any MSEdge specific changes.
 
-The following github repository provides some additional detail about this strategy and provide a minimal test extension that shows how to put it together:
+The following Github repository provides some additional detail about this strategy and a minimal test extension that shows how to put it together:
 
 - https://github.com/rpl/example-msedge-extension-with-webextension-polyfill
 
