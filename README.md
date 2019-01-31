@@ -309,7 +309,7 @@ If the content script code result is a Promise, the promise returned by `browser
 
 [With the Microsoft announcement related to the MSEdge future](https://github.com/MicrosoftEdge/MSEdge/blob/master/README.md) there aren't many compelling reasons to officially include in this polyfill any workarounds specific to the current MSEdge versions (and then maintaining them over the time), and so MSEdge is currently **unsupported**.
 
-Once the first Chrome-based MSEdge version is going to be released, we will be able to verify if any actual changes to this polyfill is needed to officially support the Chrome-based MSEdge versions.
+Once the first Chrome-based MSEdge version is going to be released, we will be able to verify if any actual changes to this polyfill are needed to officially support the Chrome-based MSEdge versions.
 
 In the meantime, for extension developers that still have to work on MSEdge extensions before it is switched to the next Chromium-based version, the MSEdge `--ms-preload` manifest key and the [Microsoft Edge Extension Toolkit](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/porting-chrome-extensions)'s Chrome API bridge can be used to be able to load the webextension-polyfill without any MSEdge specific changes.
 
