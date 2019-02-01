@@ -18,6 +18,7 @@ const TEST_TIMEOUT = 5000;
 const launchBrowser = async (launchOptions) => {
   const browser = launchOptions.browser;
   const extensionPath = launchOptions.extensionPath;
+  const openDevTools = launchOptions.openDevTools;
 
   let driver;
 
@@ -36,6 +37,10 @@ const launchBrowser = async (launchOptions) => {
       // See https://docs.travis-ci.com/user/chrome and issue #85 for a rationale.
       "--no-sandbox",
     ]);
+
+    if (openDevTools) {
+      options.addArguments(["-auto-open-devtools-for-tabs"]);
+    }
 
     if (process.env.TEST_NATIVE_CRX_BINDINGS === "1") {
       console.warn("NOTE: Running tests on a Chrome instance with NativeCrxBindings enabled.");
@@ -58,6 +63,10 @@ const launchBrowser = async (launchOptions) => {
 
     if (process.env.HEADLESS === "1") {
       options.headless();
+    }
+
+    if (openDevTools) {
+      options.addArguments("-devtools");
     }
 
     driver = await new Builder()
@@ -157,7 +166,7 @@ test.onFailure(() => {
  * @param {string[]} parameters.extensions
  * @param {boolean|string|string[]} [parameters.skip]
  */
-const defineExtensionTests = ({description, extensions, skip}) => {
+const defineExtensionTests = ({description, extensions, skip, openDevTools}) => {
   for (const extensionDirName of extensions) {
     test(`${description} (test extension: ${extensionDirName})`, async (tt) => {
       let timeout;
@@ -192,7 +201,7 @@ const defineExtensionTests = ({description, extensions, skip}) => {
         await bundleTapeStandalone(extensionPath);
 
         server = await createHTTPServer(path.join(__dirname, "..", "fixtures"));
-        driver = await launchBrowser({extensionPath, browser});
+        driver = await launchBrowser({extensionPath, browser, openDevTools});
         await Promise.race([
           runExtensionTest(tt, server, driver, extensionDirName, browser),
           new Promise((resolve, reject) => {

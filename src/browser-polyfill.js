@@ -92,7 +92,8 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       return (...callbackArgs) => {
         if (extensionAPIs.runtime.lastError) {
           promise.reject(extensionAPIs.runtime.lastError);
-        } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
+        } else if (metadata.singleCallbackArg ||
+                   (callbackArgs.length <= 1 && metadata.singleCallbackArg !== false)) {
           promise.resolve(callbackArgs[0]);
         } else {
           promise.resolve(callbackArgs);

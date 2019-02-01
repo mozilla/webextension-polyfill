@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "test-extension-devtools-api",
+  "version": "0.1",
+  "description": "test-extension-devtools-api",
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*"
+      ],
+      "js": [
+        "browser-polyfill.js",
+        "tape.js",
+        "content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": [],
+  "background": {
+    "scripts": [
+      "browser-polyfill.js",
+      "background.js"
+    ]
+  },
+  "devtools_page": "devtools_page.html"
+}

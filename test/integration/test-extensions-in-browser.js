@@ -26,3 +26,9 @@ defineExtensionTests({
   description: "Instance of BrowserSetting API",
   extensions: ["privacy-setting-extension"],
 });
+
+defineExtensionTests({
+  description: "browser.devtools",
+  extensions: ["devtools-extension"],
+  openDevTools: true,
+});
