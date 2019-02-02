@@ -6,14 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-/**
- * Checks if the `browser` namespace object is an actual
- * `browser` namespace object and not an element with
- * the `[id]` attribute with a value of `browser`.
- */
-const HAS_BROWSER_NAMESPACE = (typeof browser !== "undefined" && Object.getPrototypeOf(browser) === Object.prototype);
-
-if (!HAS_BROWSER_NAMESPACE) {
+if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.prototype) {
   const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
   const SEND_RESPONSE_DEPRECATION_WARNING = "Returning a Promise is the preferred way to send a reply from an onMessage/onMessageExternal listener, as the sendResponse will be removed from the specs (See https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage)";
 
@@ -39,6 +32,8 @@ if (!HAS_BROWSER_NAMESPACE) {
      *
      * @template {object} K
      * @template V
+     *
+     * @extends {WeakMap<K, V>}
      */
     class DefaultWeakMap extends WeakMap {
       /**
@@ -53,10 +48,6 @@ if (!HAS_BROWSER_NAMESPACE) {
         this.createItem = createItem;
       }
 
-      /**
-       * @param {K} key
-       * @returns {V}
-       */
       get(key) {
         if (!this.has(key)) {
           this.set(key, this.createItem(key));
@@ -88,19 +79,19 @@ if (!HAS_BROWSER_NAMESPACE) {
      * - Otherwise, the promise is resolved to an array containing all of the
      *   function's arguments.
      *
-     * @template T
-     *
      * @param {object} promise
      *        An object containing the resolution and rejection functions of a
      *        promise.
-     * @param {function((T|T[])):void} promise.resolve
+     * @param {function(any):void} promise.resolve
      *        The promise's resolution function.
-     * @param {function(Error):void} promise.reject
+     * @param {function(any):void} promise.reject
      *        The promise's rejection function.
-     * @param {FunctionMetadata} metadata
+     * @param {object} metadata
      *        Metadata about the wrapped method which has created the callback.
+     * @param {boolean} metadata.singleCallbackArg
+     *        If the function callback takes only one parameter in some browsers.
      *
-     * @returns {function(...T):void}
+     * @returns {function(...any):void}
      *        The generated callback function.
      */
     const makeCallback = (promise, metadata) => {
@@ -211,7 +202,7 @@ if (!HAS_BROWSER_NAMESPACE) {
      * @param {any} target The object to test.
      * @param {string | number | symbol} v A property name.
      *
-     * @type {function(any, string | number | symbol):boolean}
+     * @type {(target: any, v: string | number | symbol) => boolean}
      */
     let hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
 
@@ -423,7 +414,7 @@ if (!HAS_BROWSER_NAMESPACE) {
 
         const isResultThenable = result !== true && isThenable(result);
 
-        // If the listener didn't returned true or a Promise, or called
+        // If the listener didn't return true or a Promise, or called
         // wrappedSendResponse synchronously, we can exit earlier
         // because there will be no response sent from this listener.
         if (result !== true && !isResultThenable && !didCallSendResponse) {
@@ -477,6 +468,31 @@ if (!HAS_BROWSER_NAMESPACE) {
       };
     });
 
+    /**
+     * Creates and returns a function which, when called, will resolve or reject
+     * the given promise based on how it is called:
+     *
+     * - If, when called, `chrome.runtime.lastError` contains a non-null object,
+     *   the promise is rejected with that value.
+     * - If the function is called with exactly one argument, the promise is
+     *   resolved to that value.
+     * - Otherwise, the promise is resolved to an array containing all of the
+     *   function's arguments.
+     *
+     * @param {object} promise
+     *        An object containing the resolution and rejection functions of a
+     *        promise.
+     * @param {function(any):void} promise.resolve
+     *        The promise's resolution function.
+     * @param {function(any):void} promise.reject
+     *        The promise's rejection function.
+     * @param {object} [reply]
+     *        The reply
+     * @param {boolean} [reply.__mozWebExtensionPolyfillReject__]
+     *        If defined and `true`, then the reply is a wrapped `Error` object
+     * @param {string} [reply.message]
+     *        The message of a wrapped `Error` object
+     */
     const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
       if (extensionAPIs.runtime.lastError) {
         // Detect when none of the listeners replied to the sendMessage call and resolve

@@ -429,7 +429,7 @@
     "sort-vars": 0,
 
     // Require a space immediately following the // in a line comment.
-    "spaced-comment": [2, "always", { "markers": ["/"] }],
+    "spaced-comment": [2, "always"],
 
     // Require "use strict" to be defined globally in the script.
     "strict": [0, "global"],
