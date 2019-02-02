@@ -21,7 +21,7 @@
           "type": "boolean"
         },
         "singleCallbackArg": {
-          "description": "If the function callback takes only one parameter in some browsers.",
+          "description": "If the function callback takes only one parameter.\nSet to `false` to enforce that the function's varargs are never unwrapped.",
           "type": "boolean"
         }
       },
