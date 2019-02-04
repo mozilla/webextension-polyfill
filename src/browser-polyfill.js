@@ -175,7 +175,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *
      * @template {function} M
      *
-     * @param {any} target
+     * @param {object} target
      *        The original target object that the wrapped method belongs to.
      * @param {M} method
      *        The method being wrapped. This is used as the target of the Proxy
@@ -200,9 +200,9 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * Determines whether an object has a property with the specified name.
      *
      * @param {any} target The object to test.
-     * @param {string | number | symbol} v A property name.
+     * @param {PropertyKey} v A property name.
      *
-     * @type {(target: any, v: string | number | symbol) => boolean}
+     * @type {(target: any, v: PropertyKey) => boolean}
      */
     let hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
 
@@ -233,7 +233,6 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        A Proxy object for the given target.
      */
     const wrapObject = (target, wrappers = {}, metadata = {}) => {
-      /** @type {Partial<T>} */
       let cache = Object.create(null);
       /** @type {ProxyHandler<T>} */
       let handlers = {
@@ -315,18 +314,16 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
         },
       };
 
-      /**
-       * Per contract of the Proxy API, the "get" proxy handler must return the
-       * original value of the target if that value is declared read-only and
-       * non-configurable. For this reason, we create an object with the
-       * prototype set to `target` instead of using `target` directly.
-       * Otherwise we cannot return a custom object for APIs that
-       * are declared read-only and non-configurable, such as `chrome.devtools`.
-       *
-       * The proxy handlers themselves will still use the original `target`
-       * instead of the `proxyTarget`, so that the methods and properties are
-       * dereferenced via the original targets.
-       */
+      // Per contract of the Proxy API, the "get" proxy handler must return the
+      // original value of the target if that value is declared read-only and
+      // non-configurable. For this reason, we create an object with the
+      // prototype set to `target` instead of using `target` directly.
+      // Otherwise we cannot return a custom object for APIs that
+      // are declared read-only and non-configurable, such as `chrome.devtools`.
+      //
+      // The proxy handlers themselves will still use the original `target`
+      // instead of the `proxyTarget`, so that the methods and properties are
+      // dereferenced via the original targets.
       let proxyTarget = Object.create(target);
       return new Proxy(proxyTarget, handlers);
     };
@@ -540,8 +537,8 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     };
     const settingMetadata = {
       clear: {minArgs: 1, maxArgs: 1},
-      get:   {minArgs: 1, maxArgs: 1},
-      set:   {minArgs: 1, maxArgs: 1},
+      get: {minArgs: 1, maxArgs: 1},
+      set: {minArgs: 1, maxArgs: 1},
     };
     apiMetadata.privacy = {
       network: {
