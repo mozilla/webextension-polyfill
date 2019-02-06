@@ -387,7 +387,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
        *        True if the wrapped listener returned a Promise, which will later
        *        yield a response. False otherwise.
        */
-      return function onMessage(message, sender, /** @type {(response?: any) => void} */ sendResponse) {
+      return function onMessage(message, sender, sendResponse) {
         let didCallSendResponse = false;
 
         let wrappedSendResponse;
