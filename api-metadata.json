@@ -207,7 +207,8 @@
     "inspectedWindow": {
       "eval": {
         "minArgs": 1,
-        "maxArgs": 2
+        "maxArgs": 2,
+        "singleCallbackArg": false
       }
     },
     "panels": {

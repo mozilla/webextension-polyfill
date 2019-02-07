@@ -8,9 +8,8 @@
   },
 
   "env": {
-    "browser": true,
     "es6": true,
-    "webextensions": true,
+    "node": true,
   },
 
   "globals": {
