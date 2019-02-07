@@ -484,8 +484,11 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        The promise's resolution function.
      * @param {function(any):void} promise.reject
      *        The promise's rejection function.
-     * @param {object} [reply]
-     *        The reply
+     * @param {any} [reply]
+     *        The reply.
+     *
+     *        When `reply.__mozWebExtensionPolyfillReject__` is defined and `true`,
+     *        then the reply is a wrapped `Error` object.
      * @param {boolean} [reply.__mozWebExtensionPolyfillReject__]
      *        If defined and `true`, then the reply is a wrapped `Error` object
      * @param {string} [reply.message]
