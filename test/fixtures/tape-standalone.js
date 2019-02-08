@@ -10,8 +10,12 @@ if (navigator.userAgent.includes("Chrome/")) {
 }
 
 // Export as a global a wrapped test function which enforces a timeout by default.
-window.test = (desc, fn) => {
-  tape(`${desc} (${browser})`, async (t) => {
+window.test = (desc, options, fn) => {
+  if (!fn && typeof options === "function") {
+    fn = options;
+    options = undefined;
+  }
+  tape(`${desc} (${browser})`, options, async (t) => {
     t.timeoutAfter(DEFAULT_TIMEOUT);
     await fn(t);
   });

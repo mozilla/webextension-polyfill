@@ -1,4 +1,6 @@
-test("devtools.inspectedWindow.eval resolved with an error result", async (t) => {
+test("devtools.inspectedWindow.eval resolved with an error result", {
+  timeout: 5000,
+}, async (t) => {
   const {evalResult} = await browser.runtime.sendMessage({
     apiMethod: "devtools.inspectedWindow.eval",
     params: ["throw new Error('fake error');"],
@@ -14,7 +16,9 @@ test("devtools.inspectedWindow.eval resolved with an error result", async (t) =>
        "the second element value property should include the expected error message");
 });
 
-test("devtools.inspectedWindow.eval resolved without an error result", async (t) => {
+test("devtools.inspectedWindow.eval resolved without an error result", {
+  timeout: 5000,
+}, async (t) => {
   const {evalResult} = await browser.runtime.sendMessage({
     apiMethod: "devtools.inspectedWindow.eval",
     params: ["[document.documentElement.localName]"],
