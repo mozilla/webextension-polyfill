@@ -15,7 +15,7 @@ function getArgs(/* desc, options, fn */) {
   // it a to have a signature of `{timeout: number}` instead of `{}`
   // with a `timeout` property, which is easier on the C++ portion.
   let options = {timeout: 0};
-  /** @type {function(any):void|Promise<void>} */
+  /** @type {function(import("tape").Test):void|Promise<void>} */
   let fn;
 
   for (let i = 0, arg; i < arguments.length; i++) {
@@ -33,7 +33,7 @@ function getArgs(/* desc, options, fn */) {
     }
   }
 
-  if (!options.timeout || options.timeout < DEFAULT_TIMEOUT) {
+  if (!options.timeout) {
     options.timeout = DEFAULT_TIMEOUT;
   }
 
@@ -45,10 +45,11 @@ function getArgs(/* desc, options, fn */) {
 }
 
 // Export as a global a wrapped test function which enforces a timeout by default.
+// eslint-disable-next-line
 /**
  * @param {string} [desc]
  * @param {object} [options]
- * @param {function(any):void|Promise<void>} fn
+ * @param {(test: import("tape").Test) => void|Promise<void>} fn
  */
 window.test = (desc, options, fn) => {
   ({desc, options, fn} = getArgs(desc, options, fn));
