@@ -10,19 +10,23 @@ if (navigator.userAgent.includes("Chrome/")) {
 }
 
 // Export as a global a wrapped test function which enforces a timeout by default.
-// eslint-disable-next-line
 /**
  * @param {string} desc
- * @param {import("tape").TestOptions|null} [options]
- * @param {(test: import("tape").Test) => void|Promise<void>} fn
+ *        The test description
+ * @param {object} [options]
+ *        The test options, can be omitted.
+ * @param {number} [options.timeout=DEFAULT_TIMEOUT]
+ *        The time after which the test fails automatically, unless it has already passed.
+ * @param {boolean} [options.skip]
+ *        Whether the test case should be skipped.
+ * @param {function(tape.Test):void|Promise<void>} fn
+ *        The test case function, takes the test object as a callback.
  */
 window.test = (desc, options, fn) => {
   if (typeof options === "function") {
     // Allow swapping options with fn
     if (typeof fn === "object" && fn) {
-      let tmp = fn;
-      fn = options;
-      options = tmp;
+      [fn, options] = [options, fn];
     } else {
       fn = options;
       options = undefined;
