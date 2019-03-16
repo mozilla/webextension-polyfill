@@ -19,18 +19,13 @@ if (navigator.userAgent.includes("Chrome/")) {
  *        The time after which the test fails automatically, unless it has already passed.
  * @param {boolean} [options.skip]
  *        Whether the test case should be skipped.
- * @param {function(tape.Test):void|Promise<void>} fn
+ * @param {function(tape.Test):(void|Promise<void>)} fn
  *        The test case function, takes the test object as a callback.
  */
 window.test = (desc, options, fn) => {
   if (typeof options === "function") {
     // Allow swapping options with fn
-    if (typeof fn === "object" && fn) {
-      [fn, options] = [options, fn];
-    } else {
-      fn = options;
-      options = undefined;
-    }
+    [fn, options] = [options, fn];
   }
 
   options = {
