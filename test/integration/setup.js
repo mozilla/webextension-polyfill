@@ -165,6 +165,7 @@ test.onFailure(() => {
  * @param {string} parameters.description
  * @param {string[]} parameters.extensions
  * @param {boolean|string|string[]} [parameters.skip]
+ * @param {boolean} [parameters.openDevTools]
  */
 const defineExtensionTests = ({description, extensions, skip, openDevTools}) => {
   for (const extensionDirName of extensions) {
@@ -192,8 +193,8 @@ const defineExtensionTests = ({description, extensions, skip, openDevTools}) => 
           path.join(__dirname, "..", "fixtures", extensionDirName));
         const srcPolyfill = path.join(__dirname, "..", "..", "dist", "browser-polyfill.js");
 
-        const tmpDir = tmp.dirSync({unsafeCleanup: true});
-        const extensionPath = path.join(tmpDir.name, extensionDirName);
+        tempDir = tmp.dirSync({unsafeCleanup: true});
+        const extensionPath = path.join(tempDir.name, extensionDirName);
 
         cp("-rf", srcExtensionPath, extensionPath);
         cp("-f", srcPolyfill, extensionPath);
