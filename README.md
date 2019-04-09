@@ -284,8 +284,11 @@ This library takes its knowledge of the APIs to wrap and their signatures from a
 If an API method is not yet included in this "API metadata" file, it will not be recognized.
 Promises are not supported for unrecognized APIs, and callbacks have to be used for them.
 
-File an issue in this repository for API methods that supports a callback on Chrome and
-are currently missing from the "API metadata" file.
+Chrome-only APIs have no promise version, because extensions that use such APIs
+would not be compatible with Firefox.
+
+File an issue in this repository for API methods that support callbacks in Chrome *and*
+Firefox but are currently missing from the "API metadata" file.
 
 ### Issues that happen only when running on Firefox
 
