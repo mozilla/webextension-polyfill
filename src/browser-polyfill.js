@@ -92,7 +92,8 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       return (...callbackArgs) => {
         if (extensionAPIs.runtime.lastError) {
           promise.reject(extensionAPIs.runtime.lastError);
-        } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
+        } else if (metadata.singleCallbackArg ||
+                   (callbackArgs.length <= 1 && metadata.singleCallbackArg !== false)) {
           promise.resolve(callbackArgs[0]);
         } else {
           promise.resolve(callbackArgs);
@@ -509,7 +510,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
 
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
-  module.exports = wrapAPIs(chrome); // eslint-disable-line no-undef
+  module.exports = wrapAPIs(chrome);
 } else {
-  module.exports = browser; // eslint-disable-line no-undef
+  module.exports = browser;
 }

@@ -1,6 +1,6 @@
 {
   "name": "webextension-polyfill",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A lightweight polyfill library for Promise-based WebExtension APIs in Chrome.",
   "main": "dist/browser-polyfill.js",
   "files": [
@@ -28,9 +28,10 @@
     "browserify": "^16.2.2",
     "chai": "^3.5.0",
     "chromedriver": "^2.38.3",
+    "cross-env": "^5.2.0",
     "eslint": "^3.9.1",
     "finalhandler": "^1.1.0",
-    "geckodriver": "^1.11.0",
+    "geckodriver": "^1.11.2",
     "global-replaceify": "^1.0.0",
     "grunt": "^1.0.1",
     "grunt-babel": "^6.0.0",
@@ -64,8 +65,10 @@
     "prepublish": "npm run build && npm run test",
     "publish-coverage": "grunt coveralls",
     "test": "mocha",
-    "test-coverage": "COVERAGE=y nyc mocha",
-    "test-minified": "TEST_MINIFIED_POLYFILL=1 mocha",
-    "test-integration": "tape test/integration/test-*"
+    "test-coverage": "cross-env COVERAGE=y nyc mocha",
+    "test-minified": "cross-env TEST_MINIFIED_POLYFILL=1 mocha",
+    "test-integration": "tape test/integration/test-*",
+    "test-integration:chrome": "cross-env TEST_BROWSER_TYPE=chrome npm run test-integration | tap-nirvana",
+    "test-integration:firefox": "cross-env TEST_BROWSER_TYPE=firefox npm run test-integration | tap-nirvana"
   }
 }

@@ -29,7 +29,7 @@ Supported Browsers
 | Chrome        | *Officially Supported* (with automated tests)                                                        |
 | Firefox       | *Officially Supported as a NO-OP* (with automated tests for comparison with the behaviors on Chrome) |
 | Opera         | *Unofficially Supported* as a Chrome-compatible target (but not explicitly tested in automation)     |
-| Edge          | *Not supported* (may become unofficially supported once [#114][PR-114] lands)                          |
+| Edge          | *Not supported* (See [MSEdge Support](#msedge-support) section)                                      |
 
 The polyfill is being tested explictly (with automated tests that run on every pull request) on **officially supported** 
 browsers (that are currently the last stable versions of Chrome and Firefox).
@@ -60,7 +60,7 @@ For extensions that do not include a package.json file and/or prefer to download
 
 - https://unpkg.com/webextension-polyfill/dist/
 
-and linked to the github releases:
+and linked to the Github releases:
 
 - https://github.com/mozilla/webextension-polyfill/releases
 
@@ -284,8 +284,11 @@ This library takes its knowledge of the APIs to wrap and their signatures from a
 If an API method is not yet included in this "API metadata" file, it will not be recognized.
 Promises are not supported for unrecognized APIs, and callbacks have to be used for them.
 
-File an issue in this repository for API methods that supports a callback on Chrome and
-are currently missing from the "API metadata" file.
+Chrome-only APIs have no promise version, because extensions that use such APIs
+would not be compatible with Firefox.
+
+File an issue in this repository for API methods that support callbacks in Chrome *and*
+Firefox but are currently missing from the "API metadata" file.
 
 ### Issues that happen only when running on Firefox
 
@@ -304,6 +307,18 @@ On Firefox `browser.tabs.executeScript` returns a promise which resolves to the 
 
 On Chrome, the `browser.tabs.executeScript` API method as polyfilled by this library also returns a promise which resolves to the result of the content script code, but only immediate values are supported.
 If the content script code result is a Promise, the promise returned by `browser.tabs.executeScript` will be resolved to `undefined`.
+
+### MSEdge support
+
+[With the Microsoft announcement related to the MSEdge future](https://github.com/MicrosoftEdge/MSEdge/blob/master/README.md) there aren't many compelling reasons to officially include in this polyfill any workarounds specific to the current MSEdge versions (and then maintaining them over the time), and so MSEdge is currently **unsupported**.
+
+Once the first Chrome-based MSEdge version is going to be released, we will be able to verify if any actual changes to this polyfill are needed to officially support the Chrome-based MSEdge versions.
+
+In the meantime, for extension developers that still have to work on MSEdge extensions before it is switched to the next Chromium-based version, the MSEdge `--ms-preload` manifest key and the [Microsoft Edge Extension Toolkit](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/porting-chrome-extensions)'s Chrome API bridge can be used to be able to load the webextension-polyfill without any MSEdge specific changes.
+
+The following Github repository provides some additional detail about this strategy and a minimal test extension that shows how to put it together:
+
+- https://github.com/rpl/example-msedge-extension-with-webextension-polyfill
 
 ## Contributing to this project
 

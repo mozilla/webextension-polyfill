@@ -1,11 +1,9 @@
 {
   "env": {
-    "mocha": true,
-    "node": true,
     "browser": true,
-    "webextensions": true
+    "mocha": true,
+    "webextensions": true,
   },
-  "globals": {},
   "rules": {
     "max-nested-callbacks": ["warn", 6]
   }
