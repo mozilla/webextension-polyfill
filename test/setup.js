@@ -37,6 +37,17 @@ function setupTestDOMWindow(chromeObject, browserObject = undefined) {
   return new Promise((resolve, reject) => {
     const window = testDOMWindow;
 
+    // Ensure that "chrome.runtime.id" is set, because the polyfill is only
+    // loaded in extension environments.
+    if (chromeObject) {
+      if (!chromeObject.runtime) {
+        chromeObject.runtime = {};
+      }
+      if (!chromeObject.runtime.id) {
+        chromeObject.runtime.id = "some-test-id-from-test-setup";
+      }
+    }
+
     // Inject the fake chrome object used as a fixture for the particular
     // browser-polyfill test scenario.
     window.chrome = chromeObject;

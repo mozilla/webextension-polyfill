@@ -508,6 +508,10 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
   };
 
+  if (typeof chrome != "object" || !chrome || !chrome.runtime || !chrome.runtime.id) {
+    throw new Error("This script should only be loaded in a browser extension.");
+  }
+
   // The build process adds a UMD wrapper around this file, which makes the
   // `module` variable available.
   module.exports = wrapAPIs(chrome);

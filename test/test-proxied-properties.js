@@ -159,9 +159,16 @@ describe("browser-polyfill", () => {
           Object.defineProperty(this, "runtime", {value});
           return value;
         },
+        get tabs() {
+          ok(false, "chrome.tabs should not lazily be initialized without explicit API call");
+        },
       };
       return setupTestDOMWindow(fakeChrome).then(window => {
-        equal(lazyInitCount, 0, "chrome.runtime should not be initialized without explicit API call");
+        // This used to be equal(lazyInitCount, 0, ...), but was changed to
+        // accomodate a change in the implementation of the polyfill.
+        // To verify that APIs are not unnecessarily initialized, the fakeChrome
+        // object has a "tabs" getter that fails the test upon access.
+        equal(lazyInitCount, 1, "chrome.runtime should be initialized because chrome.runtime.id is accessed during polyfill initialization");
 
         window.browser.runtime.onMessage.addListener(() => {});
         equal(lazyInitCount, 1, "chrome.runtime should be initialized upon accessing browser.runtime");
