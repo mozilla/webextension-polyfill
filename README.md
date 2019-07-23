@@ -299,7 +299,9 @@ When an extension that uses this library doesn't behave as expected on Firefox, 
 
 ### API methods or options that are only available when running in Firefox
 
-This library does not provide any polyfill for API methods and options that are only available on Firefox, and they are actually considered out of the scope of this library.
+This library does not provide any polyfill for API methods and options that are only available on Firefox, and they are actually considered out of the scope of this library. There may however be polyfills available for Chrome, such as:
+
+- [`contentScripts.register()` polyfill](https://github.com/bfred-it/content-scripts-register-polyfill)
 
 ### tabs.executeScript
 
