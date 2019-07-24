@@ -155,6 +155,38 @@ var browser = require("webextension-polyfill/dist/browser-polyfill.min");
 ...
 ```
 
+### Preferred Usage with webpack
+
+The previous section explains how to bundle `webextension-polyfill` in each script. This other method will instead include a single copy of the polyfill across your extension. You will need a special plugin:
+
+```sh
+npm install --save-dev copy-webpack-plugin
+```
+
+**In `webpack.config.js`,** require the plugin and configure it this way. It will copy the minified file into your _output_ folder, wherever your other webpack files are generated.
+
+```js
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+	/* Your regular webpack config, probably including something like this:
+  output: {
+    path: path.join(__dirname, 'distribution'),
+    filename: '[name].js'
+  },
+  */
+	plugins: [
+		new CopyWebpackPlugin([
+			{
+				from: 'node_modules/webextension-polyfill/dist/browser-polyfill.js'
+			}
+		])
+	]
+}
+```
+
+And then include the file in each context, using the `manifest.json` just like in [Basic Setup](#basic-setup).
+
 ## Using the Promise-based APIs
 
 The Promise-based APIs in the `browser` namespace work, for the most part,
