@@ -31,7 +31,7 @@ Supported Browsers
 | Opera         | *Unofficially Supported* as a Chrome-compatible target (but not explicitly tested in automation)     |
 | Edge          | *Not supported* (See [MSEdge Support](#msedge-support) section)                                      |
 
-The polyfill is being tested explictly (with automated tests that run on every pull request) on **officially supported** 
+The polyfill is being tested explicitly (with automated tests that run on every pull request) on **officially supported** 
 browsers (that are currently the last stable versions of Chrome and Firefox).
 
 On Firefox, this library is actually acting as a NO-OP: it detects that the `browser` API object is already defined 
@@ -118,7 +118,7 @@ browser.tabs.executeScript({file: "content.js"}).then(result => {
 
 ### Basic Setup with module bundlers
 
-This library is built as a **UMD module** (Universal Module Definition), and so it can also be used with module bundlers (and explictly tested on both **webpack** and **browserify**) or AMD module loaders.
+This library is built as a **UMD module** (Universal Module Definition), and so it can also be used with module bundlers (and explicitly tested on both **webpack** and **browserify**) or AMD module loaders.
 
 **src/background.js**:
 ```javascript
