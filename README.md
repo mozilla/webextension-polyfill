@@ -16,7 +16,7 @@ Table of contents
 * [Installation](#installation)
 * [Basic Setup](#basic-setup)
   * [Basic Setup with module bundlers](#basic-setup-with-module-bundlers)
-  * [Preferred Usage with webpack](#preferred-usage-with-webpack)
+  * [Usage with webpack without bundling](#usage-with-webpack-without-bundling)
 * [Using the Promise-based APIs](#using-the-promise-based-apis)
 * [Examples](#examples)
 * [Known Limitations and Incompatibilities](#known-limitations-and-incompatibilities)
@@ -156,7 +156,7 @@ var browser = require("webextension-polyfill/dist/browser-polyfill.min");
 ...
 ```
 
-### Preferred Usage with webpack
+### Usage with webpack without bundling
 
 The previous section explains how to bundle `webextension-polyfill` in each script. An alternative method is to include a single copy of the library in your extension, and load the library as shown in [Basic Setup](#basic-setup). You will need to install [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin):
 
