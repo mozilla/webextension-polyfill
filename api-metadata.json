@@ -422,10 +422,6 @@
       "minArgs": 0,
       "maxArgs": 0
     },
-    "getBrowserInfo": {
-      "minArgs": 0,
-      "maxArgs": 0
-    },
     "getPlatformInfo": {
       "minArgs": 0,
       "maxArgs": 0
