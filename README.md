@@ -16,6 +16,7 @@ Table of contents
 * [Installation](#installation)
 * [Basic Setup](#basic-setup)
   * [Basic Setup with module bundlers](#basic-setup-with-module-bundlers)
+  * [Usage with webpack without bundling](#usage-with-webpack-without-bundling)
 * [Using the Promise-based APIs](#using-the-promise-based-apis)
 * [Examples](#examples)
 * [Known Limitations and Incompatibilities](#known-limitations-and-incompatibilities)
@@ -154,6 +155,38 @@ var browser = require("webextension-polyfill/dist/browser-polyfill.min");
 
 ...
 ```
+
+### Usage with webpack without bundling
+
+The previous section explains how to bundle `webextension-polyfill` in each script. An alternative method is to include a single copy of the library in your extension, and load the library as shown in [Basic Setup](#basic-setup). You will need to install [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin):
+
+```sh
+npm install --save-dev copy-webpack-plugin
+```
+
+**In `webpack.config.js`,** import the plugin and configure it this way. It will copy the minified file into your _output_ folder, wherever your other webpack files are generated.
+
+```js
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+  /* Your regular webpack config, probably including something like this:
+  output: {
+    path: path.join(__dirname, 'distribution'),
+    filename: '[name].js'
+  },
+  */
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: 'node_modules/webextension-polyfill/dist/browser-polyfill.js'
+      }
+    ])
+  ]
+}
+```
+
+And then include the file in each context, using the `manifest.json` just like in [Basic Setup](#basic-setup).
 
 ## Using the Promise-based APIs
 
