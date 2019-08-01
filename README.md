@@ -16,6 +16,7 @@ Table of contents
 * [Installation](#installation)
 * [Basic Setup](#basic-setup)
   * [Basic Setup with module bundlers](#basic-setup-with-module-bundlers)
+  * [Preferred Usage with webpack](#preferred-usage-with-webpack)
 * [Using the Promise-based APIs](#using-the-promise-based-apis)
 * [Examples](#examples)
 * [Known Limitations and Incompatibilities](#known-limitations-and-incompatibilities)
