@@ -12,7 +12,6 @@ script:
   npm install -g browserify webpack webpack-cli &&
   node ./scripts/run-module-bundlers-smoketests.js
 - export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
 - echo "RUN integration tests on real browsers" &&
   TRAVIS_CI=true node ./scripts/run-browsers-smoketests.js
 
@@ -22,6 +21,8 @@ sudo: required
 addons:
   firefox: 'latest'
   chrome: 'stable'
+
+services: ["xvfb"]
 
 after_script: npm run publish-coverage
 
