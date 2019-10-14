@@ -494,14 +494,28 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     apiMetadata.privacy = {
       network: {
         networkPredictionEnabled: settingMetadata,
+        webRTCMultipleRoutesEnabled: settingMetadata,
+        webRTCNonProxiedUdpEnabled: settingMetadata,
         webRTCIPHandlingPolicy: settingMetadata,
       },
       services: {
+        alternateErrorPagesEnabled: settingMetadata,
+        autofillEnabled: settingMetadata,
+        autofillAddressEnabled: settingMetadata,
+        autofillCreditCardEnabled: settingMetadata,
         passwordSavingEnabled: settingMetadata,
+        safeBrowsingEnabled: settingMetadata,
+        safeBrowsingExtendedReportingEnabled: settingMetadata,
+        searchSuggestEnabled: settingMetadata,
+        spellingServiceEnabled: settingMetadata,
+        translationServiceEnabled: settingMetadata,
       },
       websites: {
+        thirdPartyCookiesAllowed: settingMetadata,
         hyperlinkAuditingEnabled: settingMetadata,
         referrersEnabled: settingMetadata,
+        doNotTrackEnabled: settingMetadata,
+        protectedContentEnabled: settingMetadata,
       },
     };
 
