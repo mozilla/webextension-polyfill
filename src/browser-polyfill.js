@@ -491,33 +491,14 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       get: {minArgs: 1, maxArgs: 1},
       set: {minArgs: 1, maxArgs: 1},
     };
-    apiMetadata.privacy = {
-      network: {
-        networkPredictionEnabled: settingMetadata,
-        webRTCMultipleRoutesEnabled: settingMetadata,
-        webRTCNonProxiedUdpEnabled: settingMetadata,
-        webRTCIPHandlingPolicy: settingMetadata,
-      },
-      services: {
-        alternateErrorPagesEnabled: settingMetadata,
-        autofillEnabled: settingMetadata,
-        autofillAddressEnabled: settingMetadata,
-        autofillCreditCardEnabled: settingMetadata,
-        passwordSavingEnabled: settingMetadata,
-        safeBrowsingEnabled: settingMetadata,
-        safeBrowsingExtendedReportingEnabled: settingMetadata,
-        searchSuggestEnabled: settingMetadata,
-        spellingServiceEnabled: settingMetadata,
-        translationServiceEnabled: settingMetadata,
-      },
-      websites: {
-        thirdPartyCookiesAllowed: settingMetadata,
-        hyperlinkAuditingEnabled: settingMetadata,
-        referrersEnabled: settingMetadata,
-        doNotTrackEnabled: settingMetadata,
-        protectedContentEnabled: settingMetadata,
-      },
-    };
+    // Wrap all "network", "services", "websites" APIs in chrome.privacy.*
+    apiMetadata.privacy = {};
+    for (const privacyType of ["network", "services", "websites"]) {
+      apiMetadata.privacy[privacyType] = {};
+      for (const privacyName in extensionAPIs.privacy[privacyType]) {
+        apiMetadata.privacy[privacyType][privacyName] = settingMetadata;
+      }
+    }
 
     return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
   };
