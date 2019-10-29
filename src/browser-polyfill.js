@@ -511,7 +511,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       apiMetadata.privacy = {};
       for (const privacyType of privacyTypes) {
         apiMetadata.privacy[privacyType] = {};
-        for (const privacyName in privacy[privacyType]) {
+        for (const privacyName of Object.keys(privacy[privacyType])) {
           apiMetadata.privacy[privacyType][privacyName] = settingMetadata;
         }
       }
