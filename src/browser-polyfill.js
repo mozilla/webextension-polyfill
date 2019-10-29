@@ -491,12 +491,27 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       get: {minArgs: 1, maxArgs: 1},
       set: {minArgs: 1, maxArgs: 1},
     };
+
     // Wrap all "network", "services", "websites" APIs in chrome.privacy.*
-    if (extensionAPIs.privacy) {
+    const privacyTypes = ["network", "services", "websites"];
+    const privacy = {
+      get supported() {
+        return extensionAPIs.privacy;
+      },
+    };
+    for (const privacyType of privacyTypes) {
+      Object.defineProperty(privacy, privacyType, {get: () => {
+        if (extensionAPIs.privacy[privacyType]) {
+          return extensionAPIs.privacy[privacyType];
+        }
+        return {};
+      }});
+    }
+    if (privacy.supported) {
       apiMetadata.privacy = {};
-      for (const privacyType of ["network", "services", "websites"]) {
+      for (const privacyType of privacyTypes) {
         apiMetadata.privacy[privacyType] = {};
-        for (const privacyName in extensionAPIs.privacy[privacyType]) {
+        for (const privacyName in privacy[privacyType]) {
           apiMetadata.privacy[privacyType][privacyName] = settingMetadata;
         }
       }
