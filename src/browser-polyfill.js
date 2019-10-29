@@ -494,17 +494,20 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
 
     apiMetadata.privacy = {};
     for (const type of ["network", "services", "websites"]) {
-      Object.defineProperty(apiMetadata.privacy, type, {get: () => {
-        const origPrivacyType = extensionAPIs.privacy && extensionAPIs.privacy[type];
-        if (origPrivacyType) {
-          const privacyType = {};
-          for (const privacyName of Object.keys(origPrivacyType)) {
-            privacyType[privacyName] = settingMetadata;
+      Object.defineProperty(apiMetadata.privacy, type, {
+        get: () => {
+          const origPrivacyType = extensionAPIs.privacy && extensionAPIs.privacy[type];
+          if (origPrivacyType) {
+            const privacyType = {};
+            for (const privacyName of Object.keys(origPrivacyType)) {
+              privacyType[privacyName] = settingMetadata;
+            }
+            apiMetadata.privacy[type] = privacyType;
+            return privacyType;
           }
-          apiMetadata.privacy[type] = privacyType;
-          return privacyType;
-        }
-      }});
+        },
+        set: (value) => value,
+      });
     }
 
     return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
