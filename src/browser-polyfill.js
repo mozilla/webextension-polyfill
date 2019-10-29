@@ -492,29 +492,19 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       set: {minArgs: 1, maxArgs: 1},
     };
 
-    // Wrap all "network", "services", "websites" APIs in chrome.privacy.*
-    const privacyTypes = ["network", "services", "websites"];
-    const privacy = {
-      get supported() {
-        return extensionAPIs.privacy;
-      },
-    };
-    for (const privacyType of privacyTypes) {
-      Object.defineProperty(privacy, privacyType, {get: () => {
-        if (extensionAPIs.privacy[privacyType]) {
-          return extensionAPIs.privacy[privacyType];
+    apiMetadata.privacy = {};
+    for (const type of ["network", "services", "websites"]) {
+      Object.defineProperty(apiMetadata.privacy, type, {get: () => {
+        const origPrivacyType = extensionAPIs.privacy && extensionAPIs.privacy[type];
+        if (origPrivacyType) {
+          const privacyType = {};
+          for (const privacyName of Object.keys(origPrivacyType)) {
+            privacyType[privacyName] = settingMetadata;
+          }
+          apiMetadata.privacy[type] = privacyType;
+          return privacyType;
         }
-        return {};
       }});
-    }
-    if (privacy.supported) {
-      apiMetadata.privacy = {};
-      for (const privacyType of privacyTypes) {
-        apiMetadata.privacy[privacyType] = {};
-        for (const privacyName of Object.keys(privacy[privacyType])) {
-          apiMetadata.privacy[privacyType][privacyName] = settingMetadata;
-        }
-      }
     }
 
     return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
