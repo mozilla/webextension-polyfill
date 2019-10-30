@@ -507,6 +507,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
           }
         },
         set: (value) => value,
+        configurable: true,
       });
     }
 
