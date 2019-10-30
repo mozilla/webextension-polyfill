@@ -140,6 +140,7 @@ describe("browser-polyfill", () => {
   describe("without side effects", () => {
     it("should proxy non-wrapped methods", () => {
       let lazyInitCount = 0;
+      let lazyInitPrivacyCount = 0;
       const fakeChrome = {
         get runtime() {
           // Chrome lazily initializes API objects by replacing the getter with
@@ -162,6 +163,16 @@ describe("browser-polyfill", () => {
         get tabs() {
           ok(false, "chrome.tabs should not lazily be initialized without explicit API call");
         },
+        privacy: {
+          get network() {
+            ++lazyInitPrivacyCount;
+
+            const networkPredictionEnabled = () => true;
+            const value = {networkPredictionEnabled};
+            Object.defineProperty(fakeChrome.privacy, "network", {value});
+            return value;
+          },
+        },
       };
       return setupTestDOMWindow(fakeChrome).then(window => {
         // This used to be equal(lazyInitCount, 0, ...), but was changed to
@@ -178,6 +189,12 @@ describe("browser-polyfill", () => {
 
         window.chrome.runtime.onMessage.addListener(() => {});
         equal(lazyInitCount, 1, "chrome.runtime should be re-used upon accessing chrome.runtime");
+
+        window.browser.privacy.network.networkPredictionEnabled();
+        equal(lazyInitPrivacyCount, 1, "chrome.privacy.network should be accessed only once");
+
+        window.browser.privacy.network.networkPredictionEnabled();
+        equal(lazyInitPrivacyCount, 1, "chrome.privacy.network should be accessed only once");
       });
     });
   });
