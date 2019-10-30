@@ -140,7 +140,6 @@ describe("browser-polyfill", () => {
   describe("without side effects", () => {
     it("should proxy non-wrapped methods", () => {
       let lazyInitCount = 0;
-      let lazyInitPrivacyCount = 0;
       const fakeChrome = {
         get runtime() {
           // Chrome lazily initializes API objects by replacing the getter with
@@ -203,9 +202,10 @@ describe("browser-polyfill", () => {
       };
 
       return setupTestDOMWindow(fakeChrome).then(window => {
-        const {get, set} = window.browser.privacy.network.networkPredictionEnabled;
+        const {get, set, clear} = window.browser.privacy.network.networkPredictionEnabled;
         equal(get({}).then !== undefined, true, "Privacy API get method is a Promise");
         equal(set({}).then !== undefined, true, "Privacy API set method is a Promise");
+        equal(clear({}).then !== undefined, true, "Privacy API set method is a Promise");
         equal(lazyInitCount, 1, "chrome.privacy.network should be accessed only once");
 
         window.browser.privacy.network.networkPredictionEnabled.get({});
