@@ -502,11 +502,9 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
             for (const privacyName of Object.keys(origPrivacyType)) {
               privacyType[privacyName] = settingMetadata;
             }
-            apiMetadata.privacy[type] = privacyType;
             return privacyType;
           }
         },
-        set: (value) => value,
         configurable: true,
       });
     }
