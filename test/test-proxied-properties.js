@@ -190,7 +190,6 @@ describe("browser-polyfill", () => {
         privacy: {
           get network() {
             ++lazyInitCount;
-
             const networkPredictionEnabled = {
               get: () => {},
               set: () => {},
@@ -205,7 +204,7 @@ describe("browser-polyfill", () => {
         const {get, set, clear} = window.browser.privacy.network.networkPredictionEnabled;
         equal(get({}).then !== undefined, true, "Privacy API get method is a Promise");
         equal(set({}).then !== undefined, true, "Privacy API set method is a Promise");
-        equal(clear({}).then !== undefined, true, "Privacy API set method is a Promise");
+        equal(clear({}).then !== undefined, true, "Privacy API clear method is a Promise");
         equal(lazyInitCount, 1, "chrome.privacy.network should be accessed only once");
 
         window.browser.privacy.network.networkPredictionEnabled.get({});

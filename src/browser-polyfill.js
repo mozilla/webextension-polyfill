@@ -259,6 +259,9 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
             // of. Create a sub-object wrapper for it with the appropriate child
             // metadata.
             value = wrapObject(value, wrappers[prop], metadata[prop]);
+          } else if (hasOwnProperty(metadata, "*")) {
+            // Wrap all properties in * namespace.
+            value = wrapObject(value, wrappers[prop], metadata["*"]);
           } else {
             // We don't need to do any wrapping for this property,
             // so just forward all access to the underlying object.
@@ -491,23 +494,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       get: {minArgs: 1, maxArgs: 1},
       set: {minArgs: 1, maxArgs: 1},
     };
-
-    apiMetadata.privacy = {};
-    for (const type of ["network", "services", "websites"]) {
-      Object.defineProperty(apiMetadata.privacy, type, {
-        get: () => {
-          const origPrivacyType = extensionAPIs.privacy && extensionAPIs.privacy[type];
-          if (origPrivacyType) {
-            const privacyType = {};
-            for (const privacyName of Object.keys(origPrivacyType)) {
-              privacyType[privacyName] = settingMetadata;
-            }
-            return privacyType;
-          }
-        },
-        configurable: true,
-      });
-    }
+    apiMetadata.privacy = {"*": {"*": settingMetadata}};
 
     return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
   };
