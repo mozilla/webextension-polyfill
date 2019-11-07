@@ -494,7 +494,11 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       get: {minArgs: 1, maxArgs: 1},
       set: {minArgs: 1, maxArgs: 1},
     };
-    apiMetadata.privacy = {"*": {"*": settingMetadata}};
+    apiMetadata.privacy = {
+      network: {"*": settingMetadata},
+      services: {"*": settingMetadata},
+      websites: {"*": settingMetadata},
+    };
 
     return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
   };

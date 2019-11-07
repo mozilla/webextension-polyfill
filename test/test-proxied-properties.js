@@ -201,6 +201,7 @@ describe("browser-polyfill", () => {
       };
 
       return setupTestDOMWindow(fakeChrome).then(window => {
+        equal(lazyInitCount, 0, "chrome.privacy.network is not accessed first");
         const {get, set, clear} = window.browser.privacy.network.networkPredictionEnabled;
         equal(get({}).then !== undefined, true, "Privacy API get method is a Promise");
         equal(set({}).then !== undefined, true, "Privacy API set method is a Promise");
