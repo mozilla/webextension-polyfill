@@ -8,6 +8,10 @@
       "minArgs": 0,
       "maxArgs": 0
     },
+    "create": {
+      "minArgs": 0,
+      "maxArgs": 2
+    },
     "get": {
       "minArgs": 0,
       "maxArgs": 1
