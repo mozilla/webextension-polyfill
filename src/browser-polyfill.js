@@ -259,6 +259,9 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
             // of. Create a sub-object wrapper for it with the appropriate child
             // metadata.
             value = wrapObject(value, wrappers[prop], metadata[prop]);
+          } else if (hasOwnProperty(metadata, "*")) {
+            // Wrap all properties in * namespace.
+            value = wrapObject(value, wrappers[prop], metadata["*"]);
           } else {
             // We don't need to do any wrapping for this property,
             // so just forward all access to the underlying object.
@@ -492,17 +495,9 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       set: {minArgs: 1, maxArgs: 1},
     };
     apiMetadata.privacy = {
-      network: {
-        networkPredictionEnabled: settingMetadata,
-        webRTCIPHandlingPolicy: settingMetadata,
-      },
-      services: {
-        passwordSavingEnabled: settingMetadata,
-      },
-      websites: {
-        hyperlinkAuditingEnabled: settingMetadata,
-        referrersEnabled: settingMetadata,
-      },
+      network: {"*": settingMetadata},
+      services: {"*": settingMetadata},
+      websites: {"*": settingMetadata},
     };
 
     return wrapObject(extensionAPIs, staticWrappers, apiMetadata);

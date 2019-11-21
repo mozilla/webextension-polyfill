@@ -181,4 +181,36 @@ describe("browser-polyfill", () => {
       });
     });
   });
+
+  describe("Privacy API", () => {
+    it("Should wrap chrome.privacy.* API", () => {
+      let lazyInitCount = 0;
+
+      const fakeChrome = {
+        privacy: {
+          get network() {
+            ++lazyInitCount;
+            const networkPredictionEnabled = {
+              get: () => {},
+              set: () => {},
+              clear: () => {},
+            };
+            return {networkPredictionEnabled};
+          },
+        },
+      };
+
+      return setupTestDOMWindow(fakeChrome).then(window => {
+        equal(lazyInitCount, 0, "chrome.privacy.network is not accessed first");
+        const {get, set, clear} = window.browser.privacy.network.networkPredictionEnabled;
+        equal(get({}).then !== undefined, true, "Privacy API get method is a Promise");
+        equal(set({}).then !== undefined, true, "Privacy API set method is a Promise");
+        equal(clear({}).then !== undefined, true, "Privacy API clear method is a Promise");
+        equal(lazyInitCount, 1, "chrome.privacy.network should be accessed only once");
+
+        window.browser.privacy.network.networkPredictionEnabled.get({});
+        equal(lazyInitCount, 1, "chrome.privacy.network should be accessed only once");
+      });
+    });
+  });
 });
