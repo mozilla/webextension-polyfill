@@ -27,7 +27,7 @@
     "chai": "^3.5.0",
     "chromedriver": "^78.0.1",
     "cross-env": "^5.2.0",
-    "eslint": "^3.9.1",
+    "eslint": "^6.6.0",
     "finalhandler": "^1.1.0",
     "geckodriver": "^1.11.2",
     "global-replaceify": "^1.0.0",
