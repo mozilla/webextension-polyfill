@@ -39,7 +39,7 @@
     "gruntify-eslint": "^4.0.0",
     "istanbul-lib-instrument": "^3.3.0",
     "jsdom": "^9.6.0",
-    "mocha": "^3.1.0",
+    "mocha": "^6.2.2",
     "nyc": "^14.1.1",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "serve-static": "^1.13.1",
