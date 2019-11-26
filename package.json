@@ -24,7 +24,7 @@
     "babel-preset-babili": "^0.0.10",
     "babel-preset-es2017": "^6.24.1",
     "browserify": "^16.2.2",
-    "chai": "^3.5.0",
+    "chai": "^4.2.0",
     "chromedriver": "^78.0.1",
     "cross-env": "^6.0.3",
     "eslint": "^6.6.0",
