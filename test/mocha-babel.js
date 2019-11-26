@@ -1,3 +1,7 @@
-require("babel-core/register")({
-  presets: ["es2017"],
+require("@babel/register")({
+  presets: [["@babel/env", {
+    targets: {
+      node: "current",
+    },
+  }]],
 });
