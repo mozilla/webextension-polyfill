@@ -212,8 +212,8 @@ describe("browser-polyfill", () => {
           // Call pageAction.show and hide again to ensure that only after a successfull
           // API call the wrapper will always call the API method without the callback parameter.
 
-          fakeChrome.pageAction.show.reset();
-          fakeChrome.pageAction.hide.reset();
+          fakeChrome.pageAction.show.resetHistory();
+          fakeChrome.pageAction.hide.resetHistory();
 
           const secondPageActionShowPromise = browser.pageAction.show(1).catch(err => err);
           const secondPageActionHidePromise = browser.pageAction.hide(undefined).catch(err => err);

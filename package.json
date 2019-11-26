@@ -44,7 +44,7 @@
     "selenium-webdriver": "^4.0.0-alpha.1",
     "serve-static": "^1.13.1",
     "shelljs": "^0.8.2",
-    "sinon": "^1.17.6",
+    "sinon": "^7.5.0",
     "tap-nirvana": "^1.0.8",
     "tape": "^4.9.1",
     "tape-async": "^2.3.0",
