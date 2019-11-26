@@ -34,7 +34,7 @@
     "grunt": "^1.0.1",
     "grunt-babel": "^6.0.0",
     "grunt-contrib-concat": "^1.0.1",
-    "grunt-coveralls": "^1.0.1",
+    "grunt-coveralls": "^2.0.0",
     "grunt-replace": "^1.0.1",
     "gruntify-eslint": "^5.0.0",
     "istanbul-lib-instrument": "^3.3.0",
