@@ -72,11 +72,9 @@ module.exports = function(grunt) {
           babelrc: false,
           comments: true,
           plugins: [
-            ["@babel/transform-modules-umd", {
-              globals: {
-                "webextension-polyfill": "browser",
-              },
-              exactGlobals: true,
+            ["./scripts/babel-transform-to-umd-module", {
+              globalName: "browser",
+              amdModuleName: "webextension-polyfill",
             }],
           ],
           sourceMap: true,
