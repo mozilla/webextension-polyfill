@@ -3,6 +3,11 @@
 const {defineExtensionTests} = require("./setup");
 
 defineExtensionTests({
+  description: "polyfill imported as an ES6 module",
+  extensions: ["import-as-es6-extension"],
+});
+
+defineExtensionTests({
   description: "browser.runtime.onMessage/sendMessage",
   extensions: ["runtime-messaging-extension"],
 });

@@ -60,7 +60,7 @@ module.exports = function(grunt) {
         options: {
           babelrc: false,
           comments: false,
-          presets: ["babili"],
+          presets: ["minify"],
           sourceMap: true,
         },
         files: {
@@ -72,11 +72,9 @@ module.exports = function(grunt) {
           babelrc: false,
           comments: true,
           plugins: [
-            ["transform-es2015-modules-umd", {
-              globals: {
-                "webextension-polyfill": "browser",
-              },
-              exactGlobals: true,
+            ["./scripts/babel-transform-to-umd-module", {
+              globalName: "browser",
+              amdModuleName: "webextension-polyfill",
             }],
           ],
           sourceMap: true,
