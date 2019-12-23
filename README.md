@@ -15,6 +15,7 @@ Table of contents
 * [Supported Browsers](#supported-browsers)
 * [Installation](#installation)
 * [Basic Setup](#basic-setup)
+  * [Basic Setup with ES6 module loader](#basic-setup-with-es6-module-loader)
   * [Basic Setup with module bundlers](#basic-setup-with-module-bundlers)
   * [Usage with webpack without bundling](#usage-with-webpack-without-bundling)
 * [Using the Promise-based APIs](#using-the-promise-based-apis)
@@ -115,6 +116,31 @@ browser.tabs.executeScript({file: "browser-polyfill.js"});
 browser.tabs.executeScript({file: "content.js"}).then(result => {
   // ...
 });
+```
+
+### Basic Setup with ES6 module loader
+
+The polyfill can also be loaded using the native ES6 module loader available in
+the recent browsers versions.
+
+Be aware that the polyfill module does not export the `browser` API object,
+but defines the `browser` object in the global namespace (i.e. `window`).
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="module" src="browser-polyfill.js"></script>
+    <script type="module" src="background.js"></script>
+  </head>
+  <!-- ... -->
+</html>
+```
+
+```javascript
+// In background.js (loaded after browser-polyfill.js) the `browser`
+// API object is already defined and provides the promise-based APIs.
+browser.runtime.onMessage.addListener(...);
 ```
 
 ### Basic Setup with module bundlers
