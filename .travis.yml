@@ -26,16 +26,6 @@ services: ["xvfb"]
 
 after_script: npm run publish-coverage
 
-notifications:
-  irc:
-    channels:
-    - irc.mozilla.org#webextensions
-    on_success: change
-    on_failure: always
-    use_notice: true
-    template:
-    - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (%{build_url})"
-
 deploy:
   provider: npm
   email: addons-dev-automation+npm@mozilla.com
