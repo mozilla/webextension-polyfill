@@ -26,12 +26,11 @@ Table of contents
 Supported Browsers
 ==================
 
-| Browser       | Support Level                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------- |
-| Chrome        | *Officially Supported* (with automated tests)                                                        |
-| Firefox       | *Officially Supported as a NO-OP* (with automated tests for comparison with the behaviors on Chrome) |
-| Opera         | *Unofficially Supported* as a Chrome-compatible target (but not explicitly tested in automation)     |
-| Edge          | *Not supported* (See [MSEdge Support](#msedge-support) section)                                      |
+| Browser                   | Support Level                                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| Chrome                    | *Officially Supported* (with automated tests)                                                        |
+| Firefox                   | *Officially Supported as a NO-OP* (with automated tests for comparison with the behaviors on Chrome) |
+| Opera / Edge (>=79.0.309) | *Unofficially Supported* as a Chrome-compatible target (but not explicitly tested in automation)     |
 
 The polyfill is being tested explicitly (with automated tests that run on every pull request) on **officially supported** 
 browsers (that are currently the last stable versions of Chrome and Firefox).
@@ -369,11 +368,9 @@ If the content script code result is a Promise, the promise returned by `browser
 
 ### MSEdge support
 
-[With the Microsoft announcement related to the MSEdge future](https://github.com/MicrosoftEdge/MSEdge/blob/master/README.md) there aren't many compelling reasons to officially include in this polyfill any workarounds specific to the current MSEdge versions (and then maintaining them over the time), and so MSEdge is currently **unsupported**.
+MSEdge versions >= 79.0.309 are unofficially supported as a Chrome-compatible target (as for Opera or other Chrome-based browsers that also support extensions).
 
-Once the first Chrome-based MSEdge version is going to be released, we will be able to verify if any actual changes to this polyfill are needed to officially support the Chrome-based MSEdge versions.
-
-In the meantime, for extension developers that still have to work on MSEdge extensions before it is switched to the next Chromium-based version, the MSEdge `--ms-preload` manifest key and the [Microsoft Edge Extension Toolkit](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/porting-chrome-extensions)'s Chrome API bridge can be used to be able to load the webextension-polyfill without any MSEdge specific changes.
+MSEdge versions older than 79.0.309 are **unsupported**, for extension developers that still have to work on extensions for older MSEdge versions, the MSEdge `--ms-preload` manifest key and the [Microsoft Edge Extension Toolkit](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/porting-chrome-extensions)'s Chrome API bridge can be used to be able to load the webextension-polyfill without any MSEdge specific changes.
 
 The following Github repository provides some additional detail about this strategy and a minimal test extension that shows how to put it together:
 
