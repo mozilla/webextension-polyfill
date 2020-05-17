@@ -214,7 +214,7 @@
     "panels": {
       "create": {
         "minArgs": 3,
-        "maxArgs": 3,
+        "maxArgs": 4,
         "singleCallbackArg": true
       }
     }
