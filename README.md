@@ -20,6 +20,7 @@ Table of contents
   * [Usage with webpack without bundling](#usage-with-webpack-without-bundling)
 * [Using the Promise-based APIs](#using-the-promise-based-apis)
 * [Examples](#examples)
+* [Usage with TypeScript](#usage-with-typescript)
 * [Known Limitations and Incompatibilities](#known-limitations-and-incompatibilities)
 * [Contributing to this project](#contributing-to-this-project)
 
@@ -323,6 +324,16 @@ browser.runtime.onMessage.addListener(async function(msg) {
 ```
 
 Or vice versa.
+
+## Usage with TypeScript
+
+There are multiple projects that add TypeScript support to your web-extension project:
+
+| Project | Description |
+| ------------- | ------------- |
+| [webextension-polyfill-ts](https://github.com/Lusito/webextension-polyfill-ts) | Types and JS-Doc are automatically generated from the mozilla schema files, so it is always up-to-date with the latest APIs. It also bundles the webextension-polyfill for very simple usage. |
+| [web-ext-types](https://github.com/kelseasy/web-ext-types) | Manually maintained types based on MDN's documentation. No JS-Doc included. |
+| [@types/chrome](https://www.npmjs.com/package/@types/chrome) | Manually maintained types and JS-Doc. Only contains types for chrome extensions though! |
 
 ## Known Limitations and Incompatibilities
 
