@@ -2,7 +2,8 @@ language: node_js
 node_js:
 ## Some of the ES6 syntax used in the browser-polyfill sources is only supported on nodejs >= 6
 ## and the selenium-webdriver dependency used by the integration tests requires nodejs >= 8.
-- '8'
+## and the chromedriver dependency requires Node >= 10.
+- '10'
 
 script:
 - npm run build
