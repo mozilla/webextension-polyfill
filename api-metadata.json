@@ -606,7 +606,7 @@
   "topSites": {
     "get": {
       "minArgs": 0,
-      "maxArgs": 0
+      "maxArgs": 1
     }
   },
   "webNavigation": {
