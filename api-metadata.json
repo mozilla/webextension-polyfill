@@ -558,6 +558,14 @@
       "minArgs": 0,
       "maxArgs": 1
     },
+    "goBack": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
+    "goForward": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
     "highlight": {
       "minArgs": 1,
       "maxArgs": 1
