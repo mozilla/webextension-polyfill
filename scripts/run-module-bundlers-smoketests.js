@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const path = require("path");
 const shell = require("shelljs");
 
 let result = 0;
@@ -8,7 +9,10 @@ Test webextension-polyfill bundled with webpack
 ===============================================`);
 
 process.env.TEST_BUNDLED_POLYFILL = "/tmp/webpack-bundle.js";
-result = shell.exec(`webpack --mode production --entry ./test/fixtures/bundle-entrypoint.js --output ${process.env.TEST_BUNDLED_POLYFILL}`).code ||
+const webpackOutputDir = path.dirname(process.env.TEST_BUNDLED_POLYFILL);
+const webpackOutputFilename = path.basename(process.env.TEST_BUNDLED_POLYFILL);
+
+result = shell.exec(`webpack --mode production --entry ./test/fixtures/bundle-entrypoint.js --output-path ${webpackOutputDir} --output-filename ${webpackOutputFilename}`).code ||
   shell.exec("npm run test").code || result;
 
 console.log(`
