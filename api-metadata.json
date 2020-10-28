@@ -220,7 +220,7 @@
       "elements": {
         "createSidebarPane": {
           "minArgs": 1,
-          "maxArgs": 2
+          "maxArgs": 1
         }
       }
     }
