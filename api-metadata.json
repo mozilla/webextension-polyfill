@@ -216,6 +216,12 @@
         "minArgs": 3,
         "maxArgs": 3,
         "singleCallbackArg": true
+      },
+      "elements": {
+        "createSidebarPane": {
+          "minArgs": 1,
+          "maxArgs": 2
+        }
       }
     }
   },
