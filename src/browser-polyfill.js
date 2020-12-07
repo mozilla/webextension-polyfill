@@ -77,13 +77,17 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        promise.
      * @param {function} promise.resolve
      *        The promise's resolution function.
-     * @param {function} promise.rejection
+     * @param {function} promise.reject
      *        The promise's rejection function.
      * @param {object} metadata
      *        Metadata about the wrapped method which has created the callback.
-     * @param {integer} metadata.maxResolvedArgs
-     *        The maximum number of arguments which may be passed to the
-     *        callback created by the wrapped async function.
+     * @param {boolean} metadata.singleCallbackArg
+     *        Whether or not the promise is resolved with only the first
+     *        argument of the callback, alternatively an array of all the
+     *        callback arguments is resolved. By default, if the callback
+     *        function is invoked with only a single argument, that will be
+     *        resolved to the promise, while all arguments will be resolved as
+     *        an array if multiple are given.
      *
      * @returns {function}
      *        The generated callback function.
@@ -118,9 +122,13 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        The maximum number of arguments which may be passed to the
      *        function. If called with more than this number of arguments, the
      *        wrapper will raise an exception.
-     * @param {integer} metadata.maxResolvedArgs
-     *        The maximum number of arguments which may be passed to the
-     *        callback created by the wrapped async function.
+     * @param {boolean} metadata.singleCallbackArg
+     *        Whether or not the promise is resolved with only the first
+     *        argument of the callback, alternatively an array of all the
+     *        callback arguments is resolved. By default, if the callback
+     *        function is invoked with only a single argument, that will be
+     *        resolved to the promise, while all arguments will be resolved as
+     *        an array if multiple are given.
      *
      * @returns {function(object, ...*)}
      *       The generated wrapper function.
@@ -345,6 +353,30 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       },
     });
 
+    const onRequestFinishedWrappers = new DefaultWeakMap(listener => {
+      if (typeof listener !== "function") {
+        return listener;
+      }
+
+      /**
+       * Wraps an onRequestFinished listener function so that it will return a
+       * `getContent()` property which returns a `Promise` rather than using a
+       * callback API.
+       *
+       * @param {object} req
+       *        The HAR entry object representing the network request.
+       */
+      return function onRequestFinished(req) {
+        const wrappedReq = wrapObject(req, {} /* wrappers */, {
+          getContent: {
+            minArgs: 0,
+            maxArgs: 0,
+          },
+        });
+        listener(wrappedReq);
+      };
+    });
+
     // Keep track if the deprecation warning has been logged at least once.
     let loggedSendResponseDeprecationWarning = false;
 
@@ -480,6 +512,11 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     };
 
     const staticWrappers = {
+      devtools: {
+        network: {
+          onRequestFinished: wrapEvent(onRequestFinishedWrappers),
+        },
+      },
       runtime: {
         onMessage: wrapEvent(onMessageWrappers),
         onMessageExternal: wrapEvent(onMessageWrappers),
