@@ -30,12 +30,19 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * not exist when accessed, but behaves exactly as an ordinary WeakMap
      * otherwise.
      *
-     * @param {function} createItem
-     *        A function which will be called in order to create the value for any
-     *        key which does not exist, the first time it is accessed. The
-     *        function receives, as its only argument, the key being created.
+     * @template {object} K
+     * @template V
+     *
+     * @extends {WeakMap<K, V>}
      */
     class DefaultWeakMap extends WeakMap {
+      /**
+       * @param {function(K):V} createItem
+       *        A function which will be called in order to create the value for any
+       *        key which does not exist, the first time it is accessed. The
+       *        function receives, as its only argument, the key being created.
+       * @param {ReadonlyArray<[K, V]>} [items]
+       */
       constructor(createItem, items = undefined) {
         super(items);
         this.createItem = createItem;
@@ -75,17 +82,16 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * @param {object} promise
      *        An object containing the resolution and rejection functions of a
      *        promise.
-     * @param {function} promise.resolve
+     * @param {function(any):void} promise.resolve
      *        The promise's resolution function.
-     * @param {function} promise.rejection
+     * @param {function(any):void} promise.reject
      *        The promise's rejection function.
      * @param {object} metadata
      *        Metadata about the wrapped method which has created the callback.
-     * @param {integer} metadata.maxResolvedArgs
-     *        The maximum number of arguments which may be passed to the
-     *        callback created by the wrapped async function.
+     * @param {boolean} metadata.singleCallbackArg
+     *        If the function callback takes only one parameter in some browsers.
      *
-     * @returns {function}
+     * @returns {function(...any):void}
      *        The generated callback function.
      */
     const makeCallback = (promise, metadata) => {
@@ -110,19 +116,16 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      *        The name of the method which is being wrapped.
      * @param {object} metadata
      *        Metadata about the method being wrapped.
-     * @param {integer} metadata.minArgs
+     * @param {number} metadata.minArgs
      *        The minimum number of arguments which must be passed to the
      *        function. If called with fewer than this number of arguments, the
      *        wrapper will raise an exception.
-     * @param {integer} metadata.maxArgs
+     * @param {number} metadata.maxArgs
      *        The maximum number of arguments which may be passed to the
      *        function. If called with more than this number of arguments, the
      *        wrapper will raise an exception.
-     * @param {integer} metadata.maxResolvedArgs
-     *        The maximum number of arguments which may be passed to the
-     *        callback created by the wrapped async function.
      *
-     * @returns {function(object, ...*)}
+     * @returns {function(object, ...*):Promise}
      *       The generated wrapper function.
      */
     const wrapAsyncFunction = (name, metadata) => {
@@ -171,16 +174,18 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
      * as its first argument, the original `target` object, followed by each of
      * the arguments passed to the original method.
      *
+     * @template {function} M
+     *
      * @param {object} target
      *        The original target object that the wrapped method belongs to.
-     * @param {function} method
+     * @param {M} method
      *        The method being wrapped. This is used as the target of the Proxy
      *        object which is created to wrap the method.
      * @param {function} wrapper
      *        The wrapper function which is called in place of a direct invocation
      *        of the wrapped method.
      *
-     * @returns {Proxy<function>}
+     * @returns {M}
      *        A Proxy object for the given method, which invokes the given wrapper
      *        method in its place.
      */
@@ -192,33 +197,45 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       });
     };
 
+    /**
+     * Determines whether an object has a property with the specified name.
+     *
+     * @param {any} target The object to test.
+     * @param {PropertyKey} v A property name.
+     *
+     * @type {(target: any, v: PropertyKey) => boolean}
+     */
     let hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
 
     /**
      * Wraps an object in a Proxy which intercepts and wraps certain methods
      * based on the given `wrappers` and `metadata` objects.
      *
-     * @param {object} target
+     * @template T
+     *
+     * @param {T} target
      *        The target object to wrap.
      *
-     * @param {object} [wrappers = {}]
+     * @param {object} [wrappers]
      *        An object tree containing wrapper functions for special cases. Any
      *        function present in this object tree is called in place of the
      *        method in the same location in the `target` object tree. These
-     *        wrapper methods are invoked as described in {@see wrapMethod}.
+     *        wrapper methods are invoked as described in {@link wrapMethod}.
      *
-     * @param {object} [metadata = {}]
+     * @param {object} [metadata]
      *        An object tree containing metadata used to automatically generate
      *        Promise-based wrapper functions for asynchronous. Any function in
      *        the `target` object tree which has a corresponding metadata object
      *        in the same location in the `metadata` tree is replaced with an
      *        automatically-generated wrapper function, as described in
-     *        {@see wrapAsyncFunction}
+     *        {@link wrapAsyncFunction}
      *
-     * @returns {Proxy<object>}
+     * @returns {T}
+     *        A Proxy object for the given target.
      */
     const wrapObject = (target, wrappers = {}, metadata = {}) => {
       let cache = Object.create(null);
+      /** @type {ProxyHandler<T>} */
       let handlers = {
         has(proxyTarget, prop) {
           return prop in target || prop in cache;
@@ -348,7 +365,10 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     // Keep track if the deprecation warning has been logged at least once.
     let loggedSendResponseDeprecationWarning = false;
 
-    const onMessageWrappers = new DefaultWeakMap(listener => {
+    const onMessageWrappers = new DefaultWeakMap((
+      /** @type {(message, sender: object, sendResponse: (response?: any) => void) => boolean | Promise<any> | void} */
+      listener
+    ) => {
       if (typeof listener !== "function") {
         return listener;
       }
@@ -359,13 +379,14 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
        * callback. If the listener function returns a Promise, the response is
        * sent when the promise either resolves or rejects.
        *
-       * @param {*} message
+       * @param {any} message
        *        The message sent by the other end of the channel.
        * @param {object} sender
        *        Details about the sender of the message.
-       * @param {function(*)} sendResponse
+       * @param {function(any):void} sendResponse
        *        A callback which, when called with an arbitrary argument, sends
        *        that value as a response.
+       *
        * @returns {boolean}
        *        True if the wrapped listener returned a Promise, which will later
        *        yield a response. False otherwise.
@@ -394,17 +415,21 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
 
         const isResultThenable = result !== true && isThenable(result);
 
-        // If the listener didn't returned true or a Promise, or called
+        // If the listener didn't return true or a Promise, or called
         // wrappedSendResponse synchronously, we can exit earlier
         // because there will be no response sent from this listener.
         if (result !== true && !isResultThenable && !didCallSendResponse) {
           return false;
         }
 
-        // A small helper to send the message if the promise resolves
-        // and an error if the promise rejects (a wrapped sendMessage has
-        // to translate the message into a resolved promise or a rejected
-        // promise).
+        /**
+         * A small helper to send the message if the promise resolves
+         * and an error if the promise rejects (a wrapped sendMessage has
+         * to translate the message into a resolved promise or a rejected
+         * promise).
+         *
+         * @param {Promise<any>} promise
+         */
         const sendPromisedResult = (promise) => {
           promise.then(msg => {
             // send the message value.
@@ -444,6 +469,34 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
       };
     });
 
+    /**
+     * Creates and returns a function which, when called, will resolve or reject
+     * the given promise based on how it is called:
+     *
+     * - If, when called, `chrome.runtime.lastError` contains a non-null object,
+     *   the promise is rejected with that value.
+     * - If the function is called with exactly one argument, the promise is
+     *   resolved to that value.
+     * - Otherwise, the promise is resolved to an array containing all of the
+     *   function's arguments.
+     *
+     * @param {object} promise
+     *        An object containing the resolution and rejection functions of a
+     *        promise.
+     * @param {function(any):void} promise.resolve
+     *        The promise's resolution function.
+     * @param {function(any):void} promise.reject
+     *        The promise's rejection function.
+     * @param {any} [reply]
+     *        The reply.
+     *
+     *        When `reply.__mozWebExtensionPolyfillReject__` is defined and `true`,
+     *        then the reply is a wrapped `Error` object.
+     * @param {boolean} [reply.__mozWebExtensionPolyfillReject__]
+     *        If defined and `true`, then the reply is a wrapped `Error` object
+     * @param {string} [reply.message]
+     *        The message of a wrapped `Error` object
+     */
     const wrappedSendMessageCallback = ({reject, resolve}, reply) => {
       if (extensionAPIs.runtime.lastError) {
         // Detect when none of the listeners replied to the sendMessage call and resolve
