@@ -34,7 +34,7 @@ const launchBrowser = async (launchOptions) => {
     const options = new chrome.Options();
     options.addArguments([
       `--load-extension=${extensionPath}`,
-      // See https://docs.travis-ci.com/user/chrome and issue #85 for a rationale.
+      // See issue #85 for a rationale.
       "--no-sandbox",
     ]);
 
@@ -49,10 +49,21 @@ const launchBrowser = async (launchOptions) => {
       ]);
     }
 
+    const service = new chrome.ServiceBuilder(chromedriver.path);
+
+    if (process.env.CHROMEDRIVER_VERBOSE_LOGFILE) {
+      // Prevent intermittent failures due to limited resources while running
+      // in small VMs / docker containers (See #256 for a rationale).
+      const logsPath = process.env.CHROMEDRIVER_VERBOSE_LOGFILE;
+      console.warn(`NOTE: Verbose chromedriver logs: ${logsPath}`);
+      service.loggingTo(logsPath);
+      service.enableVerboseLogging();
+    }
+
     driver = await new Builder()
       .forBrowser("chrome")
       .setChromeOptions(options)
-      .setChromeService(new chrome.ServiceBuilder(chromedriver.path))
+      .setChromeService(service)
       .build();
   } else if (browser === "firefox") {
     const firefox = require("selenium-webdriver/firefox");

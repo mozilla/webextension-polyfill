@@ -63,7 +63,7 @@ The integration tests use selenium-webdriver to run a set of test extensions
 supported by this library) and Firefox (to compare the polyfilled APIs with the ones natively 
 provided on Firefox).
 
-The shell script `test/run-browsers-smoketests.sh` (executed by the Travis CI service on every
+The shell script `test/run-browsers-smoketests.sh` (executed by the CI service on every
 pull request) runs this test suite on both the browsers.
 
 To run the integration tests on a single browser:

@@ -12,12 +12,6 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
 
-    coveralls: {
-      all: {
-        src: "coverage/lcov.info",
-      },
-    },
-
     eslint: {
       src: ["src/browser-polyfill.js", "Gruntfile.js"],
       test: ["test/**/*.js", "scripts/**/*.js"],
@@ -99,7 +93,6 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-replace");
-  grunt.loadNpmTasks("grunt-coveralls");
   grunt.loadNpmTasks("grunt-contrib-concat");
   grunt.loadNpmTasks("grunt-babel");
 
