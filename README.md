@@ -1,7 +1,12 @@
-# WebExtension `browser` API Polyfill [![Build Status](https://travis-ci.org/mozilla/webextension-polyfill.svg?branch=master)](https://travis-ci.org/mozilla/webextension-polyfill) [![npm version](https://badge.fury.io/js/webextension-polyfill.svg)](https://www.npmjs.com/package/webextension-polyfill)
+# WebExtension `browser` API Polyfill
 
 This library allows extensions that use the Promise-based WebExtension/BrowserExt API being standardized by the
 [W3 Browser Extensions][w3-browserext] group to run on Google Chrome with minimal or no changes.
+
+[![CircleCI](https://circleci.com/gh/mozilla/webextension-polyfill.svg?style=svg)](https://circleci.com/gh/mozilla/webextension-polyfill)
+[![codecov](https://codecov.io/gh/mozilla/webextension-polyfill/branch/master/graph/badge.svg)](https://codecov.io/gh/mozilla/webextension-polyfill)
+[![devDependency Status](https://david-dm.org/mozilla/webextension-polyfill/dev-status.svg)](https://david-dm.org/mozilla/webextension-polyfill#info=devDependencies)
+[![npm version](https://badge.fury.io/js/webextension-polyfill.svg)](https://badge.fury.io/js/webextension-polyfill)
 
 > This library doesn't (and it is not going to) polyfill API methods or options that are missing on Chrome but natively provided
 > on Firefox, and so the extension has to do its own "runtime feature detection" in those cases (and then eventually polyfill the

@@ -1,0 +1,170 @@
+# These environment variables must be set in CircleCI UI
+#
+# NPM_TOKEN - A valid NPM token for releases
+#
+# NOTE:
+# - to validate changes to this file locally using the circleci CLI tool:
+#
+#     circleci config process .circleci/config.yml
+#
+# - to try run jobs locally:
+#
+#     circleci config process .circleci/config.yml > tmp/processed.yml
+#     circleci local execute -c tmp/processed.yml --job build-nodejs-current
+#
+version: 2.1
+
+references:
+  nodejs_current: &nodejs_current "10"
+  repo_path: &repo_path ~/webextension-polyfill
+  defaults: &defaults
+    working_directory: *repo_path
+    parameters:
+      nodejs_current:
+        type: string
+        default: *nodejs_current
+
+commands:
+  run_npm_install:
+    description: install npm dependencies
+    steps:
+      - run: npm i
+
+  run_npm_build:
+    description: build project in << parameters.node_env >> mode
+    parameters:
+      node_env:
+        type: enum
+        default: production
+        enum: ["production", "test"]
+    steps:
+      - run:
+          command: npm run build --if-present
+          environment:
+            NODE_ENV: << parameters.node_env >>
+
+  run_test_minified:
+    description: rerun unit tests on minified file
+    steps:
+      - run:
+          command: npm run test-minified
+
+  run_test_bundlers:
+    description: rerun unit tests on webpack and browserify bundled files
+    steps:
+      - configure_global_npm
+      - run: npm install -g browserify webpack webpack-cli
+      - run: |
+          export PATH=$PATH:../.npm-global/bin
+          node ./scripts/run-module-bundlers-smoketests.js
+
+  run_xephyr:
+    description: run Xephyr on DISPLAY=:10
+    steps:
+      - run: |
+          sudo apt install xserver-xephyr
+          Xephyr -ac -br -noreset -screen 1280x1024x24 :10 &
+          sleep 2
+
+  run_functional_tests:
+    description: run integration tests on Firefox and Chrome browsers
+    steps:
+      # circleci browsers image variant does include and run Xvfb
+      # unfortunately Chrome seems to intermittently fail to connect
+      # to it successfully:
+      #
+      #     ERROR:browser_main_loop.cc(1434)] Unable to open X display
+      #
+      # On the contrary it seems to don't happen with Xephyr.
+      - run_xephyr
+      - run:
+          command: node ./scripts/run-browsers-smoketests.js
+          environment:
+            DISPLAY: :10.0
+            CHROMEDRIVER_VERBOSE_LOGFILE: /tmp/chromedriver.log
+      - store_artifacts:
+          # chromedriver verbose logs stored in the artifacts to make
+          # it easier investigate CI jobs chromedriver issues.
+          path: /tmp/chromedriver.log
+  run_tests:
+    description: run tests
+    steps:
+      - run:
+          name: run linting check and unit tests with coverage
+          command: npm run test-coverage
+      - store_artifacts:
+          path: coverage
+      - run:
+          name: publish coverage data
+          command: npm run publish-coverage
+      - run_test_minified
+      - run_test_bundlers
+      - run_functional_tests
+
+  # This is required to avoid a `EACCES` when running `npm install -g` (which is
+  # executed in the test suite).
+  configure_global_npm:
+    description: create custom directory for global npm installs
+    steps:
+      - run: mkdir ../.npm-global
+      - run: npm config set prefix '../.npm-global'
+
+  attach_project_repo:
+    description: attach repo from workspace
+    steps:
+      - attach_workspace:
+          at: *repo_path
+
+  persist_project_repo:
+    description: persist repo in workspace
+    steps:
+      - persist_to_workspace:
+          root: *repo_path
+          paths: .
+
+jobs:
+  build:
+    <<: *defaults
+    docker:
+      # Image variant including Firefox, Chrome and Xvfb
+      - image: circleci/node:<< parameters.nodejs_current >>-browsers
+    steps:
+      - attach_project_repo
+      - checkout
+      - run_npm_install
+      - run_npm_build:
+          node_env: test
+      - run_tests
+      - persist_project_repo
+
+  release-tag:
+    <<: *defaults
+    docker:
+      - image: circleci/node:<< parameters.nodejs_current >>
+    steps:
+      - attach_project_repo
+      - run_npm_build:
+          node_env: production
+      - run:
+          name: npm registry auth
+          command: echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc
+      - run:
+          name: npm registry publish
+          command: npm publish
+
+workflows:
+  default-workflow:
+    jobs:
+      - build:
+          name: build-nodejs-current
+          filters:
+            tags:
+              only: /.*/
+      - release-tag:
+          requires:
+            - build-nodejs-current
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
