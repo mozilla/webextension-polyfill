@@ -1,6 +1,6 @@
 "use strict";
 
-const {deepEqual, equal, fail, ok, throws} = require("chai").assert;
+const {deepEqual, equal, fail, ok, throws, instanceOf} = require("chai").assert;
 const sinon = require("sinon");
 
 const {setupTestDOMWindow} = require("./setup");
@@ -70,8 +70,11 @@ describe("browser-polyfill", () => {
 
         return window.browser.tabs.query({active: true}).then(
           () => fail("Expected a rejected promise"),
-          (err) => equal(err, fakeChrome.runtime.lastError,
-                         "Got the expected error in the rejected promise")
+          (err) => {
+            equal(err, fakeChrome.runtime.lastError,
+              "Got the expected error in the rejected promise");
+            instanceOf(err, Error, "Expected the error to be an instance of Error");
+          }
         );
       });
     });
