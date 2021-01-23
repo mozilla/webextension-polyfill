@@ -71,9 +71,9 @@ describe("browser-polyfill", () => {
         return window.browser.tabs.query({active: true}).then(
           () => fail("Expected a rejected promise"),
           (err) => {
-            equal(err, fakeChrome.runtime.lastError,
+            instanceOf(err, window.Error, "Expected the error to be an instance of Error");
+            equal(err.message, fakeChrome.runtime.lastError.message,
               "Got the expected error in the rejected promise");
-            instanceOf(err, Error, "Expected the error to be an instance of Error");
           }
         );
       });
