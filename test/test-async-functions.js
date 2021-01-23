@@ -56,7 +56,7 @@ describe("browser-polyfill", () => {
     it("rejects the returned promise if chrome.runtime.lastError is not null", () => {
       const fakeChrome = {
         runtime: {
-          lastError: new Error("fake lastError"),
+          lastError: {message: "fake lastError"},
         },
         tabs: {
           query: sinon.stub(),
