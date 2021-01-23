@@ -73,7 +73,7 @@ describe("browser-polyfill", () => {
           (err) => {
             instanceOf(err, window.Error, "Expected the error to be an instance of Error");
             equal(err.message, fakeChrome.runtime.lastError.message,
-              "Got the expected error in the rejected promise");
+                  "Got the expected error in the rejected promise");
           }
         );
       });
