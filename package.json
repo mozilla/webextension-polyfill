@@ -37,7 +37,7 @@
     "grunt-contrib-concat": "1.0.1",
     "grunt-replace": "1.0.1",
     "gruntify-eslint": "5.0.0",
-    "istanbul-lib-instrument": "3.3.0",
+    "istanbul-lib-instrument": "4.0.3",
     "jsdom": "9.12.0",
     "mocha": "6.2.3",
     "nyc": "14.1.1",
