@@ -40,7 +40,7 @@
     "istanbul-lib-instrument": "4.0.3",
     "jsdom": "9.12.0",
     "mocha": "8.2.1",
-    "nyc": "14.1.1",
+    "nyc": "15.1.0",
     "selenium-webdriver": "4.0.0-alpha.8",
     "serve-static": "1.14.1",
     "shelljs": "0.8.4",
