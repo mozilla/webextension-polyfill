@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/mozilla/webextension-polyfill",
   "devDependencies": {
-    "@babel/core": "7.12.13",
-    "@babel/preset-env": "7.12.13",
+    "@babel/core": "7.12.16",
+    "@babel/preset-env": "7.12.16",
     "@babel/register": "7.12.13",
     "async-wait-until": "1.2.6",
     "babel-eslint": "10.1.0",
