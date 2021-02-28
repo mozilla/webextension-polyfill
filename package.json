@@ -45,7 +45,7 @@
     "shelljs": "0.8.4",
     "sinon": "9.2.4",
     "tap-nirvana": "1.1.0",
-    "tape": "5.2.0",
+    "tape": "5.2.1",
     "tape-async": "2.3.0",
     "tmp": "0.2.1"
   },
