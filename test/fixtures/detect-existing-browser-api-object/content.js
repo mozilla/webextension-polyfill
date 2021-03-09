@@ -12,7 +12,7 @@ test("browser api object in content script", async (t) => {
     t.equal(window.browser, undefined, "window.browser is expected to be undefined on Firefox");
 
     try {
-      await browser.storage.local.set({a: 'a'.repeat(10000000)});
+      await browser.storage.sync.set({a: 'a'.repeat(10000000)});
       t.fail('It should throw when set an object over quota');
     } catch (error) {
       t.ok(error instanceof Error);
