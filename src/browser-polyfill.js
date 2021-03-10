@@ -95,7 +95,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
     const makeCallback = (promise, metadata) => {
       return (...callbackArgs) => {
         if (extensionAPIs.runtime.lastError) {
-          promise.reject(extensionAPIs.runtime.lastError);
+          promise.reject(new Error(extensionAPIs.runtime.lastError.message));
         } else if (metadata.singleCallbackArg ||
                    (callbackArgs.length <= 1 && metadata.singleCallbackArg !== false)) {
           promise.resolve(callbackArgs[0]);
@@ -484,7 +484,7 @@ if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.
         if (extensionAPIs.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
           resolve();
         } else {
-          reject(extensionAPIs.runtime.lastError);
+          reject(new Error(extensionAPIs.runtime.lastError.message));
         }
       } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
         // Convert back the JSON representation of the error into
