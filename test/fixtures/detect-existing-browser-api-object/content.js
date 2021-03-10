@@ -13,7 +13,7 @@ test("browser api object in content script", async (t) => {
 
     try {
       await browser.storage.sync.set({a: 'a'.repeat(10000000)});
-      t.fail('It should throw when set an object over quota');
+      t.fail('It should throw when storing an object over quota');
     } catch (error) {
       t.ok(error instanceof Error);
     }
@@ -25,7 +25,7 @@ test("browser api object in content script", async (t) => {
     t.equal(browser, window.browser, "browser and window.browser should be the same object");
 
     chrome.storage.local.set({a: 'a'.repeat(10000000)}, () => {
-      t.ok(chrome.runtime.lastError, 'It should throw when set an object over quota');
+      t.ok(chrome.runtime.lastError, 'It should throw when storing an object over quota');
       t.equal(chrome.runtime.lastError.message, 'QUOTA_BYTES quota exceeded');
       t.notOk(chrome.runtime.lastError instanceof Error);
     });
