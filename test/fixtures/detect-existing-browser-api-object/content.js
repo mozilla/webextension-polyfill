@@ -42,7 +42,7 @@ test("error types", async (t) => {
       await browser.storage.sync.set({a: 'a'.repeat(10000000)});
       t.fail('It should throw when attempting to set an object over quota');
     } catch (error) {
-      t.equal(error.message, 'QUOTA_BYTES quota exceeded');
+      t.equal(error.message, 'The storage API will not work with a temporary addon ID. Please add an explicit addon ID to your manifest. For more information see https://mzl.la/3lPk1aE.');
       t.ok(error instanceof Error);
     }
   } else {
