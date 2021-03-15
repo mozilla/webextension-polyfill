@@ -36,7 +36,6 @@ test("browser api object in background page", async (t) => {
 
 test("error types", async (t) => {
   if (navigator.userAgent.includes("Firefox/")) {
-    t.plan(2);
     try {
       await browser.storage.sync.set({a: 'a'.repeat(10000000)});
       t.fail('It should throw when attempting to set an object over quota');
@@ -45,11 +44,11 @@ test("error types", async (t) => {
       t.ok(error instanceof Error);
     }
   } else {
-    t.plan(3);
-    chrome.storage.local.set({a: 'a'.repeat(10000000)}, () => {
-      t.ok(chrome.runtime.lastError, 'It should throw when attempting to set an object over quota');
-      t.equal(chrome.runtime.lastError.message, 'QUOTA_BYTES quota exceeded');
-      t.notOk(chrome.runtime.lastError instanceof Error);
+    await new Promise(resolve => {
+      chrome.storage.local.set({a: 'a'.repeat(10000000)}, resolve);
     });
+    t.ok(chrome.runtime.lastError, 'It should throw when attempting to set an object over quota');
+    t.equal(chrome.runtime.lastError.message, 'QUOTA_BYTES quota exceeded');
+    t.notOk(chrome.runtime.lastError instanceof Error);
   }
 });
