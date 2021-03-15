@@ -6,6 +6,11 @@
   "background": {
     "page": "background.html"
   },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "addon@example.com"
+    }
+  },
   "content_scripts": [
     {
       "matches": [
