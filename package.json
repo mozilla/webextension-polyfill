@@ -27,7 +27,7 @@
     "chromedriver": "90.0.0",
     "codecov": "3.8.1",
     "cross-env": "7.0.3",
-    "eslint": "7.24.0",
+    "eslint": "7.25.0",
     "finalhandler": "1.1.2",
     "geckodriver": "1.22.3",
     "global-replaceify": "1.0.0",
