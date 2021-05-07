@@ -34,7 +34,7 @@
     "grunt": "1.3.0",
     "grunt-babel": "8.0.0",
     "grunt-contrib-concat": "1.0.1",
-    "grunt-replace": "2.0.1",
+    "grunt-replace": "2.0.2",
     "gruntify-eslint": "5.0.0",
     "istanbul-lib-instrument": "4.0.3",
     "jsdom": "9.12.0",
