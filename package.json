@@ -24,7 +24,7 @@
     "babel-preset-minify": "0.5.1",
     "browserify": "17.0.0",
     "chai": "4.3.4",
-    "chromedriver": "90.0.0",
+    "chromedriver": "90.0.1",
     "codecov": "3.8.2",
     "cross-env": "7.0.3",
     "eslint": "7.25.0",
