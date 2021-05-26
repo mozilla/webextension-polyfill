@@ -43,7 +43,7 @@
     "selenium-webdriver": "4.0.0-alpha.8",
     "serve-static": "1.14.1",
     "shelljs": "0.8.4",
-    "sinon": "10.0.0",
+    "sinon": "11.1.1",
     "tap-nirvana": "1.1.0",
     "tape": "5.2.2",
     "tape-async": "2.3.0",
