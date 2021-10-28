@@ -97,6 +97,7 @@ commands:
           command: npm run test-coverage
       - store_artifacts:
           path: coverage
+      - run: ./scripts/fix-lcov-report.js
       - codecov/upload
       - run_test_minified
       - run_test_bundlers
