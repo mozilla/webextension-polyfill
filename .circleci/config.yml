@@ -95,6 +95,8 @@ commands:
       - run:
           name: run linting check and unit tests with coverage
           command: npm run test-coverage
+          environment:
+            COVERAGE_WITH_SOURCEMAP: "1"
       - store_artifacts:
           path: coverage
       - codecov/upload
