@@ -21,6 +21,30 @@ if (process.env.TEST_MINIFIED_POLYFILL) {
   BROWSER_POLYFILL_PATH = process.env.TEST_BUNDLED_POLYFILL;
 }
 
+function getInputSourceMap() {
+  // Enabled only on CI until we have fixed the mapping to the source file
+  // (by making sure that babel generates a sourcemap that does also take into
+  // account the api metadata being interpolated into the src script).
+  //
+  // TODO(https://github.com/mozilla/webextension-polyfill/issues/348):
+  // disabling the sourcemapped code coverage will not be necessary anymore
+  // once we fix the generated sourcemap to correctly map to src/browser-polyfill.js
+  if (process.env.COVERAGE_WITH_SOURCEMAP != "1") {
+    return undefined;
+  }
+  if (process.env.TEST_BUNDLED_POLYFILL) {
+    // Running the unit tests on the bundled files are meant to be used as smoke tests,
+    // we don't need to collect code coverage for it.
+    throw new Error("Unexpected code coverage enabled while testing bundled modules");
+  }
+  let sourceMapPath = process.env.TEST_MINIFIED_POLYFILL
+    ? "./dist/browser-polyfill.js.min.map"
+    : "./dist/browser-polyfill.js.map";
+  let sourceMap = JSON.parse(fs.readFileSync(sourceMapPath, {encoding: "utf-8"}));
+  sourceMap.sources = ["../src/browser-polyfill.js"];
+  return sourceMap;
+}
+
 // Create the jsdom window used to run the tests
 const testDOMWindow = jsdom("", {virtualConsole}).defaultView;
 
@@ -71,7 +95,11 @@ function setupTestDOMWindow(chromeObject, browserObject = undefined) {
         compact: false, esModules: false, produceSourceMap: false,
       });
       const scriptContent = fs.readFileSync(BROWSER_POLYFILL_PATH, "utf-8");
-      scriptEl.textContent = inst.instrumentSync(scriptContent, BROWSER_POLYFILL_PATH);
+      scriptEl.textContent = inst.instrumentSync(
+        scriptContent,
+        BROWSER_POLYFILL_PATH,
+        getInputSourceMap()
+      );
     } else {
       scriptEl.src = BROWSER_POLYFILL_PATH;
     }
