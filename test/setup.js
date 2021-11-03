@@ -23,7 +23,7 @@ if (process.env.TEST_MINIFIED_POLYFILL) {
 
 function getInputSourceMap() {
   // Enabled only on CI until we have fixed the mapping to the source file
-  // (by making sure the babel generate a sourcemap that does also take into
+  // (by making sure that babel generates a sourcemap that does also take into
   // account the api metadata being interpolated into the src script).
   //
   // TODO(https://github.com/mozilla/webextension-polyfill/issues/348):
