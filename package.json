@@ -36,7 +36,7 @@
     "grunt-replace": "2.0.2",
     "gruntify-eslint": "5.0.0",
     "istanbul-lib-instrument": "4.0.3",
-    "jsdom": "9.12.0",
+    "jsdom": "18.1.1",
     "mocha": "8.4.0",
     "nyc": "15.1.0",
     "selenium-webdriver": "4.0.0-alpha.8",
