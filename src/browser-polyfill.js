@@ -548,5 +548,5 @@ if (typeof globalThis.browser === "undefined" || Object.getPrototypeOf(globalThi
   // `module` variable available.
   module.exports = wrapAPIs(chrome);
 } else {
-  module.exports = browser;
+  module.exports = globalThis.browser;
 }
