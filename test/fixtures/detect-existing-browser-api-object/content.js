@@ -37,18 +37,18 @@ test("browser api object in background page", async (t) => {
 test("error types", async (t) => {
   if (navigator.userAgent.includes("Firefox/")) {
     try {
-      await browser.storage.sync.set({a: 'a'});
-      t.fail('It should throw when attempting to call storage.sync with a temporary addon ID');
+      await browser.storage.sync.set({a: "a"});
+      t.fail("It should throw when attempting to call storage.sync with a temporary addon ID");
     } catch (error) {
-      t.equal(error.message, 'The storage API will not work with a temporary addon ID. Please add an explicit addon ID to your manifest. For more information see https://mzl.la/3lPk1aE.');
+      t.equal(error.message, "The storage API will not work with a temporary addon ID. Please add an explicit addon ID to your manifest. For more information see https://mzl.la/3lPk1aE.");
       t.ok(error instanceof Error);
     }
   } else {
     await new Promise(resolve => {
-      chrome.storage.local.set({a: 'a'.repeat(10000000)}, resolve);
+      chrome.storage.local.set({a: "a".repeat(10000000)}, resolve);
     });
-    t.ok(chrome.runtime.lastError, 'It should throw when attempting to set an object over quota');
-    t.equal(chrome.runtime.lastError.message, 'QUOTA_BYTES quota exceeded');
+    t.ok(chrome.runtime.lastError, "It should throw when attempting to set an object over quota");
+    t.equal(chrome.runtime.lastError.message, "QUOTA_BYTES quota exceeded");
     t.notOk(chrome.runtime.lastError instanceof Error);
   }
 });
