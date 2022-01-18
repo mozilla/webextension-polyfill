@@ -65,6 +65,7 @@ commands:
     description: run Xephyr on DISPLAY=:10
     steps:
       - run: |
+          sudo apt update
           sudo apt install xserver-xephyr
           Xephyr -ac -br -noreset -screen 1280x1024x24 :10 &
           sleep 2
