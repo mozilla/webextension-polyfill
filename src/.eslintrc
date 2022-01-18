@@ -2,10 +2,13 @@
   "env": {
     "browser": true,
     "node": false,
-    "webextensions": true,
+    // Don't use `webextensions` because it enables the browser global.
+    // We want to use globalThis.browser instead:
+    // https://github.com/mozilla/webextension-polyfill/pull/351
   },
   "globals": {
     // Allow the `module` global, but not the `require(…)` function
     "module": false,
+    "chrome": true,
   },
 }
