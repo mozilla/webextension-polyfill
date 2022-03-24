@@ -20,6 +20,9 @@ orbs:
 references:
   # See https://hub.docker.com/r/cimg/node/tags for the nodejs versions
   # available.
+  #
+  # TODO: not listing the docker image explicitly is likely to prevent
+  # renovatebot from being able to automatically create PRs to update it.
   nodejs_current: &nodejs_current "12.22"
   repo_path: &repo_path ~/webextension-polyfill
   defaults: &defaults
