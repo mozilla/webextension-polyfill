@@ -139,6 +139,7 @@ jobs:
       # Image variant including Firefox, Chrome and Xvfb
       - image: cimg/node:<< parameters.nodejs_current >>-browsers
     steps:
+      - browser-tools/install-browser-tools
       - attach_project_repo
       - checkout
       - run_npm_install
