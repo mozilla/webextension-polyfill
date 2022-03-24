@@ -15,7 +15,7 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@3.2.0
+  codecov: codecov/codecov@3.2.2
 
 references:
   nodejs_current: &nodejs_current "12"
