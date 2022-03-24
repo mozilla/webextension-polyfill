@@ -16,6 +16,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@3.2.2
+  browser-tools: circleci/browser-tools@1.1.0
 
 references:
   # See https://hub.docker.com/r/cimg/node/tags for the nodejs versions
