@@ -18,7 +18,9 @@ orbs:
   codecov: codecov/codecov@3.2.2
 
 references:
-  nodejs_current: &nodejs_current "12"
+  # See https://hub.docker.com/r/cimg/node/tags for the nodejs versions
+  # available.
+  nodejs_current: &nodejs_current "12.22"
   repo_path: &repo_path ~/webextension-polyfill
   defaults: &defaults
     working_directory: *repo_path
@@ -131,7 +133,7 @@ jobs:
     <<: *defaults
     docker:
       # Image variant including Firefox, Chrome and Xvfb
-      - image: circleci/node:<< parameters.nodejs_current >>-browsers
+      - image: cimg/node:<< parameters.nodejs_current >>-browsers
     steps:
       - attach_project_repo
       - checkout
@@ -144,7 +146,7 @@ jobs:
   release-tag:
     <<: *defaults
     docker:
-      - image: circleci/node:<< parameters.nodejs_current >>
+      - image: cimg/node:<< parameters.nodejs_current >>
     steps:
       - attach_project_repo
       - run_npm_build:
