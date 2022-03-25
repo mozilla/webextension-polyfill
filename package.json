@@ -1,6 +1,6 @@
 {
   "name": "webextension-polyfill",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "A lightweight polyfill library for Promise-based WebExtension APIs in Chrome.",
   "main": "dist/browser-polyfill.js",
   "files": [
