@@ -19,19 +19,22 @@ orbs:
   browser-tools: circleci/browser-tools@1.1.0
 
 references:
-  # See https://hub.docker.com/r/cimg/node/tags for the nodejs versions
-  # available.
-  #
-  # TODO: not listing the docker image explicitly is likely to prevent
-  # renovatebot from being able to automatically create PRs to update it.
-  nodejs_current: &nodejs_current "12.22"
-  repo_path: &repo_path ~/webextension-polyfill
+  working_directory: &working_directory ~/webextension-polyfill
+
   defaults: &defaults
-    working_directory: *repo_path
-    parameters:
-      nodejs_current:
-        type: string
-        default: *nodejs_current
+    working_directory: *working_directory
+    # See https://hub.docker.com/r/cimg/node/tags for the cimg/node tags
+    # related to specific nodejs versions.
+    docker:
+      - image: cimg/node:14.19
+
+  defaults-browsers: &defaults-browsers
+    <<: *defaults
+    # Image variant (combined with circleci/browser-tools orb) used to
+    # run integration tests using Firefox, Chrome and Xvfb.
+    docker:
+      - image: cimg/node:14.19-browsers
+
 
 commands:
   run_npm_install:
@@ -123,21 +126,18 @@ commands:
     description: attach repo from workspace
     steps:
       - attach_workspace:
-          at: *repo_path
+          at: *working_directory
 
   persist_project_repo:
     description: persist repo in workspace
     steps:
       - persist_to_workspace:
-          root: *repo_path
+          root: *working_directory
           paths: .
 
 jobs:
   build:
-    <<: *defaults
-    docker:
-      # Image variant including Firefox, Chrome and Xvfb
-      - image: cimg/node:<< parameters.nodejs_current >>-browsers
+    <<: *defaults-browsers
     steps:
       - browser-tools/install-browser-tools
       - attach_project_repo
@@ -150,8 +150,6 @@ jobs:
 
   release-tag:
     <<: *defaults
-    docker:
-      - image: cimg/node:<< parameters.nodejs_current >>
     steps:
       - attach_project_repo
       - run_npm_build:
