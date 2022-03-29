@@ -1,1 +1,1 @@
-globalThis.browser = require('webextension-polyfill');
+globalThis.browser = require('./dist/browser-polyfill.js');
