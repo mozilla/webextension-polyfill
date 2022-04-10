@@ -152,6 +152,8 @@ browser.runtime.onMessage.addListener(...);
 
 This library is built as a **UMD module** (Universal Module Definition), and so it can also be used with module bundlers (and explicitly tested on both **webpack** and **browserify**) or AMD module loaders.
 
+Be aware that when used with module bundlers, the polyfill module does not define the `browser` object in the global namespace (i.e. `window`), but is only available in the file that imports it. To define the `browser` object  globally, [import the `register` file](#Polyfilling-the-browser-global-with-module-bundlers) instead.
+
 **src/background.js**:
 ```javascript
 var browser = require("webextension-polyfill");
@@ -185,6 +187,18 @@ If the extension doesn't minify its own sources, it is still possible to explici
 var browser = require("webextension-polyfill/dist/browser-polyfill.min");
 
 ...
+```
+
+### Polyfilling the `browser` global with module bundlers
+
+If you prefer importing the polyfill once in your entry point when using webpack or other bundlers:
+
+**src/background.js**:
+```javascript
+require("webextension-polyfill/register");
+
+// The `browser` object will now be available everywhere in the background page
+console.log(browser.runtime.id);
 ```
 
 ### Usage with webpack without bundling
