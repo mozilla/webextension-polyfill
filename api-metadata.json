@@ -453,6 +453,36 @@
       "maxArgs": 1
     }
   },
+  "scripting": {
+    "executeScript": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "getRegisteredContentScripts": {
+      "minArgs": 0,
+      "maxArgs": 1
+    },
+    "insertCSS": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "registerContentScripts": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "removeCSS": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "updateContentScripts": {
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "unregisterContentScripts": {
+      "minArgs": 0,
+      "maxArgs": 1
+    }
+  },
   "sessions": {
     "getDevices": {
       "minArgs": 0,
