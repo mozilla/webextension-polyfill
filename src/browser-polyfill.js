@@ -11,7 +11,8 @@ if (typeof globalThis != "object" || typeof chrome != "object" || !chrome || !ch
 }
 
 if (typeof globalThis.browser === "undefined" || Object.getPrototypeOf(globalThis.browser) !== Object.prototype) {
-  const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
+  const CHROME_SEND_MESSAGE_CALLBACK_NO_LISTENER_MESSAGE = "The message port closed before a response was received.";
+  const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received"; // No period
   const SEND_RESPONSE_DEPRECATION_WARNING = "Returning a Promise is the preferred way to send a reply from an onMessage/onMessageExternal listener, as the sendResponse will be removed from the specs (See https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage)";
 
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
@@ -485,7 +486,11 @@ if (typeof globalThis.browser === "undefined" || Object.getPrototypeOf(globalThi
         // Detect when none of the listeners replied to the sendMessage call and resolve
         // the promise to undefined as in Firefox.
         // See https://github.com/mozilla/webextension-polyfill/issues/130
-        if (extensionAPIs.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+        // See https://github.com/mozilla/webextension-polyfill/issues/384
+        if (
+          extensionAPIs.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE ||
+          extensionAPIs.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_LISTENER_MESSAGE
+        ) {
           resolve();
         } else {
           reject(new Error(extensionAPIs.runtime.lastError.message));
