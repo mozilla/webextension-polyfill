@@ -64,7 +64,6 @@ commands:
   run_test_bundlers:
     description: rerun unit tests on webpack and browserify bundled files
     steps:
-      - configure_global_npm
       - run: npm install -g browserify webpack webpack-cli
       - run: |
           export PATH=$PATH:../.npm-global/bin
@@ -113,14 +112,6 @@ commands:
       - run_test_minified
       - run_test_bundlers
       - run_functional_tests
-
-  # This is required to avoid a `EACCES` when running `npm install -g` (which is
-  # executed in the test suite).
-  configure_global_npm:
-    description: create custom directory for global npm installs
-    steps:
-      - run: mkdir ../.npm-global
-      - run: npm config set prefix '../.npm-global'
 
   attach_project_repo:
     description: attach repo from workspace
