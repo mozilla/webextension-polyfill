@@ -64,9 +64,13 @@ commands:
   run_test_bundlers:
     description: rerun unit tests on webpack and browserify bundled files
     steps:
-      - run: npm install -g browserify webpack webpack-cli
       - run: |
-          export PATH=$PATH:../.npm-global/bin
+          mkdir ~/.npm-global/
+          pushd ~/.npm-global/
+          npm install browserify webpack webpack-cli
+          popd
+      - run: |
+          export PATH=$PATH:../.npm-global/node_modules/.bin
           node ./scripts/run-module-bundlers-smoketests.js
 
   run_xephyr:
