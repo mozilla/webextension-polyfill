@@ -15,7 +15,7 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@3.2.2
+  codecov: codecov/codecov@3.2.3
   browser-tools: circleci/browser-tools@1.1.0
 
 references:
