@@ -21,7 +21,7 @@
     "@babel/preset-env": "7.14.1",
     "@babel/register": "7.13.16",
     "babel-eslint": "10.1.0",
-    "babel-preset-minify": "0.5.1",
+    "babel-preset-minify": "0.5.2",
     "browserify": "17.0.0",
     "chai": "4.3.4",
     "chromedriver": "103.0.0",
