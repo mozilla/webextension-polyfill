@@ -12,11 +12,6 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
 
-    eslint: {
-      src: ["src/browser-polyfill.js", "Gruntfile.js"],
-      test: ["test/**/*.js", "scripts/**/*.js"],
-    },
-
     replace: {
       dist: {
         options: {
@@ -91,10 +86,9 @@ module.exports = function(grunt) {
 
   grunt.util.linefeed = "\n";
 
-  grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-replace");
   grunt.loadNpmTasks("grunt-contrib-concat");
   grunt.loadNpmTasks("grunt-babel");
 
-  grunt.registerTask("default", ["eslint", "replace", "babel:umd", "babel:minify", "concat:license"]);
+  grunt.registerTask("default", ["replace", "babel:umd", "babel:minify", "concat:license"]);
 };
