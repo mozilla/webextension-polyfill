@@ -12,7 +12,6 @@ if (!globalThis.chrome?.runtime?.id) {
 
 if (typeof globalThis.browser === "undefined" || Object.getPrototypeOf(globalThis.browser) !== Object.prototype) {
   const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
-  const SEND_RESPONSE_DEPRECATION_WARNING = "Returning a Promise is the preferred way to send a reply from an onMessage/onMessageExternal listener, as the sendResponse will be removed from the specs (See https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage)";
 
   // Wrapping the bulk of this polyfill in a one-time-use function is a minor
   // optimization for Firefox. Since Spidermonkey does not fully parse the
@@ -381,9 +380,6 @@ if (typeof globalThis.browser === "undefined" || Object.getPrototypeOf(globalThi
       };
     });
 
-    // Keep track if the deprecation warning has been logged at least once.
-    let loggedSendResponseDeprecationWarning = false;
-
     const onMessageWrappers = new DefaultWeakMap(listener => {
       if (typeof listener !== "function") {
         return listener;
@@ -412,10 +408,6 @@ if (typeof globalThis.browser === "undefined" || Object.getPrototypeOf(globalThi
         let wrappedSendResponse;
         let sendResponsePromise = new Promise(resolve => {
           wrappedSendResponse = function(response) {
-            if (!loggedSendResponseDeprecationWarning) {
-              console.warn(SEND_RESPONSE_DEPRECATION_WARNING, new Error().stack);
-              loggedSendResponseDeprecationWarning = true;
-            }
             didCallSendResponse = true;
             resolve(response);
           };
