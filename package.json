@@ -28,7 +28,7 @@
     "cross-env": "7.0.3",
     "eslint": "7.25.0",
     "finalhandler": "1.2.0",
-    "geckodriver": "3.0.1",
+    "geckodriver": "3.0.2",
     "global-replaceify": "1.0.0",
     "grunt": "1.4.0",
     "grunt-babel": "8.0.0",
