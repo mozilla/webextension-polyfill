@@ -77,12 +77,7 @@ or
 TEST_BROWSER_TYPE=firefox npm run test-integration
 ```
 
-These tests emit their results using the TAP protocol. To get a nicer output on the console 
-you may want to pipe the results to `tap-nirvana`, e.g.
-
-```sh
-TEST_BROWSER_TYPE=chrome npm run test-integration | ./node_modules/.bin/tap-nirvana
-```
+These tests emit their results using the TAP protocol.
 
 ## Writing commit messages
 

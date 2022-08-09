@@ -42,7 +42,6 @@
     "serve-static": "1.15.0",
     "shelljs": "0.8.5",
     "sinon": "14.0.0",
-    "tap-nirvana": "1.1.0",
     "tape": "5.5.3",
     "tape-async": "2.3.0",
     "tmp": "0.2.1"
@@ -63,7 +62,7 @@
     "test-coverage": "cross-env COVERAGE=y nyc mocha",
     "test-minified": "cross-env TEST_MINIFIED_POLYFILL=1 mocha",
     "test-integration": "tape test/integration/test-*",
-    "test-integration:chrome": "cross-env TEST_BROWSER_TYPE=chrome npm run test-integration | tap-nirvana",
-    "test-integration:firefox": "cross-env TEST_BROWSER_TYPE=firefox npm run test-integration | tap-nirvana"
+    "test-integration:chrome": "cross-env TEST_BROWSER_TYPE=chrome npm run test-integration",
+    "test-integration:firefox": "cross-env TEST_BROWSER_TYPE=firefox npm run test-integration"
   }
 }
