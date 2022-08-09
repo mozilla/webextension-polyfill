@@ -2,9 +2,9 @@
 
 const fs = require("fs");
 const {createInstrumenter} = require("istanbul-lib-instrument");
-const {jsdom, createVirtualConsole} = require("jsdom");
+const jsdom = require("jsdom");
 
-var virtualConsole = createVirtualConsole();
+var virtualConsole = new jsdom.VirtualConsole();
 
 // Optionally print console logs from the jsdom window.
 if (process.env.ENABLE_JSDOM_CONSOLE == "y") {
@@ -45,8 +45,16 @@ function getInputSourceMap() {
   return sourceMap;
 }
 
+const scriptContent = fs.readFileSync(BROWSER_POLYFILL_PATH, "utf-8");
+
 // Create the jsdom window used to run the tests
-const testDOMWindow = jsdom("", {virtualConsole}).defaultView;
+const testDOMWindow = new jsdom.JSDOM("", {
+  virtualConsole,
+  // This option is needed to allow the polyfill script to be executed
+  // inside the jsdom window as a tag script (and it is actually the
+  // only script executed inside the test jsdom window).
+  runScripts: "dangerously",
+}).window;
 
 // Copy the code coverage of the browser-polyfill script from the jsdom window
 // to the nodejs global, where nyc expects to find the code coverage data to
@@ -94,14 +102,13 @@ function setupTestDOMWindow(chromeObject, browserObject = undefined) {
       const inst = createInstrumenter({
         compact: false, esModules: false, produceSourceMap: false,
       });
-      const scriptContent = fs.readFileSync(BROWSER_POLYFILL_PATH, "utf-8");
       scriptEl.textContent = inst.instrumentSync(
         scriptContent,
         BROWSER_POLYFILL_PATH,
         getInputSourceMap()
       );
     } else {
-      scriptEl.src = BROWSER_POLYFILL_PATH;
+      scriptEl.textContent = scriptContent;
     }
 
     let onLoad;
