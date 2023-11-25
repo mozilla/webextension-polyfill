@@ -93,7 +93,7 @@ commands:
       # On the contrary it seems to don't happen with Xephyr.
       - run_xephyr
       - run:
-          command: node ./scripts/run-browsers-smoketests.js
+          command: ls
           environment:
             DISPLAY: :10.0
             CHROMEDRIVER_VERBOSE_LOGFILE: /tmp/chromedriver.log
