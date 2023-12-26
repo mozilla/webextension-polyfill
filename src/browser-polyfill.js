@@ -6,6 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+// Do not use optional chaining operator here, before updating minimal supported versions
 if (typeof globalThis != "object" || typeof chrome != "object" || !chrome || !chrome.runtime || !chrome.runtime.id) {
   throw new Error("This script should only be loaded in a browser extension.");
 }
