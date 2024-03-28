@@ -26,14 +26,14 @@ references:
     # See https://hub.docker.com/r/cimg/node/tags for the cimg/node tags
     # related to specific nodejs versions.
     docker:
-      - image: cimg/node:14.19
+      - image: cimg/node:18.7
 
   defaults-browsers: &defaults-browsers
     <<: *defaults
     # Image variant (combined with circleci/browser-tools orb) used to
     # run integration tests using Firefox, Chrome and Xvfb.
     docker:
-      - image: cimg/node:14.19-browsers
+      - image: cimg/node:18.7-browsers
 
 
 commands:
@@ -64,9 +64,13 @@ commands:
   run_test_bundlers:
     description: rerun unit tests on webpack and browserify bundled files
     steps:
-      - run: npm install -g browserify webpack webpack-cli
       - run: |
-          export PATH=$PATH:../.npm-global/bin
+          mkdir ~/.npm-global/
+          pushd ~/.npm-global/
+          npm install browserify webpack webpack-cli
+          popd
+      - run: |
+          export PATH=$PATH:../.npm-global/node_modules/.bin
           node ./scripts/run-module-bundlers-smoketests.js
 
   run_xephyr:
