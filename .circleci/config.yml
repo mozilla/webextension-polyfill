@@ -26,14 +26,14 @@ references:
     # See https://hub.docker.com/r/cimg/node/tags for the cimg/node tags
     # related to specific nodejs versions.
     docker:
-      - image: cimg/node:14.19
+      - image: cimg/node:14.21
 
   defaults-browsers: &defaults-browsers
     <<: *defaults
     # Image variant (combined with circleci/browser-tools orb) used to
     # run integration tests using Firefox, Chrome and Xvfb.
     docker:
-      - image: cimg/node:14.19-browsers
+      - image: cimg/node:14.21-browsers
 
 
 commands:
