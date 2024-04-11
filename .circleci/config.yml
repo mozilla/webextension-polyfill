@@ -9,14 +9,13 @@
 #
 # - to try run jobs locally:
 #
-#     circleci config process .circleci/config.yml > tmp/processed.yml
-#     circleci local execute -c tmp/processed.yml --job build-nodejs-current
+#     circleci local execute -c .circleci/config.yml build-nodejs-current
 #
 version: 2.1
 
 orbs:
   codecov: codecov/codecov@3.2.3
-  browser-tools: circleci/browser-tools@1.4.1
+  browser-tools: circleci/browser-tools@1.4.8
 
 references:
   working_directory: &working_directory ~/webextension-polyfill
@@ -26,14 +25,14 @@ references:
     # See https://hub.docker.com/r/cimg/node/tags for the cimg/node tags
     # related to specific nodejs versions.
     docker:
-      - image: cimg/node:14.19
+      - image: cimg/node:20.12
 
   defaults-browsers: &defaults-browsers
     <<: *defaults
     # Image variant (combined with circleci/browser-tools orb) used to
     # run integration tests using Firefox, Chrome and Xvfb.
     docker:
-      - image: cimg/node:14.19-browsers
+      - image: cimg/node:20.12-browsers
 
 
 commands:
