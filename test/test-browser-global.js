@@ -28,7 +28,7 @@ describe("browser-polyfill", () => {
       runtime: {lastError: null},
     };
     const fakeBrowser = {
-      mycustomns: {mybrowserkey: true},
+      runtime: {id: "fakeid"},
     };
 
     return setupTestDOMWindow(fakeChrome, fakeBrowser).then(window => {
