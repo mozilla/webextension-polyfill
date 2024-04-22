@@ -390,7 +390,7 @@ MSEdge versions older than 79.0.309 are **unsupported**, for extension developer
 
 The following Github repository provides some additional detail about this strategy and a minimal test extension that shows how to put it together:
 
-- https://github.com/rpl/example-msedge-extension-with-webextension-polyfill
+- https://github.com/rpl/example-msedge-extension-with-webextension-polyfill 
 
 ## Contributing to this project
 
