@@ -23,7 +23,7 @@
     "@babel/register": "7.18.9",
     "babel-preset-minify": "0.5.2",
     "browserify": "17.0.0",
-    "chai": "4.3.6",
+    "chai": "5.1.1",
     "chromedriver": "123.0.3",
     "cross-env": "7.0.3",
     "eslint": "8.35.0",
