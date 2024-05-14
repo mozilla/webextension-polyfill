@@ -63,10 +63,7 @@ commands:
   run_test_bundlers:
     description: rerun unit tests on webpack and browserify bundled files
     steps:
-      - run: npm install browserify webpack webpack-cli
-      - run: |
-          export PATH=$PATH:$PWD/node_modules/.bin
-          node ./scripts/run-module-bundlers-smoketests.js
+      - run: npm run test-module-bundlers-smoketests
 
   run_xephyr:
     description: run Xephyr on DISPLAY=:10

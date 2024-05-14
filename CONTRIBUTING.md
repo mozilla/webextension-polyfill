@@ -33,7 +33,7 @@ respectively, and finally execute the unit tests on the generated dist files.
 This project provides two test suites:
 
 - unit tests (which only require Node.js to run)
-- module bundlers smoke tests (which requires also browserify and webpack to be installed globally)
+- module bundlers smoke tests
 - integration tests (which requires also a stable version of Chrome and Firefox)
 
 ### Unit Tests
@@ -51,8 +51,8 @@ by running `npm run test-coverage`.
 
 ### Module Bundler smoketests
 
-The shell script `test/run-module-bundlers-smoketests.sh` runs browserify and webpack, 
-to verify that the most commonly used module bundlers are not raising any unexpected error 
+`npm run test-module-bundlers-smoketests` runs browserify and webpack,
+to verify that the most commonly used module bundlers are not raising any unexpected error
 while building a bundle that requires this library.
 
 ### Integration Tests
