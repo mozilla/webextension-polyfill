@@ -20,7 +20,7 @@
     "@babel/core": "7.18.10",
     "@babel/eslint-parser": "7.19.1",
     "@babel/preset-env": "7.18.10",
-    "@babel/register": "7.18.9",
+    "@babel/register": "7.24.6",
     "babel-preset-minify": "0.5.2",
     "browserify": "17.0.0",
     "chai": "4.3.6",
