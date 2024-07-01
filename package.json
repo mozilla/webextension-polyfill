@@ -34,7 +34,7 @@
     "grunt-babel": "8.0.0",
     "grunt-contrib-concat": "2.1.0",
     "grunt-replace": "2.0.2",
-    "istanbul-lib-instrument": "5.2.0",
+    "istanbul-lib-instrument": "6.0.3",
     "jsdom": "20.0.0",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
