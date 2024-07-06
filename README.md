@@ -52,7 +52,7 @@ A new version of the library is built from this repository and released as an np
 
 The npm package is named after this repo: [webextension-polyfill](https://www.npmjs.com/package/webextension-polyfill).
 
-For the extension that already include a package.json file, the last released version of this library can be quickly installed using:
+For the extension that already includes a package.json file, the last released version of this library can be quickly installed using:
 
 ```
 npm install --save-dev webextension-polyfill
@@ -342,7 +342,7 @@ There are multiple projects that add TypeScript support to your web-extension pr
 
 ## Known Limitations and Incompatibilities
 
-This library tries to minimize the amount of "special handling" that a cross-browser extension has to do to be able to run on the supported browsers from a single codebase, but there are still cases when polyfillling the missing or incompatible behaviors or features is not possible or out of the scope of this polyfill.
+This library tries to minimize the amount of "special handling" that a cross-browser extension has to do to be able to run on the supported browsers from a single codebase, but there are still cases when polyfilling the missing or incompatible behaviors or features is not possible or out of the scope of this polyfill.
 
 This section aims to keep track of the most common issues that an extension may have.
 
