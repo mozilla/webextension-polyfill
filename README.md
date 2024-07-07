@@ -52,7 +52,7 @@ A new version of the library is built from this repository and released as an np
 
 The npm package is named after this repo: [webextension-polyfill](https://www.npmjs.com/package/webextension-polyfill).
 
-For the extension that already includes a package.json file, the last released version of this library can be quickly installed using:
+For extensions that already include a package.json file, the last released version of this library can be quickly installed using:
 
 ```
 npm install --save-dev webextension-polyfill
