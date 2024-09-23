@@ -73,7 +73,7 @@ const launchBrowser = async (launchOptions) => {
     const options = new firefox.Options();
 
     if (process.env.HEADLESS === "1") {
-      options.headless();
+      options.addArguments("--headless=new");
     }
 
     if (openDevTools) {
