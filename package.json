@@ -30,6 +30,7 @@
     "finalhandler": "1.2.0",
     "geckodriver": "4.4.4",
     "global-replaceify": "1.0.0",
+    "globals": "^15.9.0",
     "grunt": "1.6.1",
     "grunt-babel": "8.0.0",
     "grunt-contrib-concat": "2.1.0",
