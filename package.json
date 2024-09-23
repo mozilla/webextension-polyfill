@@ -39,7 +39,7 @@
     "mocha": "10.7.3",
     "nyc": "17.1.0",
     "selenium-webdriver": "4.8.1",
-    "serve-static": "1.15.0",
+    "serve-static": "1.16.0",
     "shelljs": "0.8.5",
     "sinon": "19.0.2",
     "tape": "5.5.3",
