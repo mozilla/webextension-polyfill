@@ -2,11 +2,14 @@ const tape = require("tape-async");
 
 const DEFAULT_TIMEOUT = 500;
 
-let browser = "unknown";
+// NOTE: eslint rules are preventing to re-declare or re-assign the `browser` global due to
+// eslint env webextensions being enabled in the project eslint config, and so we are disabling
+// those rules here because this script is only actually executed in http web pages.
+let browser = "unknown"; // eslint-disable-line no-redeclare
 if (navigator.userAgent.includes("Chrome/")) {
-  browser = "Chrome";
+  browser = "Chrome"; // eslint-disable-line no-native-reassign
 } else if (navigator.userAgent.includes("Firefox/")) {
-  browser = "Firefox";
+  browser = "Firefox"; // eslint-disable-line no-native-reassign
 }
 
 // Export as a global a wrapped test function which enforces a timeout by default.
