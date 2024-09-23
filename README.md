@@ -38,10 +38,10 @@ Supported Browsers
 | Firefox                   | *Officially Supported as a NO-OP* (with automated tests for comparison with the behaviors on Chrome) |
 | Opera / Edge (>=79.0.309) | *Unofficially Supported* as a Chrome-compatible target (but not explicitly tested in automation)     |
 
-The polyfill is being tested explicitly (with automated tests that run on every pull request) on **officially supported** 
+The polyfill is being tested explicitly (with automated tests that run on every pull request) on **officially supported**
 browsers (that are currently the last stable versions of Chrome and Firefox).
 
-On Firefox, this library is actually acting as a NO-OP: it detects that the `browser` API object is already defined 
+On Firefox, this library is actually acting as a NO-OP: it detects that the `browser` API object is already defined
 and it does not create any custom wrappers.
 Firefox is still included in the automated tests, to ensure that no wrappers are being created when running on Firefox,
 and for comparison with the behaviors implemented by the library on Chrome.
@@ -337,7 +337,6 @@ There are multiple projects that add TypeScript support to your web-extension pr
 | Project | Description |
 | ------------- | ------------- |
 | [@types/webextension-polyfill](https://www.npmjs.com/package/@types/webextension-polyfill) | Types and JS-Doc are automatically generated from the mozilla schema files, so it is always up-to-date with the latest APIs. Formerly known as [webextension-polyfill-ts](https://github.com/Lusito/webextension-polyfill-ts). |
-| [web-ext-types](https://github.com/kelseasy/web-ext-types) | Manually maintained types based on MDN's documentation. No JS-Doc included. |
 | [@types/chrome](https://www.npmjs.com/package/@types/chrome) | Manually maintained types and JS-Doc. Only contains types for chrome extensions though! |
 
 ## Known Limitations and Incompatibilities
