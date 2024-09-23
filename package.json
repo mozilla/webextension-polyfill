@@ -59,10 +59,10 @@
   "scripts": {
     "build": "npm run lint && grunt",
     "prepublish": "npm run build && npm run test",
-    "test": "mocha",
+    "test": "mocha --require chai/register-assert.js",
     "lint": "eslint *.js src/*.js scripts/**/*.js test/**/*.js",
-    "test-coverage": "cross-env COVERAGE=y nyc mocha",
-    "test-minified": "cross-env TEST_MINIFIED_POLYFILL=1 mocha",
+    "test-coverage": "cross-env COVERAGE=y nyc mocha --require chai/register-assert.js",
+    "test-minified": "cross-env TEST_MINIFIED_POLYFILL=1 mocha --require chai/register-assert.js",
     "test-integration": "tape test/integration/test-*",
     "test-integration:chrome": "cross-env TEST_BROWSER_TYPE=chrome npm run test-integration",
     "test-integration:firefox": "cross-env TEST_BROWSER_TYPE=firefox npm run test-integration",
