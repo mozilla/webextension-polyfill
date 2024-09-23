@@ -1,6 +1,6 @@
 "use strict";
 
-const {deepEqual, equal, fail, ok, throws, instanceOf} = require("chai").assert;
+const {deepEqual, equal, fail, ok, throws, instanceOf} = assert;
 const sinon = require("sinon");
 
 const {setupTestDOMWindow} = require("./setup");
