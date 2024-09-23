@@ -2,6 +2,9 @@ const tape = require("tape-async");
 
 const DEFAULT_TIMEOUT = 500;
 
+// NOTE: eslint rules are preventing to re-declare or re-assign the `browser` global due to
+// eslint env webextensions being enabled in the project eslint config, and so we are disabling
+// those rules here because this script is only actually executed in http web pages.
 let browser = "unknown"; // eslint-disable-line no-redeclare
 if (navigator.userAgent.includes("Chrome/")) {
   browser = "Chrome"; // eslint-disable-line no-native-reassign
