@@ -96,9 +96,14 @@ if (!(globalThis.browser && globalThis.browser.runtime && globalThis.browser.run
      *        The generated callback function.
      */
     const makeCallback = (promise, metadata) => {
+      // In case we encounter a browser error in the callback function, we don't
+      // want to lose the stack trace leading up to this point. For that reason,
+      // we need to instantiate the error outside the callback function.
+      let error = new Error();
       return (...callbackArgs) => {
         if (extensionAPIs.runtime.lastError) {
-          promise.reject(new Error(extensionAPIs.runtime.lastError.message));
+          error.message = extensionAPIs.runtime.lastError.message;
+          promise.reject(error);
         } else if (metadata.singleCallbackArg ||
                    (callbackArgs.length <= 1 && metadata.singleCallbackArg !== false)) {
           promise.resolve(callbackArgs[0]);
