@@ -22,7 +22,7 @@
     "@babel/preset-env": "7.25.4",
     "@babel/register": "7.24.6",
     "babel-preset-minify": "0.5.2",
-    "browserify": "17.0.0",
+    "browserify": "17.0.1",
     "chai": "5.1.1",
     "chromedriver": "134.0.5",
     "cross-env": "7.0.3",
