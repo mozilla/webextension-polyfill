@@ -15,7 +15,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@3.2.3
-  browser-tools: circleci/browser-tools@1.4.8
+  browser-tools: circleci/browser-tools@1.5.3
 
 references:
   working_directory: &working_directory ~/webextension-polyfill
