@@ -1,0 +1,17 @@
+{
+    "name": "Extension with browserAction API",
+    "short_name": "browseraction",
+    "version": "1",
+    "manifest_version": 2,
+
+    "background": {
+        "scripts": [
+            "explorer.js"
+        ]
+    },
+    "browser_action": {
+    },
+    "permissions": [
+        "tabs"
+    ]
+}

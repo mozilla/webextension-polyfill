@@ -1,0 +1,64 @@
+{
+    "name": "Extension with all APIs except browserAction",
+    "short_name": "extension-apis",
+    "description": "All stable APIs except for browser_action and devtools",
+    "version": "1",
+    "manifest_version": 2,
+
+    "background": {
+        "scripts": [
+            "browseraction/explorer.js"
+        ]
+    },
+    "commands": {
+    },
+    "omnibox": {
+        "keyword": "testkeyword"
+    },
+    "optional_permissions": [
+    ],
+    "page_action": {
+    },
+    "permissions": [
+        "alarms",
+        "bookmarks",
+        "browsingData",
+        "contentSettings",
+        "contextMenus",
+        "cookies",
+        "debugger",
+        "declarativeContent",
+        "desktopCapture",
+        "downloads",
+        "downloads.open",
+        "downloads.shelf",
+        "fontSettings",
+        "gcm",
+        "history",
+        "identity",
+        "idle",
+        "management",
+        "nativeMessaging",
+        "notifications",
+        "pageCapture",
+        "power",
+        "printerProvider",
+        "privacy",
+        "proxy",
+        "sessions",
+        "storage",
+        "system.cpu",
+        "system.memory",
+        "system.storage",
+        "system.display",
+        "tabCapture",
+        "tabs",
+        "topSites",
+        "tts",
+        "ttsEngine",
+        "webNavigation",
+        "webRequest",
+        "windows",
+        "<all_urls>"
+    ]
+}
