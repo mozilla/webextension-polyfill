@@ -41,7 +41,7 @@
     "nyc": "17.1.0",
     "selenium-webdriver": "4.25.0",
     "serve-static": "1.16.2",
-    "shelljs": "0.8.5",
+    "shelljs": "0.9.2",
     "sinon": "19.0.2",
     "tape": "5.9.0",
     "tape-async": "2.3.0",
