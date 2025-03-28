@@ -36,7 +36,7 @@
     "grunt-contrib-concat": "2.1.0",
     "grunt-replace": "2.0.2",
     "istanbul-lib-instrument": "6.0.3",
-    "jsdom": "20.0.0",
+    "jsdom": "26.0.0",
     "mocha": "10.7.3",
     "nyc": "17.1.0",
     "selenium-webdriver": "4.25.0",
