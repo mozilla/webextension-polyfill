@@ -37,7 +37,7 @@
     "grunt-replace": "2.0.2",
     "istanbul-lib-instrument": "6.0.3",
     "jsdom": "20.0.0",
-    "mocha": "10.7.3",
+    "mocha": "11.1.0",
     "nyc": "17.1.0",
     "selenium-webdriver": "4.25.0",
     "serve-static": "1.16.2",
