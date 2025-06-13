@@ -42,7 +42,7 @@
     "selenium-webdriver": "4.25.0",
     "serve-static": "1.16.2",
     "shelljs": "0.8.5",
-    "sinon": "19.0.2",
+    "sinon": "21.0.0",
     "tape": "5.9.0",
     "tape-async": "2.3.0",
     "tmp": "0.2.3",
