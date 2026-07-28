@@ -43,7 +43,7 @@
     "serve-static": "1.16.2",
     "shelljs": "0.8.5",
     "sinon": "19.0.2",
-    "tape": "5.9.0",
+    "tape": "5.10.2",
     "tape-async": "2.3.0",
     "tmp": "0.2.3",
     "webpack": "5.95.0",
