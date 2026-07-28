@@ -36,8 +36,8 @@ const launchBrowser = async (launchOptions) => {
       `--load-extension=${extensionPath}`,
       // See issue #85 for a rationale.
       "--no-sandbox",
-      // Allow MV2 extensions
-      "--disable-features=ExtensionManifestV2Unsupported,ExtensionManifestV2Disabled",
+      // Keep loading the MV2 test extensions.
+      "--enable-features=AllowLegacyMV2Extensions",
     ]);
 
     if (openDevTools) {

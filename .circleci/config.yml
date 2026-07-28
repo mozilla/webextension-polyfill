@@ -128,7 +128,7 @@ jobs:
     steps:
       - browser-tools/install_firefox
       - browser-tools/install_chrome_for_testing:
-          version: 149.0.7827.53
+          version: 150.0.7871.124
       - attach_project_repo
       - checkout
       - run_npm_install
