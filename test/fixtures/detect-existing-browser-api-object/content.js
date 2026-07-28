@@ -44,11 +44,19 @@ test("error types", async (t) => {
       t.ok(error instanceof Error);
     }
   } else {
+    // Derive the payload size from the quota advertised by the browser: it was
+    // raised from 5MB to 10MB in Chrome 114, which silently turned a hardcoded
+    // 10000000 bytes into a value that fits and no longer sets lastError.
+    const overQuota = "a".repeat(chrome.storage.local.QUOTA_BYTES + 1);
+
     await new Promise(resolve => {
-      chrome.storage.local.set({a: "a".repeat(10000000)}, resolve);
+      chrome.storage.local.set({a: overQuota}, resolve);
     });
     t.ok(chrome.runtime.lastError, "It should throw when attempting to set an object over quota");
-    t.equal(chrome.runtime.lastError.message, "QUOTA_BYTES quota exceeded");
+    // Matched loosely on purpose: Chrome words this "QUOTA_BYTES quota exceeded"
+    // up to 149 and "Resource::kQuotaBytes quota exceeded" from 150 on.
+    t.match(chrome.runtime.lastError.message, /quota exceeded/,
+      "lastError should carry a quota related message");
     t.notOk(chrome.runtime.lastError instanceof Error);
   }
 });
