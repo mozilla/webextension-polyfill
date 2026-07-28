@@ -1,5 +1,5 @@
-require("@babel/register")({
-  presets: [["@babel/env", {
+require("@babel/register").default({
+  presets: [["@babel/preset-env", {
     targets: {
       node: "current",
     },
