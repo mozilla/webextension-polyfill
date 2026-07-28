@@ -17,11 +17,10 @@
   },
   "homepage": "https://github.com/mozilla/webextension-polyfill",
   "devDependencies": {
-    "@babel/core": "7.25.2",
-    "@babel/eslint-parser": "7.25.1",
-    "@babel/preset-env": "7.25.4",
-    "@babel/register": "7.24.6",
-    "babel-preset-minify": "0.5.2",
+    "@babel/core": "8.0.1",
+    "@babel/eslint-parser": "8.0.1",
+    "@babel/preset-env": "8.0.2",
+    "@babel/register": "8.0.1",
     "browserify": "17.0.1",
     "chai": "6.2.2",
     "chromedriver": "150.0.0",
@@ -35,6 +34,7 @@
     "grunt-babel": "8.0.0",
     "grunt-contrib-concat": "2.1.0",
     "grunt-replace": "2.0.2",
+    "grunt-terser": "2.0.0",
     "istanbul-lib-instrument": "6.0.3",
     "jsdom": "20.0.0",
     "mocha": "11.7.6",
@@ -45,9 +45,15 @@
     "sinon": "22.1.0",
     "tape": "5.10.2",
     "tape-async": "2.3.0",
+    "terser": "5.49.0",
     "tmp": "0.2.7",
     "webpack": "5.108.4",
     "webpack-cli": "7.2.1"
+  },
+  "overrides": {
+    "grunt-babel": {
+      "@babel/core": "$@babel/core"
+    }
   },
   "nyc": {
     "reporter": [

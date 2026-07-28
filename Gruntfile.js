@@ -45,17 +45,6 @@ module.exports = function(grunt) {
     },
 
     babel: {
-      minify: {
-        options: {
-          babelrc: false,
-          comments: false,
-          presets: ["minify"],
-          sourceMap: true,
-        },
-        files: {
-          "dist/browser-polyfill.min.js": "dist/browser-polyfill.js",
-        },
-      },
       umd: {
         options: {
           babelrc: false,
@@ -67,10 +56,24 @@ module.exports = function(grunt) {
             }],
           ],
           sourceMap: true,
-          moduleId: "webextension-polyfill",
         },
         files: {
           "dist/browser-polyfill.js": "dist/browser-polyfill.js",
+        },
+      },
+    },
+
+    terser: {
+      minify: {
+        options: {
+          format: {comments: false},
+          sourceMap: {
+            url: "browser-polyfill.min.js.map",
+            includeSources: true,
+          },
+        },
+        files: {
+          "dist/browser-polyfill.min.js": "dist/browser-polyfill.js",
         },
       },
     },
@@ -89,6 +92,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-replace");
   grunt.loadNpmTasks("grunt-contrib-concat");
   grunt.loadNpmTasks("grunt-babel");
+  grunt.loadNpmTasks("grunt-terser");
 
-  grunt.registerTask("default", ["replace", "babel:umd", "babel:minify", "concat:license"]);
+  grunt.registerTask("default", ["replace", "babel:umd", "terser:minify", "concat:license"]);
 };

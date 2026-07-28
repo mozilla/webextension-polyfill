@@ -21,7 +21,7 @@ const buildWrapper = template(`
 `);
 
 module.exports = (api, options = {}) => {
-  api.assertVersion(7);
+  api.assertVersion(8);
 
   if (typeof options.globalName != "string") {
     throw new Error("globalName option is mandatory");
