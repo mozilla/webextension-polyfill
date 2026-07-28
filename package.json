@@ -47,7 +47,7 @@
     "tape-async": "2.3.0",
     "tmp": "0.2.7",
     "webpack": "5.108.4",
-    "webpack-cli": "5.1.4"
+    "webpack-cli": "7.2.1"
   },
   "nyc": {
     "reporter": [
