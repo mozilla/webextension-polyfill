@@ -26,7 +26,7 @@
     "chromedriver": "150.0.0",
     "cross-env": "7.0.3",
     "eslint": "9.11.1",
-    "finalhandler": "1.3.1",
+    "finalhandler": "2.1.1",
     "geckodriver": "6.1.1",
     "global-replaceify": "1.0.0",
     "globals": "^17.7.0",
