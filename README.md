@@ -1,18 +1,20 @@
 # WebExtension `browser` API Polyfill
 
-This library allows extensions that use the Promise-based WebExtension/BrowserExt API being standardized by the
-[W3 Browser Extensions][w3-browserext] group to run on Google Chrome with minimal or no changes.
+This library allows extensions to use the Promise-based `browser` API namespace
+to access [WebExtension APIs](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API).
+Firefox pioneered this API as an alternative to the callback-based `chrome`
+namespace from Chrome, and offered this polyfill to enable Chrome extensions to
+use the same API. Safari also supports the `browser` namespace.
 
-[![CircleCI](https://circleci.com/gh/mozilla/webextension-polyfill.svg?style=svg)](https://circleci.com/gh/mozilla/webextension-polyfill)
-[![codecov](https://codecov.io/gh/mozilla/webextension-polyfill/branch/master/graph/badge.svg)](https://codecov.io/gh/mozilla/webextension-polyfill)
-[![devDependency Status](https://david-dm.org/mozilla/webextension-polyfill/dev-status.svg)](https://david-dm.org/mozilla/webextension-polyfill#info=devDependencies)
-[![npm version](https://badge.fury.io/js/webextension-polyfill.svg)](https://badge.fury.io/js/webextension-polyfill)
+Chrome 148 added support for the `browser` namespace for all extensions except
+devtools extensions. This exception [was lifted](https://crbug.com/500769389)
+in Chrome 152, which supports the `browser` namespace for all Chrome extensions.
 
-> This library doesn't (and it is not going to) polyfill API methods or options that are missing on Chrome but natively provided
-> on Firefox, and so the extension has to do its own "runtime feature detection" in those cases (and then eventually polyfill the
-> missing feature on its own or enable/disable some of the features accordingly).
+For more information on Chrome's new support for the `browser` namespace, see
+https://developer.chrome.com/docs/extensions/develop/concepts/browser-namespace
 
-[w3-browserext]: https://www.w3.org/community/browserext/
+**Following the adoption of the `browser` namespace by Chrome, this polyfill
+has served its purpose, and will not receive any further updates.**
 
 Table of contents
 =================
@@ -37,6 +39,7 @@ Supported Browsers
 | Chrome                    | *Officially Supported* (with automated tests)                                                        |
 | Firefox                   | *Officially Supported as a NO-OP* (with automated tests for comparison with the behaviors on Chrome) |
 | Opera / Edge (>=79.0.309) | *Unofficially Supported* as a Chrome-compatible target (but not explicitly tested in automation)     |
+| Safari                    | *Unofficially Supported as a NO-OP* (but not explicitly tested in automation)                        |
 
 The polyfill is being tested explicitly (with automated tests that run on every pull request) on **officially supported**
 browsers (that are currently the last stable versions of Chrome and Firefox).
@@ -45,6 +48,9 @@ On Firefox, this library is actually acting as a NO-OP: it detects that the `bro
 and it does not create any custom wrappers.
 Firefox is still included in the automated tests, to ensure that no wrappers are being created when running on Firefox,
 and for comparison with the behaviors implemented by the library on Chrome.
+
+On browsers supporting the `browser` namespace, this library acts as a NO-OP.
+See the top of this file - in 2027 this library is likely redundant.
 
 ## Installation
 
