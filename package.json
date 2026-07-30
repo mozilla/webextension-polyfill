@@ -23,7 +23,7 @@
     "@babel/register": "8.0.1",
     "browserify": "17.0.1",
     "chai": "6.2.2",
-    "chromedriver": "150.0.0",
+    "chromedriver": "151.0.1",
     "cross-env": "10.1.0",
     "eslint": "10.7.0",
     "finalhandler": "2.1.1",
